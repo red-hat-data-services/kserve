@@ -2150,19 +2150,20 @@ test = ["enum34", "ipaddress", "mock", "pywin32", "wmi"]
 
 [[package]]
 name = "py-spy"
-version = "0.3.14"
+version = "0.3.12"
 description = "Sampling profiler for Python programs"
 category = "main"
 optional = false
 python-versions = "*"
 files = [
-    {file = "py_spy-0.3.14-py2.py3-none-macosx_10_7_x86_64.whl", hash = "sha256:5b342cc5feb8d160d57a7ff308de153f6be68dcf506ad02b4d67065f2bae7f45"},
-    {file = "py_spy-0.3.14-py2.py3-none-macosx_10_9_x86_64.macosx_11_0_arm64.macosx_10_9_universal2.whl", hash = "sha256:fe7efe6c91f723442259d428bf1f9ddb9c1679828866b353d539345ca40d9dd2"},
-    {file = "py_spy-0.3.14-py2.py3-none-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:590905447241d789d9de36cff9f52067b6f18d8b5e9fb399242041568d414461"},
-    {file = "py_spy-0.3.14-py2.py3-none-manylinux_2_17_armv7l.manylinux2014_armv7l.whl", hash = "sha256:fd6211fe7f587b3532ba9d300784326d9a6f2b890af7bf6fff21a029ebbc812b"},
-    {file = "py_spy-0.3.14-py2.py3-none-manylinux_2_5_i686.manylinux1_i686.whl", hash = "sha256:3e8e48032e71c94c3dd51694c39e762e4bbfec250df5bf514adcdd64e79371e0"},
-    {file = "py_spy-0.3.14-py2.py3-none-manylinux_2_5_x86_64.manylinux1_x86_64.whl", hash = "sha256:f59b0b52e56ba9566305236375e6fc68888261d0d36b5addbe3cf85affbefc0e"},
-    {file = "py_spy-0.3.14-py2.py3-none-win_amd64.whl", hash = "sha256:8f5b311d09f3a8e33dbd0d44fc6e37b715e8e0c7efefafcda8bfd63b31ab5a31"},
+    {file = "py_spy-0.3.12-py2.py3-none-macosx_10_7_x86_64.whl", hash = "sha256:608f8cb370d0f9b3bc31999502b375bf8fef555a6bf37e66980ac9e6b340ee2c"},
+    {file = "py_spy-0.3.12-py2.py3-none-macosx_10_9_x86_64.macosx_11_0_arm64.macosx_10_9_universal2.whl", hash = "sha256:333c2917ad4383fa105c2caea6d3e375019579888e39942e5062d7048c0132ee"},
+    {file = "py_spy-0.3.12-py2.py3-none-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:b205dd347ebd4e4f97a4b89950c0caab1ec969f57133ebc2ad6dd66b9c25552d"},
+    {file = "py_spy-0.3.12-py2.py3-none-manylinux_2_17_armv7l.manylinux2014_armv7l.whl", hash = "sha256:3514ba939e7c682e7955cd79dcc79f5e1ce6483e044756925a61e7fb1e80ef77"},
+    {file = "py_spy-0.3.12-py2.py3-none-manylinux_2_5_i686.manylinux1_i686.whl", hash = "sha256:1ae0e11aac6e1c8679c13251b010ac4aa59230087a09f14517431f66333d7600"},
+    {file = "py_spy-0.3.12-py2.py3-none-manylinux_2_5_x86_64.manylinux1_x86_64.whl", hash = "sha256:04005cf6c8367fcdfa039745e00db79f175a1265843daaa9872f8dbb46042763"},
+    {file = "py_spy-0.3.12-py2.py3-none-win_amd64.whl", hash = "sha256:78e96915423bceee1c81e3aa177772c4e299e063e42afbbf2a1918a1facc8b27"},
+    {file = "py_spy-0.3.12.tar.gz", hash = "sha256:e76f115e9b7f1ae629df5a42daf78e3df727cdc31e70e0520c441281dfe18794"},
 ]
 
 [[package]]

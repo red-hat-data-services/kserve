@@ -46,9 +46,9 @@ ENV VIRTUAL_ENV=${VENV_PATH}
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 RUN microdnf install python39 shadow-utils
-RUN adduser kserve -m -u 1000 -d /home/kserve
+RUN adduser kserve -m -u 1000 -g 0 -d /home/kserve
 
-COPY --from=builder --chown=kserve:kserve $VIRTUAL_ENV $VIRTUAL_ENV
+COPY --from=builder --chown=kserve:0 $VIRTUAL_ENV $VIRTUAL_ENV
 COPY --from=builder kserve kserve
 COPY ./storage-initializer /storage-initializer
 

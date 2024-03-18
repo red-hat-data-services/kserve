@@ -6,8 +6,9 @@ metadata:
     build.appstudio.redhat.com/commit_sha: '{{revision}}'
     build.appstudio.redhat.com/target_branch: '{{target_branch}}'
     pipelinesascode.tekton.dev/max-keep-runs: "3"
+    build.appstudio.openshift.io/build-nudge-files: ".*.env, .*.json"
     pipelinesascode.tekton.dev/on-cel-expression: event == "push" && target_branch
-      == "rhoai-2.9"
+      == "rhoai-2.9" && !".github/*.*".pathChanged() && (!".tekton/*.*".pathChanged() || ".tekton/kserve-storage-initializer-29-push.yaml".pathChanged()) && !"config/overlays/odh/params.env".pathChanged()
   creationTimestamp: null
   labels:
     appstudio.openshift.io/application: kserve-storage-initializer
@@ -22,7 +23,7 @@ spec:
   - name: git-url
     value: '{{source_url}}'
   - name: output-image
-    value: quay.io/redhat-user-workloads/rhoai-tenant/kserve-storage-initializer/kserve-storage-initializer-29:{{revision}}
+    value: quay.io/modh/kserve-storage-initializer:{{revision}}
   - name: path-context
     value: storage-initializer.Dockerfile
   - name: revision

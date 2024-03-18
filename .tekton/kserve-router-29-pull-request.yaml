@@ -8,8 +8,7 @@ metadata:
     build.appstudio.redhat.com/target_branch: '{{target_branch}}'
     pipelinesascode.tekton.dev/max-keep-runs: "3"
     pipelinesascode.tekton.dev/on-cel-expression: event == "pull_request" && target_branch
-      == "rhoai-2.9" && ( "./router.Dockerfile/***".pathChanged() || ".tekton/kserve-router-29-pull-request.yaml".pathChanged()
-      || "Dockerfile".pathChanged() )
+      == "rhoai-2.9" && !".github/*.*".pathChanged() && (!".tekton/*.*".pathChanged() || ".tekton/kserve-router-29-pull-request.yaml".pathChanged()) && !"config/overlays/odh/params.env".pathChanged()
   creationTimestamp: null
   labels:
     appstudio.openshift.io/application: kserve-router

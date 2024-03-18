@@ -18,6 +18,14 @@ jobs:
   instant-merge:
     runs-on: ubuntu-latest
     steps:
+      - id: poc
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: |
+          echo "from rhoai-2.9"
+          echo ${{ github.event.sender.id }}
+          echo ${{ github.event.sender.login }}
+          echo ${{ github.event.pull_request.title }}
       - name: instant-merge
         if: ${{ github.event.sender.login == 'red-hat-konflux[bot]' && startsWith(github.event.pull_request.title, 'Update kserve-') }}
         env:

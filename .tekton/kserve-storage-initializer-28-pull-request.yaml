@@ -9,8 +9,8 @@ metadata:
     pipelinesascode.tekton.dev/max-keep-runs: "3"
     pipelinesascode.tekton.dev/on-cel-expression: |
       event == "pull_request" 
-      && target_branch == "rhoai-2.8"
-      && ( "python/***".pathChanged() || ".tekton/kserve-storage-initializer-28-pull-request.yaml".pathChanged()
+      && target_branch == "rhoai-2.8" 
+      && ( "python/**".pathChanged() || ".tekton/kserve-storage-initializer-28-pull-request.yaml".pathChanged() ) 
       && !"config/overlays/odh/params.env".pathChanged()
   creationTimestamp: null
   labels:

@@ -25,6 +25,8 @@ spec:
     value: quay.io/redhat-user-workloads/rhoai-tenant/kserve-router/kserve-test-hermetic-poc:{{revision}}
   - name: dockerfile
     value: router.Dockerfile
+  - name: hermetic
+    value: "true"
   pipelineSpec:
     finally:
     - name: show-sbom

@@ -6,8 +6,12 @@ metadata:
     build.appstudio.redhat.com/commit_sha: '{{revision}}'
     build.appstudio.redhat.com/target_branch: '{{target_branch}}'
     pipelinesascode.tekton.dev/max-keep-runs: "3"
-    pipelinesascode.tekton.dev/on-cel-expression: event == "push" && target_branch
-      == "rhoai-2.12"
+    build.appstudio.openshift.io/build-nudge-files: ".*.env, .*.json"
+    pipelinesascode.tekton.dev/on-cel-expression: |
+      event == "push" 
+      && target_branch == "rhoai-2.12" 
+      && ( !".tekton/**".pathChanged() || ".tekton/kserve-controller-212-push.yaml".pathChanged() ) 
+      && !"config/overlays/odh/params.env".pathChanged()
   creationTimestamp: null
   labels:
     appstudio.openshift.io/application: kserve-controller
@@ -22,7 +26,7 @@ spec:
   - name: revision
     value: '{{revision}}'
   - name: output-image
-    value: quay.io/redhat-user-workloads/rhoai-tenant/kserve-controller/kserve-controller-212:{{revision}}
+    value: quay.io/modh/kserve-controller:{{target_branch}}
   - name: dockerfile
     value: Dockerfile
   pipelineSpec:
@@ -413,6 +417,9 @@ spec:
       params:
       - name: IMAGE
         value: $(tasks.build-container.results.IMAGE_URL)
+      - name: ADDITIONAL_TAGS
+        value: 
+          - '{{target_branch}}-{{revision}}'
       runAfter:
       - build-container
       taskRef:

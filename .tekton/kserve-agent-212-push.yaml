@@ -417,7 +417,7 @@ spec:
         value: $(tasks.build-container.results.IMAGE_URL)
       - name: ADDITIONAL_TAGS
         value: 
-          - '{{target_branch}}-{{revision}}
+          - '{{target_branch}}-{{revision}}'
       runAfter:
       - build-container
       taskRef:

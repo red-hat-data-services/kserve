@@ -17,7 +17,7 @@ RUN CGO_ENABLED=0 GOOS=linux GOFLAGS=-mod=mod go build -a -o agent ./cmd/agent
 # Copy the inference-agent into a thin image
 FROM registry.access.redhat.com/ubi8/ubi:latest
 
-useradd kserve -m -u 1000
+RUN useradd kserve -m -u 1000
 
 COPY third_party/ third_party/
 WORKDIR /ko-app

@@ -26,7 +26,7 @@ spec:
   - name: revision
     value: '{{revision}}'
   - name: output-image
-    value: quay.io/modh/kserve-controller:{{revision}}
+    value: quay.io/modh/kserve-controller:{{target_branch}}
   - name: dockerfile
     value: Dockerfile
   pipelineSpec:

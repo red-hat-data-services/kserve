@@ -241,7 +241,7 @@ spec:
         - name: name
           value: buildah
         - name: bundle
-          value: quay.io/arewm/buildah-oci-ta-bundle@sha256:f0e6b62e80f8e73419a8a04508001db2f6e72ee3932b3dc07e125797a4b935d9
+          value: quay.io/arewm/buildah-bundle:v0.2-kfluxbugs-1506
         - name: kind
           value: task
         resolver: bundles
@@ -257,8 +257,6 @@ spec:
       params:
       - name: BINARY_IMAGE
         value: $(params.output-image)
-      - name: BASE_IMAGES
-        value: $(tasks.build-container.results.BASE_IMAGES_DIGESTS)
       runAfter:
       - build-container
       taskRef:
@@ -284,8 +282,6 @@ spec:
         workspace: workspace
     - name: deprecated-base-image-check
       params:
-      - name: BASE_IMAGES_DIGESTS
-        value: $(tasks.build-container.results.BASE_IMAGES_DIGESTS)
       - name: IMAGE_URL
         value: $(tasks.build-container.results.IMAGE_URL)
       - name: IMAGE_DIGEST

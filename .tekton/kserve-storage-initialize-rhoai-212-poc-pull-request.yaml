@@ -241,7 +241,7 @@ spec:
         - name: name
           value: buildah
         - name: bundle
-          value: quay.io/arewm/buildah-oci-ta-bundle@sha256:f0e6b62e80f8e73419a8a04508001db2f6e72ee3932b3dc07e125797a4b935d9
+          value: quay.io/arewm/buildah-oci-ta-bundle:v0.1-kfluxbugs-1506@sha256:f0e6b62e80f8e73419a8a04508001db2f6e72ee3932b3dc07e125797a4b935d9
         - name: kind
           value: task
         resolver: bundles

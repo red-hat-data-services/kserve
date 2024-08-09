@@ -1133,7 +1133,7 @@ rsa==4.9; (python_version >= "3.6") \
 s3transfer==0.6.1 \
     --hash=sha256:3c0da2d074bf35d6870ef157158641178a4204a6e689e82546083e31e0311346 \
     --hash=sha256:640bb492711f4c0c0905e1f62b6aaeb771881935ad27884852411f8e9cacbca9
-setuptools==67.8.0 \
+setuptools==70.0.0 \
     --hash=sha256:5df61bf30bb10c6f756eb19e7c9f3b473051f48db77fddbe06ff2ca307df9a6f \
     --hash=sha256:62642358adc77ffa87233bc4d2354c4b2682d214048f500964dbe760ccedf102
 six==1.16.0 \

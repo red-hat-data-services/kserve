@@ -35,7 +35,7 @@ spec:
     value: "true"
   - name: prefetch-input
     value: |
-     [{"type": "rpm", "path": "python"}, {"type": "pip", "path": "python/kserve", "requirements_files": ["requirements.txt"], "allow_binary": "true"}]
+     [{"type": "rpm", "path": "python"}, {"type": "pip", "path": "python/kserve", "requirements_files": ["requirements-build.txt", "requirements.txt"], "allow_binary": "true"}]
   pipelineSpec:
     finally:
     - name: show-sbom
@@ -476,7 +476,7 @@ spec:
         - ReadWriteOnce
         resources:
           requests:
-            storage: 1Gi
+            storage: 4Gi
       status: {}
   - name: git-auth
     secret:

@@ -4,7 +4,8 @@ ARG VENV_PATH=/prod_venv
 FROM registry.access.redhat.com/ubi8/ubi-minimal:latest as builder
 
 # Install Python and dependencies
-RUN microdnf install -y python39 python39-devel gcc libffi-devel openssl-devel krb5-workstation krb5-libs && microdnf clean all
+RUN microdnf install  --setopt=ubi-8-appstream-rpms.module_hotfixes=1 \
+    -y python39 python39-devel gcc libffi-devel openssl-devel krb5-workstation krb5-libs && microdnf clean all
 
 # Install Poetry
 ARG POETRY_HOME=/opt/poetry

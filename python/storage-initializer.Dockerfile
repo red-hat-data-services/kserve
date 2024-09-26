@@ -43,8 +43,8 @@ COPY third_party third_party
 ARG VENV_PATH
 ENV VIRTUAL_ENV=${VENV_PATH}
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
-
-RUN microdnf install --setopt=ubi-8-appstream-rpms.module_hotfixes=1 \
+#--setopt=ubi-8-appstream-rpms.module_hotfixes=1 3
+RUN microdnf install --disablerepo=* --enablerepo=ubi-8-baseos-rpms --enablerepo=ubi-8-appstream-rpms \
     -y shadow-utils python39 python39-devel && \
     microdnf clean all
 RUN useradd kserve -m -u 1000 -d /home/kserve

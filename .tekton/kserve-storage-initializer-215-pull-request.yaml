@@ -7,8 +7,11 @@ metadata:
     build.appstudio.redhat.com/pull_request_number: '{{pull_request_number}}'
     build.appstudio.redhat.com/target_branch: '{{target_branch}}'
     pipelinesascode.tekton.dev/max-keep-runs: "3"
-    pipelinesascode.tekton.dev/on-cel-expression: event == "pull_request" && target_branch
-      == "rhoai-2.15"
+    pipelinesascode.tekton.dev/on-cel-expression: |
+      event == "pull_request" 
+      && target_branch == "rhoai-2.15" 
+      && ( "python/**".pathChanged() || ".tekton/kserve-storage-initializer-215-pull-request.yaml".pathChanged() ) 
+      && !"config/overlays/odh/params.env".pathChanged()
   creationTimestamp: null
   labels:
     appstudio.openshift.io/application: kserve-storage-initializer
@@ -28,12 +31,9 @@ spec:
     value: 5d
   - name: dockerfile
     value: storage-initializer.Dockerfile
+  - name: path-context
+    value: python
   pipelineSpec:
-    description: |
-      This pipeline is ideal for building container images from a Containerfile while maintaining trust after pipeline customization.
-
-      _Uses `buildah` to create a container image leveraging [trusted artifacts](https://konflux-ci.dev/architecture/ADR/0036-trusted-artifacts.html). It also optionally creates a source image and runs some build-time tests. Information is shared between tasks using OCI artifacts instead of PVCs. EC will pass the [`trusted_task.trusted`](https://enterprisecontract.dev/docs/ec-policies/release_policy.html#trusted_task__trusted) policy as long as all data used to build the artifact is generated from trusted tasks.
-      This pipeline is pushed as a Tekton bundle to [quay.io](https://quay.io/repository/konflux-ci/tekton-catalog/pipeline-docker-build-oci-ta?tab=tags)_
     finally:
     - name: show-sbom
       params:

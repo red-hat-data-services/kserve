@@ -17,10 +17,13 @@ RUN CGO_ENABLED=0 GOOS=linux GOFLAGS=-mod=mod go build -a -o agent ./cmd/agent
 # Copy the inference-agent into a thin image
 FROM registry.access.redhat.com/ubi8/ubi-minimal:latest
 
-RUN microdnf install -y --disablerepo=* --enablerepo=ubi-8-baseos-rpms shadow-utils && \
-    microdnf clean all && \ 
-    useradd kserve -m -u 1000
-RUN microdnf remove -y shadow-utils
+RUN mkdir -p /home/kserve && \
+    touch /etc/passwd /etc/group /etc/shadow && \
+    echo 'kserve:x:1000:1000::/home/kserve:/bin/bash' >> /etc/passwd && \
+    echo 'kserve:*:18573:0:99999:7:::' >> /etc/shadow && \
+    echo 'kserve:x:1000:' >> /etc/group && \
+    chown -R 1000:1000 /home/kserve
+
 COPY third_party/ third_party/
 WORKDIR /ko-app
 COPY --from=builder /go/src/github.com/kserve/kserve/agent /ko-app/

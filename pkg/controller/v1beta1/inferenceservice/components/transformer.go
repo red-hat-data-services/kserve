@@ -51,7 +51,7 @@ type Transformer struct {
 	clientset              kubernetes.Interface
 	scheme                 *runtime.Scheme
 	inferenceServiceConfig *v1beta1.InferenceServicesConfig
-	credentialBuilder      *credentials.CredentialBuilder
+	credentialBuilder      *credentials.CredentialBuilder //nolint: unused
 	deploymentMode         constants.DeploymentModeType
 	Log                    logr.Logger
 }
@@ -81,7 +81,7 @@ func (p *Transformer) Reconcile(isvc *v1beta1.InferenceService) (ctrl.Result, er
 		annotations[constants.StorageInitializerSourceUriInternalAnnotationKey] = *sourceURI
 		err := isvcutils.ValidateStorageURI(sourceURI, p.client)
 		if err != nil {
-			return ctrl.Result{}, fmt.Errorf("StorageURI not supported: %v", err)
+			return ctrl.Result{}, fmt.Errorf("StorageURI not supported: %w", err)
 		}
 	}
 	addLoggerAnnotations(isvc.Spec.Transformer.Logger, annotations)
@@ -143,12 +143,13 @@ func (p *Transformer) Reconcile(isvc *v1beta1.InferenceService) (ctrl.Result, er
 
 		// add predictor host and protocol to metadata
 		isvc.ObjectMeta.Annotations[constants.PredictorHostAnnotationKey] = predictorURL.Host
-		if predictorURL.Scheme == "grpc" {
+		switch predictorURL.Scheme {
+		case "grpc":
 			isvc.ObjectMeta.Annotations[constants.PredictorProtocolAnnotationKey] = string(constants.ProtocolGRPCV2)
-		} else if predictorURL.Scheme == "http" || predictorURL.Scheme == "https" {
+		case "http", "https":
 			// modelmesh supports v2 only
 			isvc.ObjectMeta.Annotations[constants.PredictorProtocolAnnotationKey] = string(constants.ProtocolV2)
-		} else {
+		default:
 			return ctrl.Result{}, fmt.Errorf("Predictor URL Scheme not supported: %v", predictorURL.Scheme)
 		}
 	}
@@ -169,20 +170,24 @@ func (p *Transformer) Reconcile(isvc *v1beta1.InferenceService) (ctrl.Result, er
 
 	// Here we allow switch between knative and vanilla deployment
 	if p.deploymentMode == constants.RawDeployment {
-		r, err := raw.NewRawKubeReconciler(p.client, p.clientset, p.scheme, objectMeta,
-			&isvc.Spec.Transformer.ComponentExtensionSpec, &podSpec)
+		r, err := raw.NewRawKubeReconciler(p.client, p.clientset, p.scheme, objectMeta, metav1.ObjectMeta{},
+			&isvc.Spec.Transformer.ComponentExtensionSpec, &podSpec, nil)
 		if err != nil {
 			return ctrl.Result{}, errors.Wrapf(err, "fails to create NewRawKubeReconciler for transformer")
 		}
-		//set Deployment Controller
-		if err := controllerutil.SetControllerReference(isvc, r.Deployment.Deployment, p.scheme); err != nil {
-			return ctrl.Result{}, errors.Wrapf(err, "fails to set deployment owner reference for transformer")
+		// set Deployment Controller
+		for _, deployment := range r.Deployment.DeploymentList {
+			if err := controllerutil.SetControllerReference(isvc, deployment, p.scheme); err != nil {
+				return ctrl.Result{}, errors.Wrapf(err, "fails to set deployment owner reference for transformer")
+			}
 		}
-		//set Service Controller
-		if err := controllerutil.SetControllerReference(isvc, r.Service.Service, p.scheme); err != nil {
-			return ctrl.Result{}, errors.Wrapf(err, "fails to set service owner reference for transformer")
+		// set Service Controller
+		for _, svc := range r.Service.ServiceList {
+			if err := controllerutil.SetControllerReference(isvc, svc, p.scheme); err != nil {
+				return ctrl.Result{}, errors.Wrapf(err, "fails to set service owner reference for transformer")
+			}
 		}
-		//set autoscaler Controller
+		// set autoscaler Controller
 		if err := r.Scaler.Autoscaler.SetControllerReferences(isvc, p.scheme); err != nil {
 			return ctrl.Result{}, errors.Wrapf(err, "fails to set autoscaler owner references for transformer")
 		}
@@ -192,7 +197,6 @@ func (p *Transformer) Reconcile(isvc *v1beta1.InferenceService) (ctrl.Result, er
 			return ctrl.Result{}, errors.Wrapf(err, "fails to reconcile transformer")
 		}
 		isvc.Status.PropagateRawStatus(v1beta1.TransformerComponent, deployment, r.URL)
-
 	} else {
 		r := knative.NewKsvcReconciler(p.client, p.scheme, objectMeta, &isvc.Spec.Transformer.ComponentExtensionSpec,
 			&podSpec, isvc.Status.Components[v1beta1.TransformerComponent])

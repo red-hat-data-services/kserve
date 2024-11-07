@@ -26,57 +26,65 @@ from . import grpc_predict_v2_pb2_grpc
 from .interceptors import LoggingInterceptor
 from .servicer import InferenceServicer
 
-MAX_GRPC_MESSAGE_LENGTH = 8388608
-
 
 class GRPCServer:
     def __init__(
         self,
         port: int,
         data_plane: DataPlane,
-        model_repository_extension: ModelRepositoryExtension
+        model_repository_extension: ModelRepositoryExtension,
+        kwargs: dict,
     ):
         self._port = port
         self._data_plane = data_plane
         self._model_repository_extension = model_repository_extension
         self._server = None
+        self._kwargs = kwargs
 
     async def start(self, max_workers):
         inference_servicer = InferenceServicer(
-            self._data_plane,
-            self._model_repository_extension)
+            self._data_plane, self._model_repository_extension
+        )
         self._server = aio.server(
             futures.ThreadPoolExecutor(max_workers=max_workers),
             interceptors=(LoggingInterceptor(),),
             options=[
-                ("grpc.max_message_length", MAX_GRPC_MESSAGE_LENGTH),
-                ("grpc.max_send_message_length", MAX_GRPC_MESSAGE_LENGTH),
-                ("grpc.max_receive_message_length", MAX_GRPC_MESSAGE_LENGTH),
-            ]
+                (
+                    "grpc.max_send_message_length",
+                    self._kwargs.get("grpc_max_send_message_length"),
+                ),
+                (
+                    "grpc.max_receive_message_length",
+                    self._kwargs.get("grpc_max_receive_message_length"),
+                ),
+            ],
         )
         grpc_predict_v2_pb2_grpc.add_GRPCInferenceServiceServicer_to_server(
-            inference_servicer, self._server)
+            inference_servicer, self._server
+        )
 
-        listen_addr = f'[::]:{self._port}'
+        listen_addr = f"[::]:{self._port}"
         self._server.add_insecure_port(listen_addr)
         logger.info("Starting gRPC server on %s", listen_addr)
         await self._server.start()
         await self._server.wait_for_termination()
 
     async def stop(self, sig: int = None):
-        logger.info("Waiting for gRPC server shutdown")
-        await self._server.stop(grace=10)
-        logger.info("gRPC server shutdown complete")
+        if self._server:
+            logger.info("Waiting for gRPC server shutdown")
+            await self._server.stop(grace=10)
+            logger.info("gRPC server shutdown complete")
 
 
 class GRPCProcess(multiprocessing.Process):
 
-    def __init__(self,
-                 port: int,
-                 max_threads: int,
-                 data_plane: DataPlane,
-                 model_repository_extension: ModelRepositoryExtension,
-                 ):
+    def __init__(
+        self,
+        port: int,
+        max_threads: int,
+        data_plane: DataPlane,
+        model_repository_extension: ModelRepositoryExtension,
+    ):
         super().__init__()
         self._data_plane = data_plane
         self._model_repository_extension = model_repository_extension
@@ -88,5 +96,7 @@ class GRPCProcess(multiprocessing.Process):
         self._server.stop()
 
     def run(self):
-        self._server = GRPCServer(self._port, self._data_plane, self._model_repository_extension)
+        self._server = GRPCServer(
+            self._port, self._data_plane, self._model_repository_extension
+        )
         asyncio.run(self._server.start(self._max_threads))

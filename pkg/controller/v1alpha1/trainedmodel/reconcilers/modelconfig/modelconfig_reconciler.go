@@ -63,12 +63,12 @@ func (c *ModelConfigReconciler) Reconcile(req ctrl.Request, tm *v1alpha1api.Trai
 		return err
 	}
 	if tm.DeletionTimestamp != nil {
-		//A TrainedModel is being deleted, remove the model from the model configmap
+		// A TrainedModel is being deleted, remove the model from the model configmap
 		deletedConfigs := []string{tm.Name}
 		configDelta := modelconfig.NewConfigsDelta([]modelconfig.ModelConfig{}, deletedConfigs)
 		err := configDelta.Process(desiredModelConfig)
 		if err != nil {
-			return fmt.Errorf("Can not remove model %v from config because of error %v", tm.Name, err)
+			return fmt.Errorf("Can not remove model %v from config because of error %w", tm.Name, err)
 		}
 		// Update the model Config created by the InferenceService controller
 		err = c.client.Update(context.TODO(), desiredModelConfig)
@@ -82,7 +82,7 @@ func (c *ModelConfigReconciler) Reconcile(req ctrl.Request, tm *v1alpha1api.Trai
 		configDelta := modelconfig.NewConfigsDelta(updatedConfigs, nil)
 		err := configDelta.Process(desiredModelConfig)
 		if err != nil {
-			return fmt.Errorf("Can not add or update a model %v from config because of error %v", tm.Name, err)
+			return fmt.Errorf("Can not add or update a model %v from config because of error %w", tm.Name, err)
 		}
 		// Update the model Config created by the InferenceService controller
 		err = c.client.Update(context.TODO(), desiredModelConfig)

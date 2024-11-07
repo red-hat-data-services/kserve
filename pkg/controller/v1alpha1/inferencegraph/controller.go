@@ -94,16 +94,15 @@ type RouterConfig struct {
 }
 
 func getRouterConfigs(configMap *v1.ConfigMap) (*RouterConfig, error) {
-
 	routerConfig := &RouterConfig{}
 	if agentConfigValue, ok := configMap.Data["router"]; ok {
 		err := json.Unmarshal([]byte(agentConfigValue), &routerConfig)
 		if err != nil {
-			panic(fmt.Errorf("Unable to unmarshall agent json string due to %v ", err))
+			panic(fmt.Errorf("Unable to unmarshall agent json string due to %w ", err))
 		}
 	}
 
-	//Ensure that we set proper values for CPU/Memory Limit/Request
+	// Ensure that we set proper values for CPU/Memory Limit/Request
 	resourceDefaults := []string{routerConfig.MemoryRequest,
 		routerConfig.MemoryLimit,
 		routerConfig.CpuRequest,
@@ -159,7 +158,6 @@ func (r *InferenceGraphReconciler) Reconcile(ctx context.Context, req ctrl.Reque
 							return reconcile.Result{Requeue: true}, errors.Wrapf(err, "service %s is not ready", route.ServiceName)
 						}
 					}
-
 				} else {
 					r.Log.Info("inference service is not found", "name", route.ServiceName)
 					return reconcile.Result{Requeue: true}, errors.Wrapf(err, "Failed to find graph service %s", route.ServiceName)
@@ -175,7 +173,7 @@ func (r *InferenceGraphReconciler) Reconcile(ctx context.Context, req ctrl.Reque
 	deploymentMode := isvcutils.GetDeploymentMode(graph.ObjectMeta.Annotations, deployConfig)
 	r.Log.Info("Inference graph deployment ", "deployment mode ", deploymentMode)
 	if deploymentMode == constants.RawDeployment {
-		//Create inference graph resources such as deployment, service, hpa in raw deployment mode
+		// Create inference graph resources such as deployment, service, hpa in raw deployment mode
 		deployment, url, err := handleInferenceGraphRawDeployment(r.Client, r.Clientset, r.Scheme, graph, routerConfig)
 
 		if err != nil {
@@ -191,7 +189,7 @@ func (r *InferenceGraphReconciler) Reconcile(ctx context.Context, req ctrl.Reque
 			}
 		}
 		if !igAvailable {
-			//If Deployment resource not yet available, IG is not available as well. Reconcile again.
+			// If Deployment resource not yet available, IG is not available as well. Reconcile again.
 			return reconcile.Result{Requeue: true}, errors.Wrapf(err,
 				"Failed to find inference graph deployment  %s", graph.Name)
 		}
@@ -200,7 +198,7 @@ func (r *InferenceGraphReconciler) Reconcile(ctx context.Context, req ctrl.Reque
 	} else {
 		// Abort if Knative Services are not available
 		ksvcAvailable, checkKsvcErr := utils.IsCrdAvailable(r.ClientConfig, knservingv1.SchemeGroupVersion.String(), constants.KnativeServiceKind)
-		if err != nil {
+		if checkKsvcErr != nil {
 			return reconcile.Result{}, checkKsvcErr
 		}
 
@@ -210,7 +208,6 @@ func (r *InferenceGraphReconciler) Reconcile(ctx context.Context, req ctrl.Reque
 			return reconcile.Result{Requeue: false}, reconcile.TerminalError(fmt.Errorf("the resolved deployment mode of InferenceGraph '%s' is Serverless, but Knative Serving is not available", graph.Name))
 		}
 
-		//@TODO check raw deployment mode
 		desired := createKnativeService(graph.ObjectMeta, graph, routerConfig)
 		err = controllerutil.SetControllerReference(graph, desired, r.Scheme)
 		if err != nil {
@@ -225,7 +222,7 @@ func (r *InferenceGraphReconciler) Reconcile(ctx context.Context, req ctrl.Reque
 
 		r.Log.Info("updating inference graph status", "status", ksvcStatus)
 		graph.Status.Conditions = ksvcStatus.Status.Conditions
-		//@TODO Need to check the status of all the graph components, find the inference services from all the nodes and collect the status
+		// @TODO Need to check the status of all the graph components, find the inference services from all the nodes and collect the status
 		for _, con := range ksvcStatus.Status.Conditions {
 			if con.Type == apis.ConditionReady {
 				if con.Status == "True" {

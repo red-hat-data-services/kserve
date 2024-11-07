@@ -32,9 +32,10 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	"github.com/googleapis/google-cloud-go-testing/storage/stiface"
+	"google.golang.org/api/option"
+
 	gcscredential "github.com/kserve/kserve/pkg/credentials/gcs"
 	s3credential "github.com/kserve/kserve/pkg/credentials/s3"
-	"google.golang.org/api/option"
 )
 
 func FileExists(filename string) bool {
@@ -97,7 +98,7 @@ func RemoveDir(dir string) error {
 	}
 	// Remove empty dir
 	if err := os.Remove(dir); err != nil {
-		return fmt.Errorf("dir is unable to be deleted: %v", err)
+		return fmt.Errorf("dir is unable to be deleted: %w", err)
 	}
 	return nil
 }

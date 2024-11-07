@@ -42,10 +42,11 @@ var (
 
 // InferenceService Constants
 var (
-	InferenceServiceName          = "inferenceservice"
-	InferenceServiceAPIName       = "inferenceservices"
-	InferenceServicePodLabelKey   = KServeAPIGroupName + "/" + InferenceServiceName
-	InferenceServiceConfigMapName = "inferenceservice-config"
+	InferenceServiceName                  = "inferenceservice"
+	InferenceServiceAPIName               = "inferenceservices"
+	InferenceServicePodLabelKey           = KServeAPIGroupName + "/" + InferenceServiceName
+	InferenceServiceGenerationPodLabelKey = "isvc.generation"
+	InferenceServiceConfigMapName         = "inferenceservice-config"
 )
 
 // InferenceGraph Constants
@@ -113,6 +114,7 @@ var (
 	LoggerInternalAnnotationKey                      = InferenceServiceInternalAnnotationsPrefix + "/logger"
 	LoggerSinkUrlInternalAnnotationKey               = InferenceServiceInternalAnnotationsPrefix + "/logger-sink-url"
 	LoggerModeInternalAnnotationKey                  = InferenceServiceInternalAnnotationsPrefix + "/logger-mode"
+	LoggerMetadataHeadersInternalAnnotationKey       = InferenceServiceInternalAnnotationsPrefix + "/logger-metadata-headers"
 	BatcherInternalAnnotationKey                     = InferenceServiceInternalAnnotationsPrefix + "/batcher"
 	BatcherMaxBatchSizeInternalAnnotationKey         = InferenceServiceInternalAnnotationsPrefix + "/batcher-max-batchsize"
 	BatcherMaxLatencyInternalAnnotationKey           = InferenceServiceInternalAnnotationsPrefix + "/batcher-max-latency"
@@ -122,6 +124,8 @@ var (
 	AgentModelDirAnnotationKey                       = InferenceServiceInternalAnnotationsPrefix + "/modelDir"
 	PredictorHostAnnotationKey                       = InferenceServiceInternalAnnotationsPrefix + "/predictor-host"
 	PredictorProtocolAnnotationKey                   = InferenceServiceInternalAnnotationsPrefix + "/predictor-protocol"
+	LocalModelLabel                                  = InferenceServiceInternalAnnotationsPrefix + "/localmodel"
+	LocalModelSourceUriAnnotationKey                 = InferenceServiceInternalAnnotationsPrefix + "/localmodel-sourceuri"
 )
 
 // kserve networking constants
@@ -129,12 +133,14 @@ const (
 	NetworkVisibility      = "networking.kserve.io/visibility"
 	ClusterLocalVisibility = "cluster-local"
 	ClusterLocalDomain     = "svc.cluster.local"
+	IsvcNameHeader         = "KServe-Isvc-Name"
+	IsvcNamespaceHeader    = "KServe-Isvc-Namespace"
 )
 
 // StorageSpec Constants
 var (
 	DefaultStorageSpecSecret     = "storage-config"
-	DefaultStorageSpecSecretPath = "/mnt/storage-secret"
+	DefaultStorageSpecSecretPath = "/mnt/storage-secret" // #nosec G101
 )
 
 // Controller Constants
@@ -211,7 +217,21 @@ var (
 // GPU Constants
 const (
 	NvidiaGPUResourceType = "nvidia.com/gpu"
+	AmdGPUResourceType    = "amd.com/gpu"
+	IntelGPUResourceType  = "intel.com/gpu"
+	GaudiGPUResourceType  = "habana.ai/gaudi"
 )
+
+var (
+	CustomGPUResourceTypesAnnotationKey = KServeAPIGroupName + "/gpu-resource-types"
+)
+
+var GPUResourceTypeList = []string{
+	NvidiaGPUResourceType,
+	AmdGPUResourceType,
+	IntelGPUResourceType,
+	GaudiGPUResourceType,
+}
 
 // InferenceService Environment Variables
 const (
@@ -240,6 +260,8 @@ var (
 	LocalGatewayHost = "knative-local-gateway.istio-system.svc." + network.GetClusterDomainName()
 	IstioMeshGateway = "mesh"
 )
+
+const WorkerNodeSuffix = "worker"
 
 // InferenceService Component enums
 const (
@@ -309,6 +331,9 @@ const (
 
 	// TransformerContainerName transformer container name in collocation
 	TransformerContainerName = "transformer-container"
+
+	// WorkerContainerName is for worker node container
+	WorkerContainerName = "worker-container"
 )
 
 // DefaultModelLocalMountPath is where models will be mounted by the storage-initializer
@@ -368,6 +393,10 @@ const (
 	Serverless          DeploymentModeType = "Serverless"
 	RawDeployment       DeploymentModeType = "RawDeployment"
 	ModelMeshDeployment DeploymentModeType = "ModelMesh"
+)
+
+const (
+	DefaultNSKnativeServing = "knative-serving"
 )
 
 // built-in runtime servers
@@ -446,11 +475,41 @@ const (
 const (
 	IstioVirtualServiceKind = "VirtualService"
 	KnativeServiceKind      = "Service"
+	ClusterLocalModelKind   = "ClusterLocalModel"
+)
+
+// Model Parallel Options
+const (
+	TensorParallelSizeEnvName   = "TENSOR_PARALLEL_SIZE"
+	PipelineParallelSizeEnvName = "PIPELINE_PARALLEL_SIZE"
+)
+
+// Model Parallel Options Default value
+const (
+	DefaultTensorParallelSize   = "1"
+	DefaultPipelineParallelSize = "2"
+)
+
+// Multi Node Labels
+var (
+	MultiNodeRoleLabelKey = "multinode/role"
+	MultiNodeHead         = "head"
 )
 
 // GetRawServiceLabel generate native service label
 func GetRawServiceLabel(service string) string {
 	return "isvc." + service
+}
+
+// GetRawWorkerServiceLabel generate native service label for worker
+func GetRawWorkerServiceLabel(service string) string {
+	return "isvc." + service + "-" + WorkerNodeSuffix
+}
+
+// GeHeadServiceName generate head service name
+func GeHeadServiceName(service string, isvcGeneration string) string {
+	isvcName := strings.TrimSuffix(service, "-predictor")
+	return isvcName + "-" + MultiNodeHead + "-" + isvcGeneration
 }
 
 func (e InferenceServiceComponent) String() string {
@@ -468,6 +527,7 @@ func getEnvOrDefault(key string, fallback string) string {
 	return fallback
 }
 
+// nolint: unused
 func isEnvVarMatched(envVar, matchtedValue string) bool {
 	return getEnvOrDefault(envVar, "") == matchtedValue
 }
@@ -486,6 +546,10 @@ func DefaultPredictorServiceName(name string) string {
 
 func PredictorServiceName(name string) string {
 	return name + "-" + string(Predictor)
+}
+
+func PredictorWorkerServiceName(name string) string {
+	return name + "-" + string(Predictor) + "-" + WorkerNodeSuffix
 }
 
 func CanaryPredictorServiceName(name string) string {
@@ -547,11 +611,15 @@ func ExplainPath(name string) string {
 }
 
 func PredictPrefix() string {
-	return fmt.Sprintf("^/v1/models/[\\w-]+(:predict)?")
+	return "^/v1/models/[\\w-]+(:predict)?"
 }
 
 func ExplainPrefix() string {
-	return fmt.Sprintf("^/v1/models/[\\w-]+:explain$")
+	return "^/v1/models/[\\w-]+:explain$"
+}
+
+func PathBasedExplainPrefix() string {
+	return "(/v1/models/[\\w-]+:explain)$"
 }
 
 func VirtualServiceHostname(name string, predictorHostName string) string {
@@ -581,13 +649,13 @@ const portMatch = `(?::\d{1,5})?`
 // HostRegExp returns an ECMAScript regular expression to match either host or host:<any port>
 // for clusterLocalHost, we will also match the prefixes.
 func HostRegExp(host string) string {
-	localDomainSuffix := ".svc." + network.GetClusterDomainName()
+	localDomainSuffix := "(?i).svc." + network.GetClusterDomainName()
 	if !strings.HasSuffix(host, localDomainSuffix) {
 		return exact(regexp.QuoteMeta(host) + portMatch)
 	}
 	prefix := regexp.QuoteMeta(strings.TrimSuffix(host, localDomainSuffix))
-	clusterSuffix := regexp.QuoteMeta("." + network.GetClusterDomainName())
-	svcSuffix := regexp.QuoteMeta(".svc")
+	clusterSuffix := regexp.QuoteMeta("(?i)." + network.GetClusterDomainName())
+	svcSuffix := regexp.QuoteMeta("(?i).svc")
 	return exact(prefix + optional(svcSuffix+optional(clusterSuffix)) + portMatch)
 }
 

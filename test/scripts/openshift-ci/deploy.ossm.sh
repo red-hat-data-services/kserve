@@ -33,7 +33,6 @@ waitpodready() {
   oc wait --for=condition=ready --timeout=180s pod -n $ns -l $podlabel
 }
 
-
 # Deploy OSSM operator
 cat <<EOF | oc apply -f -
 apiVersion: operators.coreos.com/v1alpha1

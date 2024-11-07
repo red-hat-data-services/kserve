@@ -20,12 +20,14 @@ import (
 	"context"
 	"crypto/tls"
 	"crypto/x509"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
 	"path/filepath"
 
 	cloudevents "github.com/cloudevents/sdk-go/v2"
+	cehttp "github.com/cloudevents/sdk-go/v2/protocol/http"
 	"go.uber.org/zap"
 )
 
@@ -38,7 +40,8 @@ const (
 	InferenceServiceAttr = "inferenceservicename"
 	NamespaceAttr        = "namespace"
 	ComponentAttr        = "component"
-	//endpoint would be either default or canary
+	MetadataAttr         = "metadata"
+	// endpoint would be either default or canary
 	EndpointAttr = "endpoint"
 
 	LoggerWorkerQueueSize = 100
@@ -84,7 +87,30 @@ func (w *Worker) sendCloudEvent(logReq LogRequest) error {
 	)
 
 	if err != nil {
-		return fmt.Errorf("while creating http transport: %s", err)
+		return fmt.Errorf("while creating http transport: %w", err)
+	}
+
+	if logReq.Url.Scheme == "https" {
+		caCertFilePath := filepath.Join(LoggerCaCertMountPath, logReq.CertName)
+		caCertFile, err := os.ReadFile(caCertFilePath)
+		// Do not fail if certificates not found, for backwards compatibility
+		if err == nil {
+			clientCertPool := x509.NewCertPool()
+			if !clientCertPool.AppendCertsFromPEM(caCertFile) {
+				return fmt.Errorf("while parsing CA certificate")
+			}
+
+			tlsTransport := &http.Transport{
+				TLSClientConfig: &tls.Config{
+					RootCAs:            clientCertPool,
+					MinVersion:         tls.VersionTLS12,
+					InsecureSkipVerify: logReq.TlsSkipVerify, // #nosec G402
+				},
+			}
+			t.Client.Transport = tlsTransport
+		} else {
+			w.Log.Warnf("using https endpoint but could not find CA cert file %s", caCertFilePath)
+		}
 	}
 
 	if logReq.Url.Scheme == "https" {
@@ -114,7 +140,7 @@ func (w *Worker) sendCloudEvent(logReq LogRequest) error {
 		cloudevents.WithTimeNow(),
 	)
 	if err != nil {
-		return fmt.Errorf("while creating new cloudevents client: %s", err)
+		return fmt.Errorf("while creating new cloudevents client: %w", err)
 	}
 	event := cloudevents.NewEvent(cloudevents.VersionV1)
 	event.SetID(logReq.Id)
@@ -125,13 +151,31 @@ func (w *Worker) sendCloudEvent(logReq LogRequest) error {
 	event.SetExtension(ComponentAttr, logReq.Component)
 	event.SetExtension(EndpointAttr, logReq.Endpoint)
 
+	encodedMetadata, err := json.Marshal(logReq.Metadata)
+	if err != nil {
+		return fmt.Errorf("could not encode metadata as json: %w", err)
+	}
+	event.SetExtension(MetadataAttr, string(encodedMetadata))
+
 	event.SetSource(logReq.SourceUri.String())
 	if err := event.SetData(logReq.ContentType, *logReq.Bytes); err != nil {
-		return fmt.Errorf("while setting cloudevents data: %s", err)
+		return fmt.Errorf("while setting cloudevents data: %w", err)
 	}
 
-	if result := c.Send(w.CeCtx, event); cloudevents.IsUndelivered(result) {
-		return fmt.Errorf("while sending event: %s", result)
+	res := c.Send(w.CeCtx, event)
+	if cloudevents.IsUndelivered(res) {
+		return fmt.Errorf("while sending event: %w", res)
+	} else {
+		var httpResult *cehttp.Result
+		if cloudevents.ResultAs(res, &httpResult) {
+			var err error
+			if httpResult.StatusCode != http.StatusOK {
+				err = fmt.Errorf(httpResult.Format, httpResult.Args...)
+			}
+			w.Log.Infof("Sent with status code %d, error: %v", httpResult.StatusCode, err)
+		} else {
+			w.Log.Infof("Send did not return an HTTP response: %s", res)
+		}
 	}
 	return nil
 }

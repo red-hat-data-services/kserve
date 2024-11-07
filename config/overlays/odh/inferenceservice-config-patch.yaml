@@ -12,10 +12,6 @@ data:
         "memoryLimit": "1Gi",
         "cpuRequest": "100m",
         "cpuLimit": "1",
-        "caBundleConfigMapName": "",
-        "caBundleVolumeMountPath": "/etc/ssl/custom-certs",
-        "cpuModelcar": "10m",
-        "memoryModelcar": "15Mi",
         "enableDirectPvcVolumeMount": true,
         "enableModelcar": true
     }
@@ -23,14 +19,14 @@ data:
     {
         "ingressGateway" : "knative-serving/knative-ingress-gateway",
         "knativeLocalGatewayService" : "knative-local-gateway.istio-system.svc.cluster.local",
-        "ingressService" : "need.to.delete",
+        "ingressService" : "istio-ingressgateway.istio-system.svc.cluster.local",
         "localGateway" : "istio-system/kserve-local-gateway",
         "localGatewayService" : "kserve-local-gateway.istio-system.svc.cluster.local",
         "ingressDomain"  : "example.com",
         "ingressClassName" : "istio",
         "domainTemplate": "{{ .Name }}-{{ .Namespace }}.{{ .IngressDomain }}",
         "urlScheme": "https",
-        "disableIstioVirtualHost": false,
+        "disableIstioVirtualHost": false, 
         "disableIngressCreation": true
     }
   logger: |-

@@ -80,10 +80,10 @@ func getStorageInitializerConfigs(configMap *v1.ConfigMap) (*StorageInitializerC
 	if initializerConfig, ok := configMap.Data[StorageInitializerConfigMapKeyName]; ok {
 		err := json.Unmarshal([]byte(initializerConfig), &storageInitializerConfig)
 		if err != nil {
-			panic(fmt.Errorf("Unable to unmarshall %v json string due to %v ", StorageInitializerConfigMapKeyName, err))
+			panic(fmt.Errorf("Unable to unmarshall %v json string due to %w ", StorageInitializerConfigMapKeyName, err))
 		}
 	}
-	//Ensure that we set proper values for CPU/Memory Limit/Request
+	// Ensure that we set proper values for CPU/Memory Limit/Request
 	resourceDefaults := []string{storageInitializerConfig.MemoryRequest,
 		storageInitializerConfig.MemoryLimit,
 		storageInitializerConfig.CpuRequest,
@@ -106,6 +106,9 @@ func GetContainerSpecForStorageUri(storageUri string, client client.Client) (*v1
 
 	for _, sc := range storageContainers.Items {
 		if sc.IsDisabled() {
+			continue
+		}
+		if sc.Spec.WorkloadType != v1alpha1.InitContainer {
 			continue
 		}
 		supported, err := sc.Spec.IsStorageUriSupported(storageUri)
@@ -225,12 +228,26 @@ func (mi *StorageInitializerInjector) InjectStorageInitializer(pod *v1.Pod) erro
 		}
 	}
 
-	// Find the kserve-container (this is the model inference server) and transformer container
+	// Find the kserve-container (this is the model inference server) and transformer container and the worker-container
 	userContainer := getContainerWithName(pod, constants.InferenceServiceContainerName)
 	transformerContainer := getContainerWithName(pod, constants.TransformerContainerName)
+	workerContainer := getContainerWithName(pod, constants.WorkerContainerName)
 
 	if userContainer == nil {
-		return fmt.Errorf("Invalid configuration: cannot find container: %s", constants.InferenceServiceContainerName)
+		if workerContainer == nil {
+			return fmt.Errorf("Invalid configuration: cannot find container: %s", constants.InferenceServiceContainerName)
+		} else {
+			userContainer = workerContainer
+		}
+	}
+
+	// Mount pvc directly if local model label exists
+	if modelName, ok := pod.ObjectMeta.Labels[constants.LocalModelLabel]; ok {
+		subPath, _ := strings.CutPrefix(srcURI, pod.ObjectMeta.Annotations[constants.LocalModelSourceUriAnnotationKey])
+		if !strings.HasPrefix(subPath, "/") {
+			subPath = "/" + subPath
+		}
+		srcURI = "pvc://" + modelName + "/models/" + modelName + subPath
 	}
 
 	podVolumes := []v1.Volume{}
@@ -257,8 +274,7 @@ func (mi *StorageInitializerInjector) InjectStorageInitializer(pod *v1.Pod) erro
 
 		// check if using direct volume mount to mount the pvc
 		// if yes, mount the pvc to model local mount path and return
-		if mi.config.EnableDirectPvcVolumeMount == true {
-
+		if mi.config.EnableDirectPvcVolumeMount {
 			// add a corresponding pvc volume mount to the userContainer
 			// pvc will be mount to /mnt/models rather than /mnt/pvc
 			// pvcPath will be injected via SubPath, pvcPath must be a root or Dir
@@ -349,7 +365,6 @@ func (mi *StorageInitializerInjector) InjectStorageInitializer(pod *v1.Pod) erro
 		storageInitializerImage = mi.config.Image
 	}
 
-	securityContext := userContainer.SecurityContext.DeepCopy()
 	// Add an init container to run provisioning logic to the PodSpec
 	initContainer := &v1.Container{
 		Name:  StorageInitializerContainerName,
@@ -370,7 +385,6 @@ func (mi *StorageInitializerInjector) InjectStorageInitializer(pod *v1.Pod) erro
 				v1.ResourceMemory: resource.MustParse(mi.config.MemoryRequest),
 			},
 		},
-		SecurityContext: securityContext,
 	}
 
 	// Add a mount the shared volume on the kserve-container, update the PodSpec
@@ -819,14 +833,15 @@ func mergeContainerSpecs(defaultContainer *v1.Container, crdContainer *v1.Contai
 
 func parsePvcURI(srcURI string) (pvcName string, pvcPath string, err error) {
 	parts := strings.Split(strings.TrimPrefix(srcURI, PvcURIPrefix), "/")
-	if len(parts) > 1 {
-		pvcName = parts[0]
-		pvcPath = strings.Join(parts[1:], "/")
-	} else if len(parts) == 1 {
+	switch len(parts) {
+	case 0:
+		return "", "", fmt.Errorf("Invalid URI must be pvc://<pvcname>/[path]: %s", srcURI)
+	case 1:
 		pvcName = parts[0]
 		pvcPath = ""
-	} else {
-		return "", "", fmt.Errorf("Invalid URI must be pvc://<pvcname>/[path]: %s", srcURI)
+	default:
+		pvcName = parts[0]
+		pvcPath = strings.Join(parts[1:], "/")
 	}
 
 	return pvcName, pvcPath, nil

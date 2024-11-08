@@ -12,10 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from typing import Dict, Optional, Union
-from .model import Model
-from ray.serve.handle import DeploymentHandle
 import os
+from typing import Dict, Optional
+
+from .model import BaseKServeModel
 
 MODEL_MOUNT_DIRS = "/mnt/models"
 
@@ -30,7 +30,7 @@ class ModelRepository:
     """
 
     def __init__(self, models_dir: str = MODEL_MOUNT_DIRS):
-        self.models: Dict[str, Union[Model, DeploymentHandle]] = {}
+        self.models: Dict[str, BaseKServeModel] = {}
         self.models_dir = models_dir
 
     def load_models(self):
@@ -42,27 +42,20 @@ class ModelRepository:
     def set_models_dir(self, models_dir):  # used for unit tests
         self.models_dir = models_dir
 
-    def get_model(self, name: str) -> Optional[Union[Model, DeploymentHandle]]:
+    def get_model(self, name: str) -> Optional[BaseKServeModel]:
         return self.models.get(name, None)
 
-    def get_models(self) -> Dict[str, Union[Model, DeploymentHandle]]:
+    def get_models(self) -> Dict[str, BaseKServeModel]:
         return self.models
 
-    def is_model_ready(self, name: str):
+    async def is_model_ready(self, name: str):
         model = self.get_model(name)
         if not model:
             return False
-        if isinstance(model, Model):
-            return False if model is None else model.ready
-        else:
-            # For Ray Serve, the models are guaranteed to be ready after deploying the model.
-            return True
+        return await model.healthy()
 
-    def update(self, model: Model):
+    def update(self, model: BaseKServeModel):
         self.models[model.name] = model
-
-    def update_handle(self, name: str, model_handle: DeploymentHandle):
-        self.models[name] = model_handle
 
     def load(self, name: str) -> bool:
         pass
@@ -72,6 +65,9 @@ class ModelRepository:
 
     def unload(self, name: str):
         if name in self.models:
+            model = self.models[name]
+            if callable(getattr(model, "stop", None)):
+                model.stop()
             del self.models[name]
         else:
-            raise KeyError(f"model {name} does not exist")
+            raise KeyError(f"model with name {name} does not exist")

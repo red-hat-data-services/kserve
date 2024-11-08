@@ -12,6 +12,7 @@ resources:
 - kserve-lgbserver.yaml
 - kserve-torchserve.yaml
 - kserve-huggingfaceserver.yaml
+- kserve-huggingfaceserver-multinode.yaml
 
 images:
   # SMS Only Runtimes
@@ -25,7 +26,7 @@ images:
 
 - name: mlserver
   newName: docker.io/seldonio/mlserver
-  newTag: 1.3.2
+  newTag: 1.5.0
 
 - name: kserve-xgbserver
   newName: kserve/xgbserver

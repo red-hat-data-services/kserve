@@ -26,6 +26,7 @@ import (
 	"os"
 	"path/filepath"
 	"sync"
+	"time"
 
 	gstorage "cloud.google.com/go/storage"
 	"github.com/aws/aws-sdk-go/aws"
@@ -53,6 +54,7 @@ var _ = Describe("Watcher", func() {
 		zapLogger, _ := zap.NewProduction()
 		sugar = zapLogger.Sugar()
 		logger.Printf("Creating temp dir %v\n", modelDir)
+		SetDefaultEventuallyTimeout(2 * time.Minute)
 	})
 	AfterEach(func() {
 		os.RemoveAll(modelDir)
@@ -403,7 +405,7 @@ var _ = Describe("Watcher", func() {
 				}
 				modelName := "model1"
 				modelStorageURI := "gs://testBucket/testModel2"
-				expectedErr := fmt.Errorf("unable to download object/s because: %v", gstorage.ErrObjectNotExist)
+				expectedErr := fmt.Errorf("unable to download object/s because: %w", gstorage.ErrObjectNotExist)
 				actualErr := cl.DownloadModel(modelDir, modelName, modelStorageURI)
 				Expect(actualErr).To(Equal(expectedErr))
 			})

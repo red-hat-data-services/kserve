@@ -1,14 +1,15 @@
 # Build the inference-agent binary
-FROM registry.access.redhat.com/ubi8/go-toolset:1.21 as builder
+FROM registry.access.redhat.com/ubi8/go-toolset:1.22 as builder
 
 # Copy in the go src
 WORKDIR /go/src/github.com/kserve/kserve
 COPY go.mod  go.mod
 COPY go.sum  go.sum
+
 RUN go mod download
 
-COPY pkg/    pkg/
 COPY cmd/    cmd/
+COPY pkg/    pkg/
 
 # Build
 USER root
@@ -18,7 +19,7 @@ RUN CGO_ENABLED=0 GOOS=linux GOFLAGS=-mod=mod go build -a -o agent ./cmd/agent
 FROM registry.access.redhat.com/ubi8/ubi-minimal:latest
 
 RUN microdnf install -y --disablerepo=* --enablerepo=ubi-8-baseos-rpms shadow-utils && \
-    microdnf clean all && \ 
+    microdnf clean all && \
     useradd kserve -m -u 1000
 RUN microdnf remove -y shadow-utils
 COPY third_party/ third_party/

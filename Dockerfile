@@ -1,12 +1,12 @@
 # Build the manager binary
-FROM registry.access.redhat.com/ubi8/go-toolset:1.21 as builder
+FROM registry.access.redhat.com/ubi8/go-toolset:1.22 as builder
 
 # Copy in the go src
 WORKDIR /go/src/github.com/kserve/kserve
 COPY go.mod  go.mod
 COPY go.sum  go.sum
 
-RUN  go mod download
+RUN go mod download
 
 COPY cmd/    cmd/
 COPY pkg/    pkg/
@@ -18,7 +18,7 @@ RUN CGO_ENABLED=0 GOOS=linux GOFLAGS=-mod=mod go build -a -o manager ./cmd/manag
 # Use distroless as minimal base image to package the manager binary
 FROM registry.access.redhat.com/ubi8/ubi-minimal:latest
 RUN microdnf install -y --disablerepo=* --enablerepo=ubi-8-baseos-rpms shadow-utils && \
-    microdnf clean all && \ 
+    microdnf clean all && \
     useradd kserve -m -u 1000
 RUN microdnf remove -y shadow-utils
 COPY third_party/ /third_party/

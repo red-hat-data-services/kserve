@@ -20,10 +20,11 @@ import (
 	"flag"
 	"net/http"
 	"os"
+
 	"sigs.k8s.io/controller-runtime/pkg/webhook/admission"
 
 	"github.com/kserve/kserve/pkg/utils"
-	istio_networking "istio.io/api/networking/v1beta1"
+	istio_networking "istio.io/api/networking/v1alpha3"
 	istioclientv1beta1 "istio.io/client-go/pkg/apis/networking/v1beta1"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -52,7 +53,7 @@ import (
 )
 
 var (
-	scheme   = runtime.NewScheme()
+	scheme   = runtime.NewScheme() //nolint: unused
 	setupLog = ctrl.Log.WithName("setup")
 )
 
@@ -209,7 +210,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	//Setup TrainedModel controller
+	// Setup TrainedModel controller
 	trainedModelEventBroadcaster := record.NewBroadcaster()
 	setupLog.Info("Setting up v1beta1 TrainedModel controller")
 	trainedModelEventBroadcaster.StartRecordingToSink(&typedcorev1.EventSinkImpl{Interface: clientSet.CoreV1().Events("")})
@@ -224,7 +225,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	//Setup Inference graph controller
+	// Setup Inference graph controller
 	inferenceGraphEventBroadcaster := record.NewBroadcaster()
 	setupLog.Info("Setting up InferenceGraph controller")
 	inferenceGraphEventBroadcaster.StartRecordingToSink(&typedcorev1.EventSinkImpl{Interface: clientSet.CoreV1().Events("")})
@@ -247,10 +248,10 @@ func main() {
 		Handler: &pod.Mutator{Client: mgr.GetClient(), Clientset: clientSet, Decoder: admission.NewDecoder(mgr.GetScheme())},
 	})
 
-	//log.Info("registering cluster serving runtime validator webhook to the webhook server")
-	//hookServer.Register("/validate-serving-kserve-io-v1alpha1-clusterservingruntime", &webhook.Admission{
-	//	Handler: &servingruntime.ClusterServingRuntimeValidator{Client: mgr.GetClient(), Decoder: admission.NewDecoder(mgr.GetScheme())},
-	//})
+	// log.Info("registering cluster serving runtime validator webhook to the webhook server")
+	// hookServer.Register("/validate-serving-kserve-io-v1alpha1-clusterservingruntime", &webhook.Admission{
+	// 	Handler: &servingruntime.ClusterServingRuntimeValidator{Client: mgr.GetClient(), Decoder: admission.NewDecoder(mgr.GetScheme())},
+	// })
 
 	setupLog.Info("registering serving runtime validator webhook to the webhook server")
 	hookServer.Register("/validate-serving-kserve-io-v1alpha1-servingruntime", &webhook.Admission{
@@ -259,6 +260,7 @@ func main() {
 
 	if err = ctrl.NewWebhookManagedBy(mgr).
 		For(&v1alpha1.TrainedModel{}).
+		WithValidator(&v1alpha1.TrainedModelValidator{}).
 		Complete(); err != nil {
 		setupLog.Error(err, "unable to create webhook", "webhook", "v1alpha1")
 		os.Exit(1)
@@ -266,6 +268,7 @@ func main() {
 
 	if err = ctrl.NewWebhookManagedBy(mgr).
 		For(&v1alpha1.InferenceGraph{}).
+		WithValidator(&v1alpha1.InferenceGraphValidator{}).
 		Complete(); err != nil {
 		setupLog.Error(err, "unable to create webhook", "webhook", "v1alpha1")
 		os.Exit(1)
@@ -273,6 +276,8 @@ func main() {
 
 	if err = ctrl.NewWebhookManagedBy(mgr).
 		For(&v1beta1.InferenceService{}).
+		WithDefaulter(&v1beta1.InferenceServiceDefaulter{}).
+		WithValidator(&v1beta1.InferenceServiceValidator{}).
 		Complete(); err != nil {
 		setupLog.Error(err, "unable to create webhook", "webhook", "v1beta1")
 		os.Exit(1)

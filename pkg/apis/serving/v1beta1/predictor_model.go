@@ -84,7 +84,8 @@ func (ss stringSet) contains(s string) bool {
 // GetSupportingRuntimes Get a list of ServingRuntimeSpecs that correspond to ServingRuntimes and ClusterServingRuntimes that
 // support the given model. If the `isMMS` argument is true, this function will only return ServingRuntimes that are
 // ModelMesh compatible, otherwise only single-model serving compatible runtimes will be returned.
-func (m *ModelSpec) GetSupportingRuntimes(cl client.Client, namespace string, isMMS bool) ([]v1alpha1.SupportedRuntime, error) {
+// If `isMultinode` is true, this function will only return ServingRuntimes configured with workers.
+func (m *ModelSpec) GetSupportingRuntimes(cl client.Client, namespace string, isMMS bool, isMultinode bool) ([]v1alpha1.SupportedRuntime, error) {
 	modelProtocolVersion := m.GetProtocol()
 
 	// List all namespace-scoped runtimes.
@@ -96,33 +97,34 @@ func (m *ModelSpec) GetSupportingRuntimes(cl client.Client, namespace string, is
 	sortServingRuntimeList(runtimes)
 
 	// ODH does not support ClusterServingRuntimes
-	//// List all cluster-scoped runtimes.
-	//clusterRuntimes := &v1alpha1.ClusterServingRuntimeList{}
-	//if err := cl.List(context.TODO(), clusterRuntimes); err != nil {
+	// // List all cluster-scoped runtimes.
+	// clusterRuntimes := &v1alpha1.ClusterServingRuntimeList{}
+	// if err := cl.List(context.TODO(), clusterRuntimes); err != nil {
 	//	return nil, err
-	//}
-	//// Sort cluster-scoped runtimes by created timestamp desc and name asc.
-	//sortClusterServingRuntimeList(clusterRuntimes)
+	// }
+	// // Sort cluster-scoped runtimes by created timestamp desc and name asc.
+	// sortClusterServingRuntimeList(clusterRuntimes)
 
 	srSpecs := []v1alpha1.SupportedRuntime{}
-	//var clusterSrSpecs []v1alpha1.SupportedRuntime
+	// var clusterSrSpecs []v1alpha1.SupportedRuntime
 	for i := range runtimes.Items {
 		rt := &runtimes.Items[i]
 		if !rt.Spec.IsDisabled() && rt.Spec.IsMultiModelRuntime() == isMMS &&
-			m.RuntimeSupportsModel(&rt.Spec) && rt.Spec.IsProtocolVersionSupported(modelProtocolVersion) {
+			m.RuntimeSupportsModel(&rt.Spec) && rt.Spec.IsProtocolVersionSupported(modelProtocolVersion) && rt.Spec.IsMultiNodeRuntime() == isMultinode {
 			srSpecs = append(srSpecs, v1alpha1.SupportedRuntime{Name: rt.GetName(), Spec: rt.Spec})
 		}
 	}
 	sortSupportedRuntimeByPriority(srSpecs, m.ModelFormat)
-	//for i := range clusterRuntimes.Items {
-	//	crt := &clusterRuntimes.Items[i]
-	//	if !crt.Spec.IsDisabled() && crt.Spec.IsMultiModelRuntime() == isMMS &&
-	//		m.RuntimeSupportsModel(&crt.Spec) && crt.Spec.IsProtocolVersionSupported(modelProtocolVersion) {
-	//		clusterSrSpecs = append(clusterSrSpecs, v1alpha1.SupportedRuntime{Name: crt.GetName(), Spec: crt.Spec})
-	//	}
-	//}
-	//sortSupportedRuntimeByPriority(clusterSrSpecs, m.ModelFormat)
-	//srSpecs = append(srSpecs, clusterSrSpecs...)
+
+	// for i := range clusterRuntimes.Items {
+	// 	crt := &clusterRuntimes.Items[i]
+	// 	if !crt.Spec.IsDisabled() && crt.Spec.IsMultiModelRuntime() == isMMS &&
+	// 		m.RuntimeSupportsModel(&crt.Spec) && crt.Spec.IsProtocolVersionSupported(modelProtocolVersion) && crt.Spec.IsMultiNodeRuntime() == isMultinode {
+	// 		clusterSrSpecs = append(clusterSrSpecs, v1alpha1.SupportedRuntime{Name: crt.GetName(), Spec: crt.Spec})
+	// 	}
+	// }
+	// sortSupportedRuntimeByPriority(clusterSrSpecs, m.ModelFormat)
+	// srSpecs = append(srSpecs, clusterSrSpecs...)
 	return srSpecs, nil
 }
 
@@ -179,36 +181,37 @@ func sortServingRuntimeList(runtimes *v1alpha1.ServingRuntimeList) {
 	})
 }
 
-func sortClusterServingRuntimeList(runtimes *v1alpha1.ClusterServingRuntimeList) {
-	sort.Slice(runtimes.Items, func(i, j int) bool {
-		if GetProtocolVersionPriority(runtimes.Items[i].Spec.ProtocolVersions) <
-			GetProtocolVersionPriority(runtimes.Items[j].Spec.ProtocolVersions) {
-			return true
-		}
-		if GetProtocolVersionPriority(runtimes.Items[i].Spec.ProtocolVersions) >
-			GetProtocolVersionPriority(runtimes.Items[j].Spec.ProtocolVersions) {
-			return false
-		}
-		if runtimes.Items[i].CreationTimestamp.Before(&runtimes.Items[j].CreationTimestamp) {
-			return false
-		}
-		if runtimes.Items[j].CreationTimestamp.Before(&runtimes.Items[i].CreationTimestamp) {
-			return true
-		}
-		return runtimes.Items[i].Name < runtimes.Items[j].Name
-	})
-}
+// func sortClusterServingRuntimeList(runtimes *v1alpha1.ClusterServingRuntimeList) {
+//	sort.Slice(runtimes.Items, func(i, j int) bool {
+//		if GetProtocolVersionPriority(runtimes.Items[i].Spec.ProtocolVersions) <
+//			GetProtocolVersionPriority(runtimes.Items[j].Spec.ProtocolVersions) {
+//			return true
+//		}
+//		if GetProtocolVersionPriority(runtimes.Items[i].Spec.ProtocolVersions) >
+//			GetProtocolVersionPriority(runtimes.Items[j].Spec.ProtocolVersions) {
+//			return false
+//		}
+//		if runtimes.Items[i].CreationTimestamp.Before(&runtimes.Items[j].CreationTimestamp) {
+//			return false
+//		}
+//		if runtimes.Items[j].CreationTimestamp.Before(&runtimes.Items[i].CreationTimestamp) {
+//			return true
+//		}
+//		return runtimes.Items[i].Name < runtimes.Items[j].Name
+//	})
+// }
 
 func sortSupportedRuntimeByPriority(runtimes []v1alpha1.SupportedRuntime, modelFormat ModelFormat) {
 	sort.Slice(runtimes, func(i, j int) bool {
 		p1 := runtimes[i].Spec.GetPriority(modelFormat.Name)
 		p2 := runtimes[j].Spec.GetPriority(modelFormat.Name)
 
-		if p1 == nil && p2 == nil { // if both runtimes does not specify the priority, the order is kept.
+		switch {
+		case p1 == nil && p2 == nil: // if both runtimes does not specify the priority, the order is kept.
 			return false
-		} else if p1 == nil && p2 != nil { // runtime with priority specified takes precedence
+		case p1 == nil && p2 != nil: // runtime with priority specified takes precedence
 			return false
-		} else if p1 != nil && p2 == nil {
+		case p1 != nil && p2 == nil:
 			return true
 		}
 		return *p1 > *p2
@@ -216,7 +219,7 @@ func sortSupportedRuntimeByPriority(runtimes []v1alpha1.SupportedRuntime, modelF
 }
 
 func GetProtocolVersionPriority(protocols []constants.InferenceServiceProtocol) int {
-	if protocols == nil || len(protocols) == 0 {
+	if len(protocols) == 0 {
 		return int(constants.Unknown)
 	}
 	protocolVersions := []int{}

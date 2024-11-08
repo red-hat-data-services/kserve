@@ -18,6 +18,7 @@ package v1beta1
 
 import (
 	"reflect"
+	"strings"
 
 	"github.com/kserve/kserve/pkg/constants"
 	appsv1 "k8s.io/api/apps/v1"
@@ -209,6 +210,8 @@ const (
 	RuntimeNotRecognized FailureReason = "RuntimeNotRecognized"
 	// The current Predictor Spec is invalid or unsupported
 	InvalidPredictorSpec FailureReason = "InvalidPredictorSpec"
+	// When WorkerSpec is set in InferenceService with a ServingRuntime that does not have a WorkerSpec.
+	InvalidWorkerSpecNotSet = "InvalidWorkerSpecNotSet"
 )
 
 type FailureInfo struct {
@@ -295,9 +298,34 @@ func (ss *InferenceServiceStatus) IsConditionUnknown(t apis.ConditionType) bool 
 	return condition == nil || condition.Status == v1.ConditionUnknown
 }
 
+func (ss *InferenceServiceStatus) PropagateRawStatusWithMessages(
+	component ComponentType,
+	reason string,
+	msg string,
+	targetStatus v1.ConditionStatus) {
+	if len(ss.Components) == 0 {
+		ss.Components = make(map[ComponentType]ComponentStatusSpec)
+	}
+
+	statusSpec, ok := ss.Components[component]
+	if !ok {
+		ss.Components[component] = ComponentStatusSpec{}
+	}
+
+	condition := &apis.Condition{
+		Reason:  reason,
+		Message: msg,
+		Status:  targetStatus,
+	}
+
+	readyCondition := readyConditionsMap[component]
+	ss.SetCondition(readyCondition, condition)
+	ss.Components[component] = statusSpec
+}
+
 func (ss *InferenceServiceStatus) PropagateRawStatus(
 	component ComponentType,
-	deployment *appsv1.Deployment,
+	deploymentList []*appsv1.Deployment,
 	url *apis.URL) {
 	if len(ss.Components) == 0 {
 		ss.Components = make(map[ComponentType]ComponentStatusSpec)
@@ -307,32 +335,75 @@ func (ss *InferenceServiceStatus) PropagateRawStatus(
 		ss.Components[component] = ComponentStatusSpec{}
 	}
 
-	statusSpec.LatestCreatedRevision = deployment.GetObjectMeta().GetAnnotations()["deployment.kubernetes.io/revision"]
-	condition := getDeploymentCondition(deployment, appsv1.DeploymentAvailable)
+	condition := getDeploymentCondition(deploymentList, appsv1.DeploymentAvailable)
 	if condition != nil && condition.Status == v1.ConditionTrue {
 		statusSpec.URL = url
 	}
 	readyCondition := readyConditionsMap[component]
 	ss.SetCondition(readyCondition, condition)
 	ss.Components[component] = statusSpec
-	ss.ObservedGeneration = deployment.Status.ObservedGeneration
+	ss.ObservedGeneration = deploymentList[0].Status.ObservedGeneration
 }
 
-func getDeploymentCondition(deployment *appsv1.Deployment, conditionType appsv1.DeploymentConditionType) *apis.Condition {
+func getDeploymentCondition(deploymentList []*appsv1.Deployment, conditionType appsv1.DeploymentConditionType) *apis.Condition {
 	condition := apis.Condition{}
-	for _, con := range deployment.Status.Conditions {
-		if con.Type == conditionType {
-			condition.Type = apis.ConditionType(conditionType)
-			condition.Status = con.Status
-			condition.Message = con.Message
-			condition.LastTransitionTime = apis.VolatileTime{
-				Inner: con.LastTransitionTime,
+	var messages, reasons []string
+	var statuses []v1.ConditionStatus
+	var lastTransitionTime []apis.VolatileTime
+	// Multi Node case
+	if len(deploymentList) > 1 {
+		for _, deployment := range deploymentList {
+			containerName := "predictor-container: "
+			if strings.Contains(deployment.Name, constants.WorkerNodeSuffix) {
+				containerName = "worker-container: "
 			}
-			condition.Reason = con.Reason
-			break
+			for _, con := range deployment.Status.Conditions {
+				if con.Type == conditionType {
+					statuses = append(statuses, con.Status)
+					messages = append(messages, containerName+con.Message)
+					lastTransitionTime = append(lastTransitionTime, apis.VolatileTime{
+						Inner: con.LastTransitionTime,
+					})
+					break
+				}
+				reasons = append(reasons, containerName+con.Reason)
+			}
+		}
+		// If the status of both the head node and worker node deployments matches the conditionType
+		if len(statuses) == 2 {
+			condition.Type = apis.ConditionType(conditionType)
+			condition.Status = allStatusesTrue(statuses)
+			condition.Message = strings.Join(messages, ", ")
+			condition.LastTransitionTime = lastTransitionTime[0] // used head node one
+		}
+		condition.Reason = strings.Join(reasons, ", ")
+	} else {
+		// Usual rawDeployment case
+		for _, con := range deploymentList[0].Status.Conditions {
+			if con.Type == conditionType {
+				condition.Type = apis.ConditionType(conditionType)
+				condition.Status = con.Status
+				condition.Message = con.Message
+				condition.LastTransitionTime = apis.VolatileTime{
+					Inner: con.LastTransitionTime,
+				}
+				condition.Reason = con.Reason
+				break
+			}
 		}
 	}
 	return &condition
+}
+
+// allStatusesTrue check all status are true or not
+func allStatusesTrue(statuses []v1.ConditionStatus) v1.ConditionStatus {
+	for _, status := range statuses {
+		if status != v1.ConditionTrue {
+			return v1.ConditionFalse
+		}
+	}
+
+	return v1.ConditionTrue
 }
 
 // PropagateCrossComponentStatus aggregates the RoutesReady or ConfigurationsReady condition across all available components
@@ -443,7 +514,9 @@ func (ss *InferenceServiceStatus) SetCondition(conditionType apis.ConditionType,
 
 func (ss *InferenceServiceStatus) ClearCondition(conditionType apis.ConditionType) {
 	if conditionSet.Manage(ss).GetCondition(conditionType) != nil {
-		conditionSet.Manage(ss).ClearCondition(conditionType)
+		if err := conditionSet.Manage(ss).ClearCondition(conditionType); err != nil {
+			return
+		}
 	}
 }
 
@@ -454,13 +527,14 @@ func (ss *InferenceServiceStatus) UpdateModelRevisionStates(modelState ModelStat
 		ss.ModelStatus.ModelRevisionStates.TargetModelState = modelState
 	}
 	// Update transition status, failure info based on new model state
-	if modelState == Pending || modelState == Loading {
+	switch modelState {
+	case Pending, Loading:
 		ss.ModelStatus.TransitionStatus = InProgress
-	} else if modelState == Loaded {
+	case Loaded:
 		ss.ModelStatus.TransitionStatus = UpToDate
 		ss.ModelStatus.ModelCopies = &ModelCopies{TotalCopies: totalCopies}
 		ss.ModelStatus.ModelRevisionStates.ActiveModelState = Loaded
-	} else if modelState == FailedToLoad {
+	case FailedToLoad:
 		ss.ModelStatus.TransitionStatus = BlockedByFailedLoad
 	}
 	if info != nil {
@@ -514,19 +588,18 @@ func (ss *InferenceServiceStatus) PropagateModelStatus(statusSpec ComponentStatu
 	// state to 'ModelLoadFailed' with failure info.
 	for _, cs := range podList.Items[0].Status.InitContainerStatuses {
 		if cs.Name == constants.StorageInitializerContainerName {
-			if cs.State.Running != nil {
+			switch {
+			case cs.State.Running != nil:
 				ss.UpdateModelRevisionStates(Loading, totalCopies, nil)
 				return
-			} else if cs.State.Terminated != nil &&
-				cs.State.Terminated.Reason == constants.StateReasonError {
+			case cs.State.Terminated != nil && cs.State.Terminated.Reason == constants.StateReasonError:
 				ss.UpdateModelRevisionStates(FailedToLoad, totalCopies, &FailureInfo{
 					Reason:   ModelLoadFailed,
 					Message:  cs.State.Terminated.Message,
 					ExitCode: cs.State.Terminated.ExitCode,
 				})
 				return
-			} else if cs.State.Waiting != nil &&
-				cs.State.Waiting.Reason == constants.StateReasonCrashLoopBackOff {
+			case cs.State.Waiting != nil && cs.State.Waiting.Reason == constants.StateReasonCrashLoopBackOff:
 				ss.UpdateModelRevisionStates(FailedToLoad, totalCopies, &FailureInfo{
 					Reason:   ModelLoadFailed,
 					Message:  cs.LastTerminationState.Terminated.Message,
@@ -540,21 +613,20 @@ func (ss *InferenceServiceStatus) PropagateModelStatus(statusSpec ComponentStatu
 	// state to 'ModelLoadFailed' with failure info.
 	for _, cs := range podList.Items[0].Status.ContainerStatuses {
 		if cs.Name == constants.InferenceServiceContainerName {
-			if cs.State.Terminated != nil &&
-				cs.State.Terminated.Reason == constants.StateReasonError {
+			switch {
+			case cs.State.Terminated != nil && cs.State.Terminated.Reason == constants.StateReasonError:
 				ss.UpdateModelRevisionStates(FailedToLoad, totalCopies, &FailureInfo{
 					Reason:   ModelLoadFailed,
 					Message:  cs.State.Terminated.Message,
 					ExitCode: cs.State.Terminated.ExitCode,
 				})
-			} else if cs.State.Waiting != nil &&
-				cs.State.Waiting.Reason == constants.StateReasonCrashLoopBackOff {
+			case cs.State.Waiting != nil && cs.State.Waiting.Reason == constants.StateReasonCrashLoopBackOff:
 				ss.UpdateModelRevisionStates(FailedToLoad, totalCopies, &FailureInfo{
 					Reason:   ModelLoadFailed,
 					Message:  cs.LastTerminationState.Terminated.Message,
 					ExitCode: cs.LastTerminationState.Terminated.ExitCode,
 				})
-			} else {
+			default:
 				ss.UpdateModelRevisionStates(Pending, totalCopies, nil)
 			}
 		}

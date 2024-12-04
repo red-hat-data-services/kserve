@@ -20,7 +20,7 @@ import orjson
 import ray
 from cloudevents.http import CloudEvent, from_http
 from cloudevents.sdk.converters.util import has_binary_headers
-from ray.serve.handle import RayServeHandle, RayServeSyncHandle, DeploymentHandle
+from ray.serve.handle import DeploymentHandle
 
 from ..model import Model
 from ..errors import InvalidInput, ModelNotFound
@@ -38,7 +38,7 @@ JSON_HEADERS = ["application/json", "application/cloudevents+json", "application
 # RayServeSyncHandle has been the return type of serve.run since Ray 2.5.
 # DeploymentHandle will be the new return type (still under feature flag in Ray 2.7).
 # ref https://github.com/ray-project/ray/pull/37817
-ModelHandleType = Union[Model, RayServeHandle, RayServeSyncHandle, DeploymentHandle]
+ModelHandleType = Union[Model, DeploymentHandle]
 
 
 class DataPlane:
@@ -169,10 +169,7 @@ class DataPlane:
         # TODO: model versioning is not supported yet
         model = self.get_model_from_registry(model_name)
 
-        if isinstance(model, RayServeSyncHandle):
-            input_types = ray.get(model.get_input_types.remote())
-            output_types = ray.get(model.get_output_types.remote())
-        elif isinstance(model, (RayServeHandle, DeploymentHandle)):
+        if isinstance(model, DeploymentHandle):
             input_types = await model.get_input_types.remote()
             output_types = await model.get_output_types.remote()
         else:
@@ -315,9 +312,7 @@ class DataPlane:
         """
         # call model locally or remote model workers
         model = self.get_model(model_name)
-        if isinstance(model, RayServeSyncHandle):
-            response = ray.get(model.remote(request, headers=headers))
-        elif isinstance(model, (RayServeHandle, DeploymentHandle)):
+        if isinstance(model, DeploymentHandle):
             response = await model.remote(request, headers=headers)
         else:
             response = await model(request, headers=headers)
@@ -342,9 +337,7 @@ class DataPlane:
         """
         # call model locally or remote model workers
         model = self.get_model(model_name)
-        if isinstance(model, RayServeSyncHandle):
-            response = ray.get(model.remote(request, model_type=ModelType.EXPLAINER))
-        elif isinstance(model, (RayServeHandle, DeploymentHandle)):
+        if isinstance(model, DeploymentHandle):
             response = await model.remote(request, model_type=ModelType.EXPLAINER)
         else:
             response = await model(request, model_type=ModelType.EXPLAINER)

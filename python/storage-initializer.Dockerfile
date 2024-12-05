@@ -37,6 +37,8 @@ RUN yum -y update && yum install -y \
 # Remove the fastapi when this is addressed:  https://issues.redhat.com/browse/RHOAIENG-3894
 # or ray releses a new version that removes the fastapi version pinning and it gets updated on KServe
 RUN pip install --no-cache-dir krbcontext==0.10 hdfs~=2.6.0 requests-kerberos==0.14.0
+# address CVE-2024-47874
+RUN pip install --no-cache-dir starlette==0.40.0
 
 
 FROM registry.access.redhat.com/ubi8/ubi-minimal as prod

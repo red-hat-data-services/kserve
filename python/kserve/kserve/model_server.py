@@ -24,7 +24,7 @@ from typing import Dict, List, Optional, Union
 
 from ray import serve as rayserve
 from ray.serve.api import Deployment
-from ray.serve.handle import RayServeHandle
+from ray.serve.handle import DeploymentHandle
 
 from .logging import KSERVE_LOG_CONFIG, logger
 from .model import Model
@@ -205,7 +205,7 @@ class ModelServer:
             logger.info("Stopping the grpc server")
             await self._grpc_server.stop(sig)
 
-    def register_model_handle(self, name: str, model_handle: RayServeHandle):
+    def register_model_handle(self, name: str, model_handle: DeploymentHandle):
         self.registered_models.update_handle(name, model_handle)
         logger.info("Registering model handle: %s", name)
 

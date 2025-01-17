@@ -31,7 +31,11 @@ import (
 	"k8s.io/client-go/kubernetes"
 	knapis "knative.dev/pkg/apis"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+
+	logf "sigs.k8s.io/controller-runtime/pkg/log"
 )
+
+var log = logf.Log.WithName("RawKubeReconciler")
 
 // RawKubeReconciler reconciles the Native K8S Resources
 type RawKubeReconciler struct {
@@ -64,11 +68,22 @@ func NewRawKubeReconciler(client client.Client,
 	if workerPodSpec != nil {
 		multiNodeEnabled = true
 	}
+
+	// do not return error as service config is optional
+	serviceConfig, err1 := v1beta1.NewServiceConfig(clientset)
+	if err1 != nil {
+		log.Error(err1, "failed to get service config")
+	}
+
+	depl, err := deployment.NewDeploymentReconciler(client, clientset, scheme, componentMeta, workerComponentMeta, componentExt, podSpec, workerPodSpec)
+	if err != nil {
+		return nil, err
+	}
 	return &RawKubeReconciler{
 		client:     client,
 		scheme:     scheme,
-		Deployment: deployment.NewDeploymentReconciler(client, scheme, componentMeta, workerComponentMeta, componentExt, podSpec, workerPodSpec),
-		Service:    service.NewServiceReconciler(client, scheme, componentMeta, componentExt, podSpec, multiNodeEnabled),
+		Deployment: depl,
+		Service:    service.NewServiceReconciler(client, scheme, componentMeta, componentExt, podSpec, multiNodeEnabled, serviceConfig),
 		Scaler:     as,
 		URL:        url,
 	}, nil
@@ -86,19 +101,19 @@ func createRawURL(clientset kubernetes.Interface, metadata metav1.ObjectMeta) (*
 	if err != nil {
 		return nil, fmt.Errorf("failed creating host name: %w", err)
 	}
-
 	return url, nil
 }
 
 // Reconcile ...
 func (r *RawKubeReconciler) Reconcile() ([]*appsv1.Deployment, error) {
-	// reconcile Deployment
-	deploymentList, err := r.Deployment.Reconcile()
+	// reconciling service before deployment because we want to use "service.beta.openshift.io/serving-cert-secret-name"
+	// reconcile Service
+	_, err := r.Service.Reconcile()
 	if err != nil {
 		return nil, err
 	}
-	// reconcile Service
-	_, err = r.Service.Reconcile()
+	// reconcile Deployment
+	deploymentList, err := r.Deployment.Reconcile()
 	if err != nil {
 		return nil, err
 	}

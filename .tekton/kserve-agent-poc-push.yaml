@@ -195,7 +195,7 @@ spec:
           value: task
         resolver: bundles
       runAfter:
-      - rhoai-init
+      # - rhoai-init
     - name: clone-repository
       params:
       - name: url

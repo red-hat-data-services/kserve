@@ -136,47 +136,60 @@ spec:
     - description: ""
       name: CHAINS-GIT_COMMIT
       value: $(tasks.clone-repository.results.commit)
-    tasks:
-    - name: rhoai-init
-      params:
+tasks:
+  - name: rhoai-init
+    params:
       - name: pipelinerun-name
         value: "$(context.pipelineRun.name)"
-      taskSpec:
-        results:
-        - description: Notification text to be posted to slack
+      - name: target-branch
+        value: "$(params.target-branch)"  # Pass target branch dynamically
+    taskSpec:
+      params:
+        - name: target-branch
+          type: string
+          description: "The target branch name"
+      results:
+        - description: Notification text to be posted to Slack
           name: slack-message-failure-text
-        steps:
+      steps:
         - image: quay.io/rhoai-konflux/alpine:latest
           name: rhoai-init
           env:
-          - name: slack_message
-            valueFrom:
-              secretKeyRef:
-                name: rhoai-slack
-                key: rhoai-slack-webhook
+            - name: slack_message
+              valueFrom:
+                secretKeyRef:
+                  name: rhoai-slack
+                  key: rhoai-slack-webhook
           script: |
             #!/bin/sh
             pipelinerun_name=$(params.pipelinerun-name)
-            target_branch={{target_branch}}
+            target_branch=$(params.target-branch)
             echo "pipelinerun-name = $pipelinerun_name"
 
+            # Process target_branch to construct application_name
             application_name=${target_branch/rhoai-/}
             application_name=rhoai-v${application_name/./-}
             echo "application-name = $application_name"
 
+            # Extract component_name from pipelinerun_name
             component_name=${pipelinerun_name/-on-*/}
             echo "component-name = $component_name"
 
+            # Construct the build URL
             KONFLUX_SERVER="https://console.redhat.com"
             build_url="${KONFLUX_SERVER}/application-pipeline/workspaces/rhoai/applications/${application_name}/pipelineruns/${pipelinerun_name}/logs"
 
+            # Get the current build time
             build_time="$(date +%Y-%m-%dT%H:%M:%S)"
 
-            #slack_message=${slack_message/__BUILD__URL__/$build_url}
-            #slack_message=${slack_message/__PIPELINERUN__NAME__/$pipelinerun_name}
+            # Replace placeholders in the Slack message template
+            slack_message=${slack_message/__BUILD__URL__/$build_url}
+            slack_message=${slack_message/__PIPELINERUN__NAME__/$pipelinerun_name}
             slack_message=${slack_message/__BUILD__TIME__/$build_time}
 
-            #echo -en "${slack_message}" > "$(results.slack-message-failure-text.path)"
+            # Write the constructed Slack message to the Tekton result
+            echo -en "${slack_message}" > "$(results.slack-message-failure-text.path)"
+
     - name: init
       params:
       - name: image-url

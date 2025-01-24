@@ -136,34 +136,28 @@ spec:
     - description: ""
       name: CHAINS-GIT_COMMIT
       value: $(tasks.clone-repository.results.commit)
-tasks:
-  - name: rhoai-init
-    params:
+    tasks:
+    - name: rhoai-init
+      params:
       - name: pipelinerun-name
         value: "$(context.pipelineRun.name)"
-      - name: target-branch
-        value: "$(params.target-branch)"  # Pass target branch dynamically
-    taskSpec:
-      params:
-        - name: target-branch
-          type: string
-          description: "The target branch name"
-      results:
-        - description: Notification text to be posted to Slack
+      taskSpec:
+        results:
+        - description: Notification text to be posted to slack
           name: slack-message-failure-text
-      steps:
+        steps:
         - image: quay.io/rhoai-konflux/alpine:latest
           name: rhoai-init
           env:
-            - name: slack_message
-              valueFrom:
-                secretKeyRef:
-                  name: rhoai-slack
-                  key: rhoai-slack-webhook
+          - name: slack_message
+            valueFrom:
+              secretKeyRef:
+                name: rhoai-slack
+                key: rhoai-slack-webhook
           script: |
             #!/bin/sh
             pipelinerun_name=$(params.pipelinerun-name)
-            target_branch=$(params.target-branch)
+            target_branch={{target_branch}}
             echo "pipelinerun-name = $pipelinerun_name"
 
             # Process target_branch to construct application_name
@@ -189,7 +183,6 @@ tasks:
 
             # Write the constructed Slack message to the Tekton result
             echo -en "${slack_message}" > "$(results.slack-message-failure-text.path)"
-
     - name: init
       params:
       - name: image-url

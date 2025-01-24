@@ -51,7 +51,7 @@ spec:
       - name: secret-name
         value: devops-slack-bot
       - name: key-name
-        value: slack-webhook
+        value: slack-webhook1
       taskRef:
         params:
         - name: name

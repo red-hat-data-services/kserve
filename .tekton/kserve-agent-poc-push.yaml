@@ -47,7 +47,7 @@ spec:
     - name: send-slack-notification
       params:
       - name: message
-        value: "Build failed"
+        value: "$(tasks.rhoai-init.results)"
       - name: secret-name
         value: devops-slack-bot
       - name: key-name

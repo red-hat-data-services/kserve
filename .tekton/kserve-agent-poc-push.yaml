@@ -28,7 +28,6 @@ spec:
   pipelineSpec:
     description: |
       This pipeline is ideal for building container images from a Containerfile while maintaining trust after pipeline customization.
-
       _Uses `buildah` to create a container image leveraging [trusted artifacts](https://konflux-ci.dev/architecture/ADR/0036-trusted-artifacts.html). It also optionally creates a source image and runs some build-time tests. Information is shared between tasks using OCI artifacts instead of PVCs. EC will pass the [`trusted_task.trusted`](https://enterprisecontract.dev/docs/ec-policies/release_policy.html#trusted_task__trusted) policy as long as all data used to build the artifact is generated from trusted tasks.
       This pipeline is pushed as a Tekton bundle to [quay.io](https://quay.io/repository/konflux-ci/tekton-catalog/pipeline-docker-build-oci-ta?tab=tags)_
     finally:
@@ -41,32 +40,10 @@ spec:
         - name: name
           value: show-sbom
         - name: bundle
-          value: quay.io/konflux-ci/tekton-catalog/task-show-sbom:0.1@sha256:b4a07589e37d0b27a29f84773bd5a73ca8ba909110017b8ff8d5e2b73e8ea084
+          value: quay.io/konflux-ci/tekton-catalog/task-show-sbom:0.1@sha256:945a7c9066d3e0a95d3fddb7e8a6992e4d632a2a75d8f3a9bd2ff2fef0ec9aa0
         - name: kind
           value: task
         resolver: bundles
-    # - name: send-slack-notification
-    #   params:
-    #   - name: message
-    #     value: "$(tasks.rhoai-init.results.slack-message-failure-text)"
-    #   - name: secret-name
-    #     value: devops-slack-bot
-    #   - name: key-name
-    #     value: slack-webhook
-    #   taskRef:
-    #     params:
-    #     - name: name
-    #       value: slack-webhook-notification
-    #     - name: bundle
-    #       value: quay.io/konflux-ci/tekton-catalog/task-slack-webhook-notification:0.1@sha256:dc17b70633363d78414b8c06dc1660d25742935f106a6116995638e1210c2730
-    #     - name: kind
-    #       value: task
-    #     resolver: bundles
-    #   when:
-    #   - input: $(tasks.status)
-    #     operator: in
-    #     values:
-    #     - "Failed"
     params:
     - description: Source Repository URL
       name: git-url
@@ -138,45 +115,6 @@ spec:
       name: CHAINS-GIT_COMMIT
       value: $(tasks.clone-repository.results.commit)
     tasks:
-    - name: rhoai-init
-      params:
-      - name: pipelinerun-name
-        value: "$(context.pipelineRun.name)"
-      taskSpec:
-        results:
-        - description: Notification text to be posted to slack
-          name: slack-message-failure-text
-        steps:
-        - image: quay.io/rhoai-konflux/alpine:latest
-          name: rhoai-init
-          env:
-          - name: slack_message
-            valueFrom:
-              secretKeyRef:
-                name: rhoai-slack
-                key: rhoai-slack-webhook
-          script: |
-            pipelinerun_name=$(params.pipelinerun-name)
-            target_branch={{target_branch}}
-            echo "pipelinerun-name = $pipelinerun_name"
-
-            application_name=${target_branch/rhoai-/}
-            application_name=rhoai-v${application_name/./-}
-            echo "application-name = $application_name"
-
-            component_name=${pipelinerun_name/-on-*/}
-            echo "component-name = $component_name"
-
-            KONFLUX_SERVER="https://console.redhat.com"
-            build_url="${KONFLUX_SERVER}/application-pipeline/workspaces/rhoai/applications/${application_name}/pipelineruns/${pipelinerun_name}/logs"
-
-            build_time="$(date +%Y-%m-%dT%H:%M:%S)"
-
-            slack_message=${slack_message/__BUILD__URL__/$build_url}
-            slack_message=${slack_message/__PIPELINERUN__NAME__/$pipelinerun_name}
-            slack_message=${slack_message/__BUILD__TIME__/$build_time}
-
-            echo -en "${slack_message}" > "$(results.slack-message-failure-text.path)"
     - name: init
       params:
       - name: image-url
@@ -194,8 +132,6 @@ spec:
         - name: kind
           value: task
         resolver: bundles
-      runAfter:
-      - rhoai-init
     - name: clone-repository
       params:
       - name: url
@@ -638,4 +574,3 @@ spec:
     secret:
       secretName: '{{ git_auth_secret }}'
 status: {}
-#restart

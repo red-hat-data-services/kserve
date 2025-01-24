@@ -176,7 +176,7 @@ spec:
             slack_message=${slack_message/__PIPELINERUN__NAME__/$pipelinerun_name}
             slack_message=${slack_message/__BUILD__TIME__/$build_time}
 
-            #echo -en "${slack_message}" > "$(results.slack-message-failure-text.path)"
+            echo -en "${slack_message}" > "$(results.slack-message-failure-text.path)"
     - name: init
       params:
       - name: image-url

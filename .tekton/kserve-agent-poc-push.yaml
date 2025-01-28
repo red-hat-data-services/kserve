@@ -157,8 +157,10 @@ spec:
           script: |
             #!/bin/sh
             pipelinerun_name=$(params.pipelinerun-name)
-            target_branch=$(params.target-branch)
             echo "pipelinerun-name = $pipelinerun_name"
+            
+            target_branch=$(params.target-branch)
+            echo "target_branch = $target_branch"
 
             application_name=${target_branch/rhoai-/}
             application_name=rhoai-v${application_name/./-}
@@ -169,11 +171,16 @@ spec:
 
             KONFLUX_SERVER="https://console.redhat.com"
             build_url="${KONFLUX_SERVER}/application-pipeline/workspaces/rhoai/applications/${application_name}/pipelineruns/${pipelinerun_name}/logs"
+            echo "build_url = $build_url"
+            
             build_time="$(date +%Y-%m-%dT%H:%M:%S)"
+            echo "build_time = $build_time"
 
             slack_message=${slack_message/__BUILD__URL__/$build_url}
             slack_message=${slack_message/__PIPELINERUN__NAME__/$pipelinerun_name}
             slack_message=${slack_message/__BUILD__TIME__/$build_time}
+
+            echo "slack_message = $slack_message"
 
             echo -en "${slack_message}" > "$(results.slack-message-failure-text.path)"
     - name: init

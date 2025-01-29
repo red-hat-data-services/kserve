@@ -154,6 +154,12 @@ spec:
         steps:
         - image: quay.io/rhoai-konflux/alpine:latest
           name: rhoai-init
+          env:
+          - name: slack_message
+            valueFrom:
+              secretKeyRef:
+                name: rhoai-konflux-secret
+                key: slack-component-failure-notification   
           script: |
             #!/bin/sh
             pipelinerun_name=$(params.pipelinerun-name)

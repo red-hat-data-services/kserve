@@ -173,6 +173,8 @@ spec:
                 echo "target_branch = $target_branch"
 
                 application_name=${target_branch/rhoai-/}
+                echo "application-name = $application_name"
+                
                 application_name=rhoai-v${application_name/./-}
                 echo "application-name = $application_name"
 

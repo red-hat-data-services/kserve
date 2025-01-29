@@ -169,7 +169,7 @@ spec:
                 pipelinerun_name=$(params.pipelinerun-name)
                 echo "pipelinerun-name = $pipelinerun_name"
 
-                target_branch=$(params.target-branch)
+                target_branch="$(params.target-branch)"
                 echo "target_branch = $target_branch"
 
                 application_name=${target_branch/rhoai-/}

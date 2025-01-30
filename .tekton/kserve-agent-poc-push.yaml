@@ -162,7 +162,7 @@ spec:
                 - name: slack_message
                   valueFrom:
                     secretKeyRef:
-                      name: rhoai-slack-secret
+                      name: rhoai-slack
                       key: slack-component-failure-notification
               script: |
                 #!/bin/sh

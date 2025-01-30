@@ -214,6 +214,8 @@ spec:
             - name: kind
               value: task
           resolver: bundles
+        runAfter:
+        - rhoai-init          
       - name: clone-repository
         params:
           - name: url
@@ -254,7 +256,6 @@ spec:
           - name: ociArtifactExpiresAfter
             value: $(params.image-expires-after)
         runAfter:
-          - rhoai-init
           - clone-repository
         taskRef:
           params:

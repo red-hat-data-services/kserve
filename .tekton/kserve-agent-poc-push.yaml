@@ -52,7 +52,7 @@ spec:
         value: slack-webhook
         params:
           - name: message
-            value: "Hello Print"
+            value: "$(tasks.rhoai-init.results.slack-message-failure-text)"
           - name: secret-name
             value: rhoai-konflux-secret
           - name: key-name

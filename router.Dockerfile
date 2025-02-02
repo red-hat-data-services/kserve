@@ -1,6 +1,11 @@
 # Build the inference-router binary
 FROM registry.access.redhat.com/ubi8/go-toolset:1.22 as builder
 
+# These built-in args are defined in the global scope, and are not automatically accessible within build stages or RUN commands.
+# To expose these arguments inside the build stage, we need to redefine it without a value.
+ARG TARGETOS TARGETARCH
+RUN echo "GOOS=${TARGETOS} GOARCH=${TARGETARCH}"
+
 # Copy in the go src
 WORKDIR /go/src/github.com/kserve/kserve
 COPY go.mod  go.mod
@@ -13,11 +18,11 @@ COPY pkg/    pkg/
 
 # Build
 USER root
-RUN CGO_ENABLED=0  go build -a -o router ./cmd/router
+RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build -a -o router ./cmd/router
 
 # Copy the inference-router into a thin image
 FROM registry.access.redhat.com/ubi8/ubi-minimal:latest
-RUN microdnf install -y --disablerepo=* --enablerepo=ubi-8-baseos-rpms shadow-utils && \
+RUN microdnf install -y shadow-utils && \
     microdnf clean all && \
     useradd kserve -m -u 1000
 RUN microdnf remove -y shadow-utils

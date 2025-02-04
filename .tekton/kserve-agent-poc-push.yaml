@@ -50,11 +50,12 @@ spec:
         value: devops-slack-bot
       - name: key-name
         value: slack-webhook
+      taskRef:
         params:
           - name: message
             value: "$(tasks.rhoai-init.results.slack-message-failure-text)"
           - name: secret-name
-            value: rhoai-konflux-secret
+            value: rhoai-slack
           - name: key-name
             value: slack-webhook
         taskRef:

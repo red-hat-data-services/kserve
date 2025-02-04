@@ -7,6 +7,16 @@ RUN microdnf install -y --setopt=ubi-8-appstream-rpms.module_hotfixes=1 \
     python39 python39-devel gcc libffi-devel openssl-devel krb5-workstation krb5-libs \
     && microdnf clean all
 
+RUN echo "$(uname -m)"
+RUN if [ "$(uname -m)" = "ppc64le" ]; then \
+      echo "Installing packages and rust " && \
+      microdnf install -y openssl-devel pkg-config curl hdf5-devel git && \
+      curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs > sh.rustup.rs && \
+      export CARGO_HOME=${CARGO_HOME} && sh ./sh.rustup.rs -y && export PATH=$PATH:${CARGO_HOME}/bin && . "${CARGO_HOME}/env"; \
+    fi \
+    && microdnf clean all
+
+
 # Install Poetry
 ARG POETRY_HOME=/opt/poetry
 ARG POETRY_VERSION=1.8.3
@@ -19,6 +29,8 @@ ARG VENV_PATH
 ENV VIRTUAL_ENV=${VENV_PATH}
 RUN python -m venv $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+# To allow GRPCIO to build build via openssl
+ENV GRPC_PYTHON_BUILD_SYSTEM_OPENSSL 1
 
 COPY kserve/pyproject.toml kserve/poetry.lock kserve/
 RUN cd kserve && poetry install --no-root --no-interaction --no-cache --extras "storage"
@@ -27,6 +39,8 @@ RUN cd kserve && poetry install --no-interaction --no-cache --extras "storage"
 
 RUN pip install --no-cache-dir krbcontext==0.10 hdfs~=2.6.0 requests-kerberos==0.14.0
 
+
+# Runtime image
 FROM registry.access.redhat.com/ubi8/ubi-minimal:latest AS prod
 
 COPY third_party third_party

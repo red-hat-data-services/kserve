@@ -48,7 +48,7 @@ spec:
     - name: send-slack-notification
       params:
       - name: message
-        value: "Hello World"
+        value: "$(tasks.rhoai-init.results.slack-message-failure-text)"
       - name: secret-name
         value: rhoai-konflux-secret
       - name: key-name

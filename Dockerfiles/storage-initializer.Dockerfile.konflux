@@ -3,16 +3,20 @@ ARG VENV_PATH=/prod_venv
 FROM registry.access.redhat.com/ubi8/ubi-minimal:latest AS builder
 
 # Install Python and dependencies
-RUN microdnf install -y  \
-    python39 python39-devel gcc libffi-devel openssl-devel krb5-workstation krb5-libs \
-    && microdnf clean all
+RUN microdnf install -y \
+    python39 python39-devel gcc-c++ libffi-devel openssl-devel krb5-workstation krb5-libs && \
+    if [ "$(uname -m)" = "ppc64le" ]; then \
+       echo "Installing packages" && \
+       microdnf install -y pkg-config curl cmake rust cargo; \
+    fi && \
+    microdnf clean all
 
 # Install Poetry
 ARG POETRY_HOME=/opt/poetry
 ARG POETRY_VERSION=1.8.3
 
-RUN python -m venv ${POETRY_HOME} && ${POETRY_HOME}/bin/pip install poetry==${POETRY_VERSION}
 ENV PATH="$PATH:${POETRY_HOME}/bin"
+RUN ln -s /usr/bin/python3.9 /usr/bin/python && python -m venv ${POETRY_HOME} && ${POETRY_HOME}/bin/pip install poetry==${POETRY_VERSION}
 
 # Activate virtual env
 ARG VENV_PATH
@@ -20,8 +24,15 @@ ENV VIRTUAL_ENV=${VENV_PATH}
 RUN python -m venv $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
+RUN source $VIRTUAL_ENV/bin/activate
+
 COPY kserve/pyproject.toml kserve/poetry.lock kserve/
-RUN cd kserve && poetry install --no-root --no-interaction --no-cache --extras "storage"
+RUN cd kserve && \
+    if [ $(uname -m) = "ppc64le" ]; then \
+       export GRPC_PYTHON_BUILD_SYSTEM_OPENSSL=true; \
+    fi && \
+    poetry install --no-root --no-interaction --no-cache --extras "storage"
+
 COPY kserve kserve
 RUN cd kserve && poetry install --no-interaction --no-cache --extras "storage"
 

@@ -46,18 +46,13 @@ spec:
               value: task
           resolver: bundles
       - name: send-slack-notification
-      - name: secret-name
-        value: devops-slack-bot
-      - name: key-name
-        value: slack-webhook
-      taskRef:
         params:
-          - name: message
-            value: "$(tasks.rhoai-init.results.slack-message-failure-text)"
-          - name: secret-name
-            value: rhoai-slack
-          - name: key-name
-            value: slack-webhook
+        - name: message
+          value: "$(tasks.rhoai-init.results.slack-message-failure-text)"
+        - name: secret-name
+          value: rhoai-slack
+        - name: key-name
+          value: slack-webhook
         taskRef:
           params:
             - name: name

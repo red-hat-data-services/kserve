@@ -50,9 +50,9 @@ spec:
       - name: message
         value: "Hello world"
       - name: secret-name
-        value: rhoai-konflux-secret
+        value: rhoai-slack-webhook-secret
       - name: key-name
-        value: slack-webhook
+        value: rhoai-slack-webhook-key
       taskRef:
         params:
         - name: name

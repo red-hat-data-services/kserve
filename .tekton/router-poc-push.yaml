@@ -157,7 +157,7 @@ spec:
                 key: slack-component-failure-notification
           script: |
             pipelinerun_name=$(params.pipelinerun-name)
-            echo "application-name = $application_name"
+            echo "pipelinerun_name = $pipelinerun_name"
             
             target_branch={{target_branch}}
             echo "target_branch = $target_branch"

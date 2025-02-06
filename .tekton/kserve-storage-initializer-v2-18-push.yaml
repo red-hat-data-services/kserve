@@ -1,4 +1,3 @@
-# trigger
 apiVersion: tekton.dev/v1
 kind: PipelineRun
 metadata:
@@ -102,7 +101,7 @@ spec:
       description: Build a source image.
       name: build-source-image
       type: string
-    - default: "false"
+    - default: "true"
       description: Add built image into an OCI image index
       name: build-image-index
       type: string

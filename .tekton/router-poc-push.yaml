@@ -155,8 +155,6 @@ spec:
               secretKeyRef:
                 name: rhoai-slack-message
                 key: slack-component-failure-notification
-          - name: APP_NAME
-                  value: "$(context.pipelineRun.metadata.labels['appstudio.openshift.io/application'])"
           script: |
             pipelinerun_name=$(params.pipelinerun-name)
             echo "pipelinerun_name = $pipelinerun_name"
@@ -164,7 +162,7 @@ spec:
             target_branch={{target_branch}}
             echo "target_branch = $target_branch"
 
-            application_name=$APP_NAME
+            application_name=${target_branch/rhoai-/}
             echo "application-name = $application_name"
             
             application_name=rhoai-v${application_name/./-}

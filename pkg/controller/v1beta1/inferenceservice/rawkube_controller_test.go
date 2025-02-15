@@ -19,7 +19,6 @@ package inferenceservice
 import (
 	"context"
 	"fmt"
-
 	"time"
 
 	"github.com/kserve/kserve/pkg/apis/serving/v1alpha1"
@@ -29,9 +28,10 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
+	. "github.com/onsi/ginkgo/v2"
+
 	"github.com/kserve/kserve/pkg/apis/serving/v1beta1"
 	"github.com/kserve/kserve/pkg/constants"
-	. "github.com/onsi/ginkgo/v2"
 
 	"github.com/onsi/gomega"
 	. "github.com/onsi/gomega"
@@ -41,7 +41,6 @@ import (
 	autoscalingv2 "k8s.io/api/autoscaling/v2"
 	v1 "k8s.io/api/core/v1"
 
-	v1beta1utils "github.com/kserve/kserve/pkg/controller/v1beta1/inferenceservice/utils"
 	routev1 "github.com/openshift/api/route/v1"
 	netv1 "k8s.io/api/networking/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
@@ -51,6 +50,8 @@ import (
 	"knative.dev/pkg/apis"
 	duckv1 "knative.dev/pkg/apis/duck/v1"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
+
+	v1beta1utils "github.com/kserve/kserve/pkg/controller/v1beta1/inferenceservice/utils"
 )
 
 var _ = Describe("v1beta1 inference service controller", func() {
@@ -2251,7 +2252,7 @@ var _ = Describe("v1beta1 inference service controller", func() {
 	})
 	Context("When creating an inferenceservice with raw kube predictor and ODH auth enabled", func() {
 		configs := map[string]string{
-			"oauthProxy":         `{"image": "registry.redhat.io/openshift4/ose-oauth-proxy@sha256:234af927030921ab8f7333f61f967b4b4dee37a1b3cf85689e9e63240dd62800", "memoryRequest": "64Mi", "memoryLimit": "128Mi", "cpuRequest": "100m", "cpuLimit": "200m"}`,
+			"oauthProxy":         `{"image": "registry.redhat.io/openshift4/ose-oauth-proxy@sha256:8507daed246d4d367704f7d7193233724acf1072572e1226ca063c066b858ecf", "memoryRequest": "64Mi", "memoryLimit": "128Mi", "cpuRequest": "100m", "cpuLimit": "200m"}`,
 			"ingress":            `{"ingressGateway": "knative-serving/knative-ingress-gateway", "ingressService": "test-destination", "localGateway": "knative-serving/knative-local-gateway", "localGatewayService": "knative-local-gateway.istio-system.svc.cluster.local"}`,
 			"storageInitializer": `{"image": "kserve/storage-initializer:latest", "memoryRequest": "100Mi", "memoryLimit": "1Gi", "cpuRequest": "100m", "cpuLimit": "1", "CaBundleConfigMapName": "", "caBundleVolumeMountPath": "/etc/ssl/custom-certs", "enableDirectPvcVolumeMount": false}`,
 		}
@@ -2610,21 +2611,22 @@ var _ = Describe("v1beta1 inference service controller", func() {
 					},
 					WildcardPolicy: routev1.WildcardPolicyNone,
 				},
-				Status: routev1.RouteStatus{
-					Ingress: []routev1.RouteIngress{
-						{
-							Host: "raw-auth-default.example.com",
-							Conditions: []routev1.RouteIngressCondition{
-								{
-									Type:   routev1.RouteAdmitted,
-									Status: v1.ConditionTrue,
-								},
+			}
+			Expect(k8sClient.Create(context.TODO(), route)).Should(Succeed())
+			route.Status = routev1.RouteStatus{
+				Ingress: []routev1.RouteIngress{
+					{
+						Host: "raw-auth-default.example.com",
+						Conditions: []routev1.RouteIngressCondition{
+							{
+								Type:   routev1.RouteAdmitted,
+								Status: v1.ConditionTrue,
 							},
 						},
 					},
 				},
 			}
-			Expect(k8sClient.Create(context.TODO(), route)).Should(Succeed())
+			Expect(k8sClient.Status().Update(ctx, route)).Should(Succeed())
 
 			//check isvc status
 			updatedDeployment := actualDeployment.DeepCopy()

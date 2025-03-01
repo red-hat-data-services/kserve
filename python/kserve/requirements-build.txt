@@ -1,5 +1,5 @@
 poetry==1.7.1
-build==1.2.2
+build==1.2.2.post1
 cachecontrol==0.13.1
 cffi==1.16.0
 cleo==2.1.0

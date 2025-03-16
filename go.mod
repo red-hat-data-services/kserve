@@ -28,10 +28,10 @@ require (
 	google.golang.org/protobuf v1.33.0
 	istio.io/api v1.19.4
 	istio.io/client-go v1.19.4
-	k8s.io/api v0.28.4
-	k8s.io/apimachinery v0.28.4
-	k8s.io/client-go v0.28.4
-	k8s.io/code-generator v0.28.4
+	k8s.io/api v0.32.3
+	k8s.io/apimachinery v0.32.3
+	k8s.io/client-go v0.32.3
+	k8s.io/code-generator v0.32.3
 	k8s.io/klog v1.0.0
 	k8s.io/kube-openapi v0.0.0-20231113174909-778a5567bc1e
 	knative.dev/networking v0.0.0-20231115015815-3af9769712cd

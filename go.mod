@@ -132,4 +132,4 @@ require (
 // Fixes CVE-2022-21698 and CVE-2023-45142
 // this dependency comes from k8s.io/component-base@v0.28.4 and k8s.io/apiextensions-apiserver@v0.28.4
 // before removing it make sure that the next version of the related k8s dependencies contains the fix
-replace go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp => go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.44.0
+replace go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp => go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.60.0

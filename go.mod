@@ -6,7 +6,7 @@ require (
 	cloud.google.com/go/storage v1.35.1
 	github.com/aws/aws-sdk-go v1.48.0
 	github.com/cloudevents/sdk-go/v2 v2.15.2
-	github.com/fsnotify/fsnotify v1.7.0
+	github.com/fsnotify/fsnotify v1.8.0
 	github.com/getkin/kin-openapi v0.120.0
 	github.com/go-logr/logr v1.4.1
 	github.com/gofrs/uuid/v5 v5.0.0

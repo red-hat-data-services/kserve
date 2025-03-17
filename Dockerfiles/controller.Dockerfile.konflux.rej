@@ -1,0 +1,21 @@
+diff a/Dockerfiles/controller.Dockerfile.konflux b/Dockerfiles/controller.Dockerfile.konflux	(rejected hunks)
+@@ -1,5 +1,5 @@
+ # Build the manager binary
+-FROM registry.access.redhat.com/ubi8/go-toolset:1.22 as builder
++FROM registry.access.redhat.com/ubi9/go-toolset:1.22@sha256:6402ad7886fb3bdaa950c89bdf338f8dbedde54c16bddb1157ebb8691b2def50 as builder
+ 
+ # These built-in args are defined in the global scope, and are not automatically accessible within build stages or RUN commands.
+ # To expose these arguments inside the build stage, we need to redefine it without a value.
+@@ -18,10 +18,10 @@ COPY pkg/    pkg/
+ 
+ # Build
+ USER root
+-RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} GOFLAGS=-mod=mod go build -a -o manager ./cmd/manager
++RUN CGO_ENABLED=1 GOOS=${TARGETOS} GOARCH=${TARGETARCH} GOFLAGS=-mod=mod GOEXPERIMENT=strictfipsruntime go build -tags strictfipsruntime -a -o manager ./cmd/manager
+ 
+ # Use distroless as minimal base image to package the manager binary
+-FROM registry.access.redhat.com/ubi8/ubi-minimal:latest
++FROM registry.access.redhat.com/ubi9/ubi-minimal:latest@sha256:30bbd445046a3a63f5f5557a3c67dee74e3c8e7855eb0347630b020f3689823f
+ RUN microdnf install -y shadow-utils && \
+     microdnf clean all && \
+     useradd kserve -m -u 1000

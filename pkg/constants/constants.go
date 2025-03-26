@@ -53,6 +53,8 @@ var (
 const (
 	RouterHeadersPropagateEnvVar = "PROPAGATE_HEADERS"
 	InferenceGraphLabel          = "serving.kserve.io/inferencegraph"
+	InferenceGraphAuthCRBName    = "kserve-inferencegraph-auth-verifiers"
+	InferenceGraphFinalizerName  = "inferencegraph.finalizers"
 )
 
 // TrainedModel Constants
@@ -130,14 +132,15 @@ var (
 
 // kserve networking constants
 const (
-	NetworkVisibility       = "networking.kserve.io/visibility"
-	ClusterLocalVisibility  = "cluster-local"
-	ClusterLocalDomain      = "svc.cluster.local"
-	IsvcNameHeader          = "KServe-Isvc-Name"
-	IsvcNamespaceHeader     = "KServe-Isvc-Namespace"
-	ODHKserveRawAuth        = "security.opendatahub.io/enable-auth"
-	ODHRouteEnabled         = "exposed"
-	ServingCertSecretSuffix = "-serving-cert"
+	NetworkVisibility              = "networking.kserve.io/visibility"
+	ClusterLocalVisibility         = "cluster-local"
+	ClusterLocalDomain             = "svc.cluster.local"
+	IsvcNameHeader                 = "KServe-Isvc-Name"
+	IsvcNamespaceHeader            = "KServe-Isvc-Namespace"
+	ODHKserveRawAuth               = "security.opendatahub.io/enable-auth"
+	ODHRouteEnabled                = "exposed"
+	ServingCertSecretSuffix        = "-serving-cert"
+	OpenshiftServingCertAnnotation = "service.beta.openshift.io/serving-cert-secret-name"
 )
 
 // StorageSpec Constants
@@ -515,6 +518,13 @@ var (
 // OpenShift constants
 const (
 	OpenShiftServiceCaConfigMapName = "openshift-service-ca.crt"
+)
+
+type ResourceType string
+
+const (
+	InferenceServiceResource ResourceType = "InferenceService"
+	InferenceGraphResource   ResourceType = "InferenceGraph"
 )
 
 // GetRawServiceLabel generate native service label

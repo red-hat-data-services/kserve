@@ -113,6 +113,7 @@ if [ "$1" != "raw" ]; then
     oc create -f -
 
   oc apply -k $PROJECT_ROOT/test/scripts/openshift-ci
+  oc wait --for=condition=ready pod -l app=odh-model-controller -n kserve --timeout=300s
 fi
 
 echo "Add testing models to minio storage ..." # Reference: config/overlays/test/minio/minio-init-job.yaml
@@ -170,5 +171,25 @@ kustomize build $PROJECT_ROOT/config/overlays/test/clusterresources |
 # generate passthrough routes. If RawDeployment test are being run, this annotation would have
 # no effect, because of missing Knative
 oc annotate servingruntimes -n kserve-ci-e2e-test --all serving.knative.openshift.io/enablePassthrough=true
+
+
+# Allow all traffic to the kserve namespace. Without this networkpolicy, webhook will return 500
+# error msg: 'http: server gave HTTP response to HTTPS client"}]},"code":500}'
+cat <<EOF | oc apply -f -
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-all
+  namespace: kserve
+spec:
+  podSelector: {} 
+  ingress:
+  - {}  
+  egress:
+  - {}  
+  policyTypes:
+  - Ingress
+  - Egress
+EOF
 
 echo "Setup complete"

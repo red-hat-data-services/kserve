@@ -1,10 +1,11 @@
 ARG VENV_PATH=/prod_venv
 
-FROM registry.access.redhat.com/ubi8/ubi-minimal:latest AS builder
+FROM registry.access.redhat.com/ubi9/ubi-minimal:latest@sha256:30bbd445046a3a63f5f5557a3c67dee74e3c8e7855eb0347630b020f3689823f AS builder
 
 # Install Python and dependencies
 RUN microdnf install -y \
-    python39 python39-devel gcc libffi-devel openssl-devel krb5-workstation krb5-libs && \
+    python3.11 \
+       python3.11-pip python3.11-devel gcc libffi-devel openssl-devel krb5-workstation krb5-devel krb5-libs && \
     if [ "$(uname -m)" = "s390x" ] || [ "$(uname -m)" = "ppc64le" ]; then \
        echo "Installing packages" && \
        microdnf install -y gcc-c++ cmake rust cargo; \
@@ -16,12 +17,12 @@ ARG POETRY_HOME=/opt/poetry
 ARG POETRY_VERSION=1.8.3
 
 ENV PATH="$PATH:${POETRY_HOME}/bin"
-RUN python3 -m venv ${POETRY_HOME} && ${POETRY_HOME}/bin/pip install poetry==${POETRY_VERSION}
+RUN /usr/bin/python3.11 -m venv ${POETRY_HOME} && ${POETRY_HOME}/bin/pip install poetry==${POETRY_VERSION}
 
 # Activate virtual env
 ARG VENV_PATH
 ENV VIRTUAL_ENV=${VENV_PATH}
-RUN python3 -m venv $VIRTUAL_ENV
+RUN /usr/bin/python3.11 -m venv $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 COPY kserve/pyproject.toml kserve/poetry.lock kserve/
@@ -34,9 +35,9 @@ RUN cd kserve && \
 COPY kserve kserve
 RUN cd kserve && poetry install --no-interaction --no-cache --extras "storage"
 
-RUN pip install --no-cache-dir krbcontext==0.10 hdfs~=2.6.0 requests-kerberos==0.14.0
+RUN /usr/bin/pip3.11 install --no-cache-dir krbcontext==0.10 hdfs~=2.6.0 requests-kerberos==0.14.0
 
-FROM registry.access.redhat.com/ubi8/ubi-minimal:latest AS prod
+FROM registry.access.redhat.com/ubi9/ubi-minimal:latest@sha256:30bbd445046a3a63f5f5557a3c67dee74e3c8e7855eb0347630b020f3689823f AS prod
 
 COPY third_party third_party
 
@@ -46,7 +47,8 @@ ENV VIRTUAL_ENV=${VENV_PATH}
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 RUN microdnf install -y  \
-    shadow-utils python39 python39-devel && \
+    shadow-utils python3.11 \
+       python3.11-pip python3.11-devel && \
     microdnf clean all
 RUN useradd kserve -m -u 1000 -d /home/kserve
 

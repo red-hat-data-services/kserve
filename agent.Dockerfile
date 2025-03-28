@@ -1,5 +1,5 @@
 # Build the inference-agent binary
-FROM registry.access.redhat.com/ubi8/go-toolset:1.21 as builder
+FROM registry.access.redhat.com/ubi8/go-toolset:1.22.9-3.1742991062 as builder
 
 # Copy in the go src
 WORKDIR /go/src/github.com/kserve/kserve

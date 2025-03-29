@@ -1550,9 +1550,9 @@ yarl==1.15.2 ; python_version >= "3.8" and python_version < "3.12" \
     --hash=sha256:fbbb63bed5fcd70cd3dd23a087cd78e4675fb5a2963b8af53f945cbbca79ae16 \
     --hash=sha256:fbda058a9a68bec347962595f50546a8a4a34fd7b0654a7b9697917dc2bf810d \
     --hash=sha256:ffd591e22b22f9cb48e472529db6a47203c41c2c5911ff0a52e85723196c0d75
-zipp==3.17.0 ; python_version >= "3.8" and python_version < "3.9" \
-    --hash=sha256:0e923e726174922dce09c53c59ad483ff7bbb8e572e00c7f7c46b88556409f31 \
-    --hash=sha256:84e64a1c28cf7e91ed2078bb8cc8c259cb19b76942096c8d7b84947690cabaf0
+zipp==3.21.0; python_version >= "3.8" and python_version < "3.9" \
+    --hash=sha256:2c9958f6430a2040341a52eb608ed6dd93ef4392e02ffe219417c1b28b5dd1f4 \
+    --hash=sha256:ac1bbe05fd2991f160ebce24ffbac5f6d11d83dc90891255885223d42b3cd931
 krbcontext==0.10 \
     --hash=sha256:f7f1bdc33a86f18f3d119a631eb250d1389378fdaea1a983eef8ef0996d64ab8
 hdfs==2.6.0 \

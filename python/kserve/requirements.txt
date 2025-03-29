@@ -408,9 +408,9 @@ google-auth==2.29.0 ; python_version >= "3.8" and python_version < "3.12" \
 google-cloud-core==2.4.1 ; python_version >= "3.8" and python_version < "3.12" \
     --hash=sha256:9b7749272a812bde58fff28868d0c5e2f585b82f37e09a1f6ed2d4d10f134073 \
     --hash=sha256:a9e6a4422b9ac5c29f79a0ede9485473338e2ce78d91f2370c01e730eab22e61
-google-cloud-storage==2.16.0 ; python_version >= "3.8" and python_version < "3.12" \
-    --hash=sha256:91a06b96fb79cf9cdfb4e759f178ce11ea885c79938f89590344d079305f5852 \
-    --hash=sha256:dda485fa503710a828d01246bd16ce9db0823dc51bbca742ce96a6817d58669f
+google-cloud-storage==2.19.0; python_version >= "3.8" and python_version < "3.12" \
+    --hash=sha256:aeb971b5c29cf8ab98445082cbfe7b161a1f48ed275822f59ed3f1524ea54fba \
+    --hash=sha256:cd05e9e7191ba6cb68934d8eb76054d9be4562aa89dbc4236feee4d7d51342b2
 google-crc32c==1.5.0 ; python_version >= "3.8" and python_version < "3.12" \
     --hash=sha256:024894d9d3cfbc5943f8f230e23950cd4906b2fe004c72e29b209420a1e6b05a \
     --hash=sha256:02c65b9817512edc6a4ae7c7e987fea799d2e0ee40c53ec573a692bee24de876 \

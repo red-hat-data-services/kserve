@@ -1,6 +1,6 @@
-aiohttp-cors==0.7.0 ; python_version >= "3.8" and python_version < "3.12" \
-    --hash=sha256:0451ba59fdf6909d0e2cd21e4c0a43752bc0703d33fc78ae94d9d9321710193e \
-    --hash=sha256:4d39c6d7100fd9764ed1caf8cebf0eb01bf5e3f24e2e073fda6234bc48b19f5d
+aiohttp-cors==0.8.0; python_version >= "3.8" and python_version < "3.12" \
+    --hash=sha256:b656eeadb84c8fc6771b07460419b100f20dee1d6bf403505b5bd347894c7941 \
+    --hash=sha256:ec70f38432c938e39d240ff38a7d789a5aa0a18087882c12d6cc141eef1144f6
 aiohttp==3.9.5 ; python_version >= "3.8" and python_version < "3.12" \
     --hash=sha256:0605cc2c0088fcaae79f01c913a38611ad09ba68ff482402d3410bf59039bfb8 \
     --hash=sha256:0a158704edf0abcac8ac371fbb54044f3270bdbc93e254a82b6c82be1ef08f3c \

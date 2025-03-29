@@ -1257,8 +1257,9 @@ zipp==3.15.0; (python_version < "3.10") \
 #
 # Dev dependencies
 #
-avro==1.11.1 \
-    --hash=sha256:f123623ecc648d0e20ce14f8ed85162140c13cc4b108865d1b2529fbfa06c008
+avro==1.12.0 \
+    --hash=sha256:9a255c72e1837341dd4f6ff57b2b6f68c0f0cecdef62dd04962e10fd33bec05b \
+    --hash=sha256:cad9c53b23ceed699c7af6bddced42e2c572fd6b408c257a7d4fc4e8cf2e2d6b
 coverage[toml]==7.2.5 \
     --hash=sha256:883123d0bbe1c136f76b56276074b0c79b5817dd4238097ffa64ac67257f4b6c \
     --hash=sha256:d2fbc2a127e857d2f8898aaabcc34c37771bf78a4d5e17d3e1f5c30cd0cbc62a \

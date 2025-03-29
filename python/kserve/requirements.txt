@@ -603,9 +603,9 @@ kubernetes==29.0.0 ; python_version >= "3.8" and python_version < "3.12" \
 msal-extensions==1.1.0 ; python_version >= "3.8" and python_version < "3.12" \
     --hash=sha256:01be9711b4c0b1a151450068eeb2c4f0997df3bba085ac299de3a66f585e382f \
     --hash=sha256:6ab357867062db7b253d0bd2df6d411c7891a0ee7308d54d1e4317c1d1c54252
-msal==1.28.0 ; python_version >= "3.8" and python_version < "3.12" \
-    --hash=sha256:3064f80221a21cd535ad8c3fafbb3a3582cd9c7e9af0bb789ae14f726a0ca99b \
-    --hash=sha256:80bbabe34567cb734efd2ec1869b2d98195c927455369d8077b3c542088c5c9d
+msal==1.32.0; python_version >= "3.8" and python_version < "3.12" \
+    --hash=sha256:5445fe3af1da6be484991a7ab32eaa82461dc2347de105b76af92c610c3335c2 \
+    --hash=sha256:9dbac5384a10bbbf4dae5c7ea0d707d14e087b92c5aa4954b3feaa2d1aa0bcb7
 msgpack==1.0.8 ; python_version >= "3.8" and python_version < "3.12" \
     --hash=sha256:00e073efcba9ea99db5acef3959efa45b52bc67b61b00823d2a1a6944bf45982 \
     --hash=sha256:0726c282d188e204281ebd8de31724b7d749adebc086873a59efb8cf7ae27df3 \

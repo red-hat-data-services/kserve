@@ -1177,10 +1177,10 @@ tabulate==0.9.0 ; python_version >= "3.8" and python_version < "3.12" \
 timing-asgi==0.3.1 ; python_version >= "3.8" and python_version < "3.12" \
     --hash=sha256:5f040b2588476c048dd09d8c8fc4b71152b9465474f5c1899a1f77c2b400e46f \
     --hash=sha256:dc947f43227c500a3259d90034da9c49a959a60243f9121db337dd7e6e57e808
-tritonclient==2.41.1 ; python_version >= "3.8" and python_version < "3.12" \
-    --hash=sha256:22ad56ae5ab25518862dec85af0a8246a32a1e14e2ee1d86f1444ce432c254e1 \
-    --hash=sha256:6545055add115e9bd07ca540af95db5ceda0c783009ad41df6a7f35a79d57474 \
-    --hash=sha256:91cb234331a7145c407cea605caf9eecbd4276ddc5f085ddd5a6dcab64e5e70b
+tritonclient==2.55.0; python_version >= "3.8" and python_version < "3.12" \
+    --hash=sha256:57b986bc3c4ea1462a6ae3db5a5024c9e6a6b4e906c352dcd9ba2f87334f5b8c \
+    --hash=sha256:856e7be404555a94a441489a72034c582c793a2de7ef187bfc4570cbf416f827 \
+    --hash=sha256:d7cace1b8d3a676ed1aefd1ba3bf34ce1c79146bb741dc095d91634d0c06074d
 typing-extensions==4.10.0 ; python_version >= "3.8" and python_version < "3.12" \
     --hash=sha256:69b1a937c3a517342112fb4c6df7e72fc39a38e7891a5730ed4985b5214b5475 \
     --hash=sha256:b0abd7c89e8fb96f98db18d86106ff1d90ab692004eb746cf6eda2682f91b3cb

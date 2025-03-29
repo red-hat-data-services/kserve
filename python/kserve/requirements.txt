@@ -877,9 +877,9 @@ platformdirs==4.2.1 ; python_version >= "3.8" and python_version < "3.12" \
 portalocker==2.8.2 ; python_version >= "3.8" and python_version < "3.12" \
     --hash=sha256:2b035aa7828e46c58e9b31390ee1f169b98e1066ab10b9a6a861fe7e25ee4f33 \
     --hash=sha256:cfb86acc09b9aa7c3b43594e19be1345b9d16af3feb08bf92f23d4dce513a28e
-prometheus-client==0.13.1 ; python_version >= "3.8" and python_version < "3.12" \
-    --hash=sha256:357a447fd2359b0a1d2e9b311a0c5778c330cfbe186d880ad5a6b39884652316 \
-    --hash=sha256:ada41b891b79fca5638bd5cfe149efa86512eaa55987893becd2c6d8d0a5dfc5
+prometheus-client==0.21.1; python_version >= "3.8" and python_version < "3.12" \
+    --hash=sha256:252505a722ac04b0456be05c05f75f45d760c2911ffc45f2a06bcaed9f3ae3fb \
+    --hash=sha256:594b45c410d6f4f8888940fe80b5cc2521b305a1fafe1c58609ef715a001f301
 proto-plus==1.23.0 ; python_version >= "3.8" and python_version < "3.12" \
     --hash=sha256:89075171ef11988b3fa157f5dbd8b9cf09d65fffee97e29ce403cd8defba19d2 \
     --hash=sha256:a829c79e619e1cf632de091013a4173deed13a55f326ef84f05af6f50ff4c82c

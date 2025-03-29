@@ -92,9 +92,9 @@ aiohttp==3.8.4 \
 aiohttp-cors==0.7.0 \
     --hash=sha256:4d39c6d7100fd9764ed1caf8cebf0eb01bf5e3f24e2e073fda6234bc48b19f5d \
     --hash=sha256:0451ba59fdf6909d0e2cd21e4c0a43752bc0703d33fc78ae94d9d9321710193e
-aiorwlock==1.3.0 \
-    --hash=sha256:45baf8e4fa9a23e0bb325fbd67da80de1fd7ae1d4f59a6381754c60cec7b289b \
-    --hash=sha256:83f12d87df4b9728a0b8fda1756585ab0d652b107bab59c6084e1b1ad692ab45
+aiorwlock==1.5.0 \
+    --hash=sha256:0010cd2d2c603eb84bfee1cfd06233a976618dab90ec7108191e936137a8420a \
+    --hash=sha256:b529da24da659bdedcf68faf216595bde00db228c905197ac554773620e7fd2f
 aiosignal==1.3.1 \
     --hash=sha256:f8376fb07dd1e86a584e4fcdec80b36b7f81aac666ebc724e2c090300dd83b17 \
     --hash=sha256:54cd96e15e1649b75d6c87526a6ff0b6c1b0dd3459f43d9ca11d48c339b68cfc

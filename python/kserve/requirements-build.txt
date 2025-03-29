@@ -24,7 +24,7 @@ pexpect==4.9.0
 pkginfo==1.11.1
 platformdirs==3.11.0
 poetry-core==1.8.1
-poetry-plugin-export==1.6.0
+poetry-plugin-export==1.9.0
 ptyprocess==0.7.0
 pycparser==2.22
 pyproject-hooks==1.1.0

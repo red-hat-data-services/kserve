@@ -839,9 +839,9 @@ orjson==3.10.3 ; python_version >= "3.8" and python_version < "3.12" \
     --hash=sha256:cf20465e74c6e17a104ecf01bf8cd3b7b252565b4ccee4548f18b012ff2f8069 \
     --hash=sha256:d4a654ec1de8fdaae1d80d55cee65893cb06494e124681ab335218be6a0691e7 \
     --hash=sha256:e852baafceff8da3c9defae29414cc8513a1586ad93e45f27b89a639c68e8176
-packaging==24.0 ; python_version >= "3.8" and python_version < "3.12" \
-    --hash=sha256:2ddfb553fdf02fb784c234c7ba6ccc288296ceabec964ad2eae3777778130bc5 \
-    --hash=sha256:eb82c5e3e56209074766e6885bb04b8c38a0c015d0a30036ebe7ece34c9989e9
+packaging==24.2; python_version >= "3.8" and python_version < "3.12" \
+    --hash=sha256:09abb1bccd265c01f4a3aa3f7a7db064b36514d2cba19a2f694fe6150451a759 \
+    --hash=sha256:c228a6dc5e932d346bc5739379109d49e8853dd8223571c7c5b55260edc0b97f
 pandas==2.0.3 ; python_version >= "3.8" and python_version < "3.12" \
     --hash=sha256:04dbdbaf2e4d46ca8da896e1805bc04eb85caa9a82e259e8eed00254d5e0c682 \
     --hash=sha256:1168574b036cd8b93abc746171c9b4f1b83467438a5e45909fed645cf8692dbc \

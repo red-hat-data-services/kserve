@@ -1304,9 +1304,9 @@ watchfiles==0.21.0 ; python_version >= "3.8" and python_version < "3.12" \
     --hash=sha256:ec8c8900dc5c83650a63dd48c4d1d245343f904c4b64b48798c67a3767d7e165 \
     --hash=sha256:f564bf68404144ea6b87a78a3f910cc8de216c6b12a4cf0b27718bf4ec38d303 \
     --hash=sha256:fd7ac678b92b29ba630d8c842d8ad6c555abda1b9ef044d6cc092dacbfc9719d
-websocket-client==1.7.0 ; python_version >= "3.8" and python_version < "3.12" \
-    --hash=sha256:10e511ea3a8c744631d3bd77e61eb17ed09304c413ad42cf6ddfa4c7787e8fe6 \
-    --hash=sha256:f4c3d22fec12a2461427a29957ff07d35098ee2d976d3ba244e688b8b4057588
+websocket-client==1.8.0; python_version >= "3.8" and python_version < "3.12" \
+    --hash=sha256:17b44cc997f5c498e809b22cdf2d9c7a9e71c02c8cc2b6c56e7c2d1239bfa526 \
+    --hash=sha256:3239df9f44da632f96012472805d40a23281a991027ce11d2f45a6f24ac4c3da
 websockets==12.0 ; python_version >= "3.8" and python_version < "3.12" \
     --hash=sha256:00700340c6c7ab788f176d118775202aadea7602c5cc6be6ae127761c16d6b0b \
     --hash=sha256:0bee75f400895aef54157b36ed6d3b308fcab62e5260703add87f44cee9c82a6 \

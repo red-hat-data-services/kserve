@@ -12,7 +12,7 @@ dulwich==0.21.7
 fastjsonschema==2.20.0
 gssapi==1.8.3
 hdfs==2.6.0
-importlib-metadata==8.5.0
+importlib-metadata==8.6.1
 installer==0.7.0
 jaraco.classes==3.4.0
 jeepney==0.4.2

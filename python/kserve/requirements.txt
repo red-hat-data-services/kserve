@@ -1044,9 +1044,9 @@ ray[serve]==2.10.0 ; python_version >= "3.8" and python_version < "3.12" \
     --hash=sha256:eceecea4133e63f5d607cc9f2a4278de51eeeeef552f694895e381aae9ff8522 \
     --hash=sha256:f215eb704f2cb72e984d5a85fe435b4d74808c906950176789ba2101ce739082 \
     --hash=sha256:fb92f2d6d4eca602dfb0d3d459a09be59668e1560ce4bd89b692892f25b1933b
-referencing==0.33.0 ; python_version >= "3.8" and python_version < "3.12" \
-    --hash=sha256:39240f2ecc770258f28b642dd47fd74bc8b02484de54e1882b74b35ebd779bd5 \
-    --hash=sha256:c775fedf74bc0f9189c2a3be1c12fd03e8c23f4d371dce795df44e06c5b412f7
+referencing==0.36.2; python_version >= "3.8" and python_version < "3.12" \
+    --hash=sha256:df2e89862cd09deabbdba16944cc3f10feb6b3e6f18e902f7cc25609a34775aa \
+    --hash=sha256:e8699adbbf8b5c7de96d8ffa0eb5c158b3beafce084968e2ea8bb08c6794dcd0
 requests-oauthlib==1.3.1 ; python_version >= "3.8" and python_version < "3.12" \
     --hash=sha256:2577c501a2fb8d05a304c09d090d6e47c306fef15809d102b327cf8364bddab5 \
     --hash=sha256:75beac4a47881eeb94d5ea5d6ad31ef88856affe2332b9aafb52c6452ccf0d7a

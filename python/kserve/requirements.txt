@@ -1162,9 +1162,9 @@ rsa==4.9 ; python_version >= "3.8" and python_version < "3.12" \
 six==1.16.0 ; python_version >= "3.8" and python_version < "3.12" \
     --hash=sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926 \
     --hash=sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254
-smart-open==7.0.1 ; python_version >= "3.8" and python_version < "3.12" \
-    --hash=sha256:9507e38b43d1fd515c2085b9db2e41b592bb754b0e31395a085eb0d61d2410e5 \
-    --hash=sha256:c03d00e49483d8e5375720d4d6c1402107f23584bf96505db0b4e17f92339e56
+smart-open==7.1.0; python_version >= "3.8" and python_version < "3.12" \
+    --hash=sha256:4b8489bb6058196258bafe901730c7db0dcf4f083f316e97269c66f45502055b \
+    --hash=sha256:a4f09f84f0f6d3637c6543aca7b5487438877a21360e7368ccf1f704789752ba
 sniffio==1.3.1 ; python_version >= "3.8" and python_version < "3.12" \
     --hash=sha256:2f6da418d1f1e0fddd844478f41680e794e6051915791a034ff65e5f100525a2 \
     --hash=sha256:f4324edc670a0f49750a81b895f35c3adb843cca46f0530f79fc1babb23789dc

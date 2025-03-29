@@ -860,9 +860,9 @@ py-spy==0.3.14 ; python_version >= "3.8" and python_version < "3.12" \
 pyasn1-modules==0.3.0 ; python_version >= "3.8" and python_version < "3.12" \
     --hash=sha256:5bd01446b736eb9d31512a30d46c1ac3395d676c6f3cafa4c03eb54b9925631c \
     --hash=sha256:d3ccd6ed470d9ffbc716be08bd90efbd44d0734bc9303818f7336070984a162d
-pyasn1==0.5.1 ; python_version >= "3.8" and python_version < "3.12" \
-    --hash=sha256:4439847c58d40b1d0a573d07e3856e95333f1976294494c325775aeca506eb58 \
-    --hash=sha256:6d391a96e59b23130a5cfa74d6fd7f388dbbe26cc8f1edf39fdddf08d9d6676c
+pyasn1==0.6.1; python_version >= "3.8" and python_version < "3.12" \
+    --hash=sha256:0d632f46f2ba09143da3a8afe9e33fb6f92fa2320ab7e886e2d0f7672af84629 \
+    --hash=sha256:6f580d2bdd84365380830acf45550f2511469f673cb4a5ae3857a3170128b034
 pydantic==1.10.14 ; python_version >= "3.8" and python_version < "3.12" \
     --hash=sha256:08b6ec0917c30861e3fe71a93be1648a2aa4f62f866142ba21670b24444d7fd8 \
     --hash=sha256:0fbb503bbbbab0c588ed3cd21975a1d0d4163b87e360fec17a792f7d8c4ff29f \

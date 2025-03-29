@@ -900,9 +900,9 @@ pydantic==1.10.14 ; python_version >= "3.8" and python_version < "3.12" \
     --hash=sha256:e897c9f35281f7889873a3e6d6b69aa1447ceb024e8495a5f0d02ecd17742a7f \
     --hash=sha256:f9f674b5c3bebc2eba401de64f29948ae1e646ba2735f884d1594c5f675d6f2a \
     --hash=sha256:fa7790e94c60f809c95602a26d906eba01a0abee9cc24150e4ce2189352deb1b
-python-dateutil==2.8.2 ; python_version >= "3.8" and python_version < "3.12" \
-    --hash=sha256:0123cacc1627ae19ddf3c27a5de5bd67ee4586fbdd6440d9748f8abb483d3e86 \
-    --hash=sha256:961d03dc3453ebbc59dbdea9e4e11c5651520a876d0f4db161e8674aae935da9
+python-dateutil==2.9.0.post0; python_version >= "3.8" and python_version < "3.12" \
+    --hash=sha256:37dd54208da7e1cd875388217d5e00ebd4179249f90fb72437e91a35459a0ad3 \
+    --hash=sha256:a8b2bc7bffae282281c8140a97d3aa9c14da0b136dfe83f850eea9a5f7470427
 python-dotenv==1.0.1 ; python_version >= "3.8" and python_version < "3.12" \
     --hash=sha256:e324ee90a023d808f1959c46bcbc04446a10ced277783dc6ee09987c37ec10ca \
     --hash=sha256:f7b63ef50f1b690dddf550d03497b66d609393b40b564ed0d674909a68ebf16a

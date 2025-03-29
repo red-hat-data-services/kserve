@@ -19,7 +19,7 @@ jeepney==0.4.2
 keyring==24.3.1
 krb5==0.6.0
 krbcontext==0.10
-more-itertools==10.5.0
+more-itertools==10.6.0
 pexpect==4.9.0
 pkginfo==1.11.1
 platformdirs==3.11.0

@@ -483,9 +483,9 @@ google-crc32c==1.5.0 ; python_version >= "3.8" and python_version < "3.12" \
 google-resumable-media==2.7.0 ; python_version >= "3.8" and python_version < "3.12" \
     --hash=sha256:5f18f5fa9836f4b083162064a1c2c98c17239bfda9ca50ad970ccf905f3e625b \
     --hash=sha256:79543cfe433b63fd81c0844b7803aba1bb8950b47bedf7d980c38fa123937e08
-googleapis-common-protos==1.63.0 ; python_version >= "3.8" and python_version < "3.12" \
-    --hash=sha256:17ad01b11d5f1d0171c06d3ba5c04c54474e883b66b949722b4938ee2694ef4e \
-    --hash=sha256:ae45f75702f7c08b541f750854a678bd8f534a1a6bace6afe975f1d0a82d6632
+googleapis-common-protos==1.69.2; python_version >= "3.8" and python_version < "3.12" \
+    --hash=sha256:0b30452ff9c7a27d80bfc5718954063e8ab53dd3697093d3bc99581f5fd24212 \
+    --hash=sha256:3e1b904a27a33c821b4b749fd31d334c0c9c30e6113023d495e48979a3dc9c5f
 grpcio==1.63.0 ; python_version >= "3.8" and python_version < "3.12" \
     --hash=sha256:01799e8649f9e94ba7db1aeb3452188048b0019dc37696b0f5ce212c87c560c3 \
     --hash=sha256:0697563d1d84d6985e40ec5ec596ff41b52abb3fd91ec240e8cb44a63b895094 \

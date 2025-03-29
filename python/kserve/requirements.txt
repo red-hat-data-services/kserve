@@ -576,9 +576,9 @@ httptools==0.6.1 ; python_version >= "3.8" and python_version < "3.12" \
     --hash=sha256:e0b281cf5a125c35f7f6722b65d8542d2e57331be573e9e88bc8b0115c4a7a81 \
     --hash=sha256:e57997ac7fb7ee43140cc03664de5f268813a481dff6245e0075925adc6aa185 \
     --hash=sha256:fe467eb086d80217b7584e61313ebadc8d187a4d95bb62031b7bab4b205c3ba3
-httpx==0.26.0 ; python_version >= "3.8" and python_version < "3.12" \
-    --hash=sha256:451b55c30d5185ea6b23c2c793abf9bb237d2a7dfb901ced6ff69ad37ec1dfaf \
-    --hash=sha256:8915f5a3627c4d47b73e8202457cb28f1266982d1159bd5779d86a80c0eab1cd
+httpx==0.28.1; python_version >= "3.8" and python_version < "3.12" \
+    --hash=sha256:75e98c5f16b0f35b567856f597f06ff2270a374470a5c2392242528e3e3e42fc \
+    --hash=sha256:d909fcccc110f8c7faf814ca82a9a4d816bc5a6dbfea25d6591d6985b8ba59ad
 idna==3.7 ; python_version >= "3.8" and python_version < "3.12" \
     --hash=sha256:028ff3aadf0609c1fd278d8ea3089299412a7a8b9bd005dd08b9f8285bcb5cfc \
     --hash=sha256:82fee1fc78add43492d3a1898bfa6d8a904cc97d8427f683ed8e798d07761aa0

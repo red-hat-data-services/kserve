@@ -968,9 +968,9 @@ python-rapidjson==1.14 ; python_version >= "3.8" and python_version < "3.12" \
     --hash=sha256:f0ce716f9d8c2eb5ccd2807dbfd969e84f7ca86b09b9b56be27c1dee57dfaa9c \
     --hash=sha256:f7ce2132531643fa9c2935146e28875c60a79fa0de1afc86951a2b09ef04b40a \
     --hash=sha256:f827fc652ab51e3777b375d17867132351eb9b4e53578a139c24fb5c559fdb45
-pytz==2024.1 ; python_version >= "3.8" and python_version < "3.12" \
-    --hash=sha256:2a29735ea9c18baf14b448846bde5a48030ed267578472d8955cd0e7443a9812 \
-    --hash=sha256:328171f4e3623139da4983451950b28e95ac706e13f3f2630a879749e7a8b319
+pytz==2024.2; python_version >= "3.8" and python_version < "3.12" \
+    --hash=sha256:2aa355083c50a0f93fa581709deac0c9ad65cca8a9e9beac660adcbd493c798a \
+    --hash=sha256:31c7c1817eb7fae7ca4b8c7ee50c72f93aa2dd863de768e1ef4245d426aa0725
 pyyaml==6.0.1 ; python_version >= "3.8" and python_version < "3.12" \
     --hash=sha256:04ac92ad1925b2cff1db0cfebffb6ffc43457495c9b3c39d3fcae417d7125dc5 \
     --hash=sha256:062582fca9fabdd2c8b54a3ef1c978d786e0f6b3a1510e0ac93ef59e0ddae2bc \

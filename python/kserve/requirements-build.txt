@@ -21,7 +21,7 @@ krb5==0.6.0
 krbcontext==0.10
 more-itertools==10.5.0
 pexpect==4.9.0
-pkginfo==1.11.1
+pkginfo==1.12.1.2
 platformdirs==3.11.0
 poetry-core==1.8.1
 poetry-plugin-export==1.6.0

@@ -855,8 +855,9 @@ istio.io/api v0.0.0-20200715212100-dbf5277541ef h1:EK7lCql3HAxEoyPQuPWamG00XkOKz
 istio.io/api v0.0.0-20200715212100-dbf5277541ef/go.mod h1:kyq3g5w42zl/AKlbzDGppYpGMQYMYMyZKeq0/eexML8=
 istio.io/client-go v0.0.0-20201005161859-d8818315d678 h1:Mjl9qt66aZnoN+Ki6UkBjFEOogi2+l2nmJ/9RcuZWlA=
 istio.io/client-go v0.0.0-20201005161859-d8818315d678/go.mod h1:0QlyS/x4wqkZWIbE8NdXFsvUoH2zkVHXB3Zrh50FCVs=
-istio.io/gogo-genproto v0.0.0-20190930162913-45029607206a h1:w7zILua2dnYo9CxImhpNW4NE/8ZxEoc/wfBfHrhUhrE=
 istio.io/gogo-genproto v0.0.0-20190930162913-45029607206a/go.mod h1:OzpAts7jljZceG4Vqi5/zXy/pOg1b209T3jb7Nv5wIs=
+istio.io/gogo-genproto v0.0.0-20230705213215-8f59b5a7ddde h1:h/EeQmV8x9xZMd7VP+sja+UmUW5sAWnqjDlFkYK1T7A=
+istio.io/gogo-genproto v0.0.0-20230705213215-8f59b5a7ddde/go.mod h1:CX4lrhfV/KnShn+slx+0MDsSKL+PeUsqniKmiBS7f54=
 k8s.io/api v0.26.4 h1:qSG2PmtcD23BkYiWfoYAcak870eF/hE7NNYBYavTT94=
 k8s.io/api v0.26.4/go.mod h1:WwKEXU3R1rgCZ77AYa7DFksd9/BAIKyOmRlbVxgvjCk=
 k8s.io/apiextensions-apiserver v0.27.6 h1:mOwSBJtThZhpJr+8gEkc3wFDIjq87E3JspR5mtZxIg8=

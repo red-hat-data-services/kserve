@@ -4,12 +4,13 @@ FROM registry.access.redhat.com/ubi8/ubi-minimal:latest AS builder
 
 # Install Python and dependencies
 RUN microdnf install -y \
-    python39 python39-devel gcc libffi-devel openssl-devel krb5-workstation krb5-libs && \
+    python3.11 python3.11-devel gcc libffi-devel openssl-devel krb5-workstation krb5-libs krb5-devel && \
     if [ "$(uname -m)" = "s390x" ] || [ "$(uname -m)" = "ppc64le" ]; then \
        echo "Installing packages" && \
        microdnf install -y gcc-c++ cmake rust cargo; \
-    fi && \
-    microdnf clean all
+    fi \
+    && microdnf clean all \
+    && alternatives --install /usr/bin/python python /usr/bin/python3.11 1
 
 # Install Poetry
 ARG POETRY_HOME=/opt/poetry
@@ -36,6 +37,8 @@ RUN cd kserve && poetry install --no-interaction --no-cache --extras "storage"
 
 RUN pip install --no-cache-dir krbcontext==0.10 hdfs~=2.6.0 requests-kerberos==0.14.0
 
+########################################################################
+# Runtime
 FROM registry.access.redhat.com/ubi8/ubi-minimal:latest AS prod
 
 COPY third_party third_party
@@ -46,8 +49,10 @@ ENV VIRTUAL_ENV=${VENV_PATH}
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 RUN microdnf install -y  \
-    shadow-utils python39 python39-devel && \
-    microdnf clean all
+        shadow-utils python3.11 python3.11-devel \
+    &&  microdnf clean all \
+    &&  alternatives --install /usr/bin/python python3 /usr/bin/python3.11 1
+
 RUN useradd kserve -m -u 1000 -d /home/kserve
 
 COPY --from=builder --chown=kserve:kserve $VIRTUAL_ENV $VIRTUAL_ENV

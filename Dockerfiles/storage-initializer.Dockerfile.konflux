@@ -10,7 +10,7 @@ RUN microdnf install -y \
        microdnf install -y gcc-c++ cmake rust cargo; \
     fi \
     && microdnf clean all \
-    && alternatives --install /usr/bin/python python /usr/bin/python3.11 1
+    && alternatives --install /usr/bin/unversioned-python python /usr/bin/python3.11 1
 
 # Install Poetry
 ARG POETRY_HOME=/opt/poetry
@@ -51,7 +51,7 @@ ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 RUN microdnf install -y  \
         shadow-utils python3.11 python3.11-devel \
     &&  microdnf clean all \
-    &&  alternatives --install /usr/bin/python python3 /usr/bin/python3.11 1
+    && alternatives --install /usr/bin/unversioned-python python /usr/bin/python3.11 1
 
 RUN useradd kserve -m -u 1000 -d /home/kserve
 

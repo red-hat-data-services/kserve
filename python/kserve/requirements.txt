@@ -1,9 +1,9 @@
 aiohappyeyeballs==2.4.4 ; python_version >= "3.8" and python_version < "3.12" \
     --hash=sha256:5fdd7d87889c63183afc18ce9271f9b0a7d32c2303e394468dd45d514a757745 \
     --hash=sha256:a980909d50efcd44795c4afeca523296716d50cd756ddca6af8c65b996e27de8
-aiohttp-cors==0.7.0 ; python_version >= "3.8" and python_version < "3.12" \
-    --hash=sha256:0451ba59fdf6909d0e2cd21e4c0a43752bc0703d33fc78ae94d9d9321710193e \
-    --hash=sha256:4d39c6d7100fd9764ed1caf8cebf0eb01bf5e3f24e2e073fda6234bc48b19f5d
+aiohttp-cors==0.8.1; python_version >= "3.8" and python_version < "3.12" \
+    --hash=sha256:3180cf304c5c712d626b9162b195b1db7ddf976a2a25172b35bb2448b890a80d \
+    --hash=sha256:ccacf9cb84b64939ea15f859a146af1f662a6b1d68175754a07315e305fb1403
 aiohttp==3.10.11 ; python_version >= "3.8" and python_version < "3.12" \
     --hash=sha256:0316e624b754dbbf8c872b62fe6dcb395ef20c70e59890dfa0de9eafccd2849d \
     --hash=sha256:099fd126bf960f96d34a760e747a629c27fb3634da5d05c7ef4d35ef4ea519fc \

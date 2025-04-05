@@ -1181,9 +1181,9 @@ tritonclient==2.41.1 ; python_version >= "3.8" and python_version < "3.12" \
     --hash=sha256:22ad56ae5ab25518862dec85af0a8246a32a1e14e2ee1d86f1444ce432c254e1 \
     --hash=sha256:6545055add115e9bd07ca540af95db5ceda0c783009ad41df6a7f35a79d57474 \
     --hash=sha256:91cb234331a7145c407cea605caf9eecbd4276ddc5f085ddd5a6dcab64e5e70b
-typing-extensions==4.10.0 ; python_version >= "3.8" and python_version < "3.12" \
-    --hash=sha256:69b1a937c3a517342112fb4c6df7e72fc39a38e7891a5730ed4985b5214b5475 \
-    --hash=sha256:b0abd7c89e8fb96f98db18d86106ff1d90ab692004eb746cf6eda2682f91b3cb
+typing-extensions==4.13.1; python_version >= "3.8" and python_version < "3.12" \
+    --hash=sha256:4b6cf02909eb5495cfbc3f6e8fd49217e6cc7944e145cdda8caa3734777f9e69 \
+    --hash=sha256:98795af00fb9640edec5b8e31fc647597b4691f099ad75f469a2616be1a76dff
 tzdata==2024.1 ; python_version >= "3.8" and python_version < "3.12" \
     --hash=sha256:2674120f8d891909751c38abcdfd386ac0a5a1127954fbc332af6b5ceae07efd \
     --hash=sha256:9068bc196136463f5245e51efda838afa15aaeca9903f49050dfa2679db4d252

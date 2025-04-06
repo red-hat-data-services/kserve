@@ -5,7 +5,7 @@ go 1.22.7
 require (
 	cloud.google.com/go/storage v1.43.0
 	github.com/aws/aws-sdk-go v1.55.5
-	github.com/cloudevents/sdk-go/v2 v2.15.2
+	github.com/cloudevents/sdk-go/v2 v2.16.0
 	github.com/fsnotify/fsnotify v1.7.0
 	github.com/getkin/kin-openapi v0.127.0
 	github.com/go-logr/logr v1.4.2
@@ -21,7 +21,7 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/spf13/cobra v1.8.1
 	github.com/spf13/pflag v1.0.5
-	github.com/stretchr/testify v1.9.0
+	github.com/stretchr/testify v1.10.0
 	github.com/tidwall/gjson v1.17.3
 	go.uber.org/zap v1.27.0
 	gomodules.xyz/jsonpatch/v2 v2.4.0

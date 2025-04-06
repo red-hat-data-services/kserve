@@ -26,7 +26,7 @@ require (
 	go.uber.org/zap v1.27.0
 	gomodules.xyz/jsonpatch/v2 v2.4.0
 	google.golang.org/api v0.195.0
-	google.golang.org/protobuf v1.34.2
+	google.golang.org/protobuf v1.36.6
 	gopkg.in/go-playground/validator.v9 v9.31.0
 	istio.io/api v1.23.0
 	istio.io/client-go v1.23.0

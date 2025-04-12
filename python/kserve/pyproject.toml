@@ -99,7 +99,7 @@ pytest_httpx = "^v0.30.0"
 mypy = "^0.991"
 portforward = "^0.6.2"
 avro = "^1.11.0"
-tomlkit = "^0.12.0"
+tomlkit = "^0.13.0"
 jinja2 = "^3.1.4"
 grpcio-testing = "^1.60.0"
 

@@ -26,7 +26,7 @@ require (
 	go.uber.org/zap v1.27.0
 	gomodules.xyz/jsonpatch/v2 v2.4.0
 	google.golang.org/api v0.195.0
-	google.golang.org/protobuf v1.34.2
+	google.golang.org/protobuf v1.36.6
 	gopkg.in/go-playground/validator.v9 v9.31.0
 	istio.io/api v1.23.0
 	istio.io/client-go v1.23.0
@@ -101,7 +101,7 @@ require (
 	github.com/perimeterx/marshmallow v1.1.5 // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/prometheus/client_golang v1.20.2 // indirect
-	github.com/prometheus/client_model v0.6.1 // indirect
+	github.com/prometheus/client_model v0.6.2 // indirect
 	github.com/prometheus/common v0.57.0 // indirect
 	github.com/prometheus/procfs v0.15.1 // indirect
 	github.com/prometheus/statsd_exporter v0.27.1 // indirect

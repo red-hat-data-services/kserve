@@ -7,7 +7,7 @@ RUN microdnf install -y \
     python3.11 python3.11-devel gcc libffi-devel openssl-devel krb5-workstation krb5-libs krb5-devel && \
     if [ "$(uname -m)" = "s390x" ] || [ "$(uname -m)" = "ppc64le" ]; then \
        echo "Installing packages" && \
-       microdnf install -y gcc-c++ cmake rust cargo; \
+       microdnf install -y gcc-c++ cmake rust cargo perl; \
     fi \
     && microdnf clean all \
     && alternatives --install /usr/bin/unversioned-python python /usr/bin/python3.11 1

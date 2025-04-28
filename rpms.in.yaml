@@ -1,0 +1,19 @@
+contentOrigin:
+  repofiles:
+    - ubi.repo
+packages:
+  - shadow-utils
+  - cargo
+  - cmake
+  - gcc
+  - gcc-c++
+  - krb5-devel
+  - krb5-libs
+  - krb5-workstation
+  - libffi-devel
+  - openssl-devel
+  - perl
+  - python3.11
+  - python3.11-devel
+  - python3.11-pip
+  - rust

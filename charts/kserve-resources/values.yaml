@@ -84,7 +84,7 @@ kserve:
     deploymentMode: "Serverless"
 
     # -- KServe controller manager rbac proxy contrainer image
-    rbacProxyImage: quay.io/brancz/kube-rbac-proxy:v0.18.0
+    rbacProxyImage: quay.io/brancz/kube-rbac-proxy:v0.19.1
     rbacProxy:
       resources:
         limits:

@@ -7,11 +7,11 @@ metadata:
     build.appstudio.redhat.com/pull_request_number: '{{pull_request_number}}'
     build.appstudio.redhat.com/target_branch: '{{target_branch}}'
     pipelinesascode.tekton.dev/max-keep-runs: "3"
-    pipelinesascode.tekton.dev/on-cel-expression: |
-      event == "pull_request" 
-      && target_branch == "rhoai-2.16" && !matches(source_branch, "^konflux/references") && !matches(source_branch, "^konflux/component-updates")    
-      && ( "python/**".pathChanged() || ".tekton/kserve-storage-initializer-216-pull-request.yaml".pathChanged() ) 
-      && !"config/overlays/odh/params.env".pathChanged()
+    pipelinesascode.tekton.dev/on-cel-expression: "event == \"pull_request\" \n&&
+      target_branch == \"rhoai-2.16\" && !matches(source_branch, \"^konflux/references\")
+      && !matches(source_branch, \"^konflux/component-updates\")    \n&& ( \"python/**\".pathChanged()
+      || \".tekton/kserve-storage-initializer-216-pull-request.yaml\".pathChanged()
+      ) \n&& !\"config/overlays/odh/params.env\".pathChanged()\n"
   creationTimestamp: null
   labels:
     appstudio.openshift.io/application: kserve-storage-initializer
@@ -444,7 +444,8 @@ spec:
       optional: true
     - name: netrc
       optional: true
-  taskRunTemplate: {}
+  taskRunTemplate:
+    serviceAccountName: build-pipeline-kserve-storage-initializer-216
   workspaces:
   - name: git-auth
     secret:

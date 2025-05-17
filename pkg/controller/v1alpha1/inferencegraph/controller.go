@@ -23,6 +23,7 @@ limitations under the License.
 // +kubebuilder:rbac:groups=serving.knative.dev,resources=services/status,verbs=get;update;patch
 // +kubebuilder:rbac:groups=route.openshift.io,resources=routes,verbs=create;get;update;patch;watch;delete
 // +kubebuilder:rbac:groups=route.openshift.io,resources=routes/status,verbs=get
+// +kubebuilder:rbac:groups=operator.knative.dev,resources=knativeservings,verbs=get;list;watch
 package inferencegraph
 
 import (
@@ -45,6 +46,7 @@ import (
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/record"
+	operatorv1beta1 "knative.dev/operator/pkg/apis/operator/v1beta1"
 	"knative.dev/pkg/apis"
 	knservingv1 "knative.dev/serving/pkg/apis/serving/v1"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -146,37 +148,6 @@ func (r *InferenceGraphReconciler) Reconcile(ctx context.Context, req ctrl.Reque
 		r.Log.Error(err, "Failed to find config map", "name", constants.InferenceServiceConfigMapName)
 		return reconcile.Result{}, err
 	}
-	routerConfig, err := getRouterConfigs(configMap)
-	if err != nil {
-		return reconcile.Result{}, err
-	}
-	// resolve service urls
-	for node, router := range graph.Spec.Nodes {
-		for i, route := range router.Steps {
-			isvc := v1beta1.InferenceService{}
-			if route.ServiceName != "" {
-				err := r.Client.Get(ctx, types.NamespacedName{Namespace: graph.Namespace, Name: route.ServiceName}, &isvc)
-				if err == nil {
-					if graph.Spec.Nodes[node].Steps[i].ServiceURL == "" {
-						serviceUrl, err := isvcutils.GetPredictorEndpoint(&isvc)
-						if err == nil {
-							graph.Spec.Nodes[node].Steps[i].ServiceURL = serviceUrl
-						} else {
-							r.Log.Info("inference service is not ready", "name", route.ServiceName)
-							return reconcile.Result{Requeue: true}, errors.Wrapf(err, "service %s is not ready", route.ServiceName)
-						}
-					}
-				} else {
-					r.Log.Info("inference service is not found", "name", route.ServiceName)
-					return reconcile.Result{Requeue: true}, errors.Wrapf(err, "Failed to find graph service %s", route.ServiceName)
-				}
-			}
-		}
-	}
-	deployConfig, err := v1beta1api.NewDeployConfig(r.Clientset)
-	if err != nil {
-		return reconcile.Result{}, errors.Wrapf(err, "fails to create DeployConfig")
-	}
 
 	// examine DeletionTimestamp to determine if object is under deletion
 	if graph.ObjectMeta.DeletionTimestamp.IsZero() {
@@ -211,6 +182,38 @@ func (r *InferenceGraphReconciler) Reconcile(ctx context.Context, req ctrl.Reque
 
 		// Stop reconciliation as the item is being deleted
 		return ctrl.Result{}, nil
+	}
+
+	routerConfig, err := getRouterConfigs(configMap)
+	if err != nil {
+		return reconcile.Result{}, err
+	}
+	// resolve service urls
+	for node, router := range graph.Spec.Nodes {
+		for i, route := range router.Steps {
+			isvc := v1beta1.InferenceService{}
+			if route.ServiceName != "" {
+				err := r.Client.Get(ctx, types.NamespacedName{Namespace: graph.Namespace, Name: route.ServiceName}, &isvc)
+				if err == nil {
+					if graph.Spec.Nodes[node].Steps[i].ServiceURL == "" {
+						serviceUrl, err := isvcutils.GetPredictorEndpoint(&isvc)
+						if err == nil {
+							graph.Spec.Nodes[node].Steps[i].ServiceURL = serviceUrl
+						} else {
+							r.Log.Info("inference service is not ready", "name", route.ServiceName)
+							return reconcile.Result{Requeue: true}, errors.Wrapf(err, "service %s is not ready", route.ServiceName)
+						}
+					}
+				} else {
+					r.Log.Info("inference service is not found", "name", route.ServiceName)
+					return reconcile.Result{Requeue: true}, errors.Wrapf(err, "Failed to find graph service %s", route.ServiceName)
+				}
+			}
+		}
+	}
+	deployConfig, err := v1beta1api.NewDeployConfig(r.Clientset)
+	if err != nil {
+		return reconcile.Result{}, errors.Wrapf(err, "fails to create DeployConfig")
 	}
 
 	deploymentMode := isvcutils.GetDeploymentMode(graph.Status.DeploymentMode, graph.ObjectMeta.Annotations, deployConfig)
@@ -266,10 +269,26 @@ func (r *InferenceGraphReconciler) Reconcile(ctx context.Context, req ctrl.Reque
 		if !ksvcAvailable {
 			r.Recorder.Event(graph, v1.EventTypeWarning, "ServerlessModeRejected",
 				"It is not possible to use Serverless deployment mode when Knative Services are not available")
-			return reconcile.Result{Requeue: false}, reconcile.TerminalError(fmt.Errorf("the resolved deployment mode of InferenceGraph '%s' is Serverless, but Knative Serving is not available", graph.Name))
+			return reconcile.Result{Requeue: false}, reconcile.TerminalError(fmt.Errorf("the resolved deployment mode of InferenceGraph '%s' is Serverless, but Knative Services are not available", graph.Name))
 		}
 
-		desired := createKnativeService(graph.ObjectMeta, graph, routerConfig)
+		// Abort if Knative KnativeServings are not available
+		knServingFound, knServingCheckErr := utils.IsCrdAvailable(r.ClientConfig, operatorv1beta1.SchemeGroupVersion.String(), constants.KnativeServingKind)
+		if knServingCheckErr != nil {
+			return reconcile.Result{}, knServingCheckErr
+		}
+
+		if !knServingFound {
+			r.Recorder.Event(graph, v1.EventTypeWarning, "ServerlessModeRejected",
+				"It is not possible to use Serverless deployment mode when Knative KnativeServings are not available")
+			return reconcile.Result{Requeue: false}, reconcile.TerminalError(fmt.Errorf("the resolved deployment mode of InferenceGraph '%s' is Serverless, but Knative KnativeServings are not available", graph.Name))
+		}
+
+		desired, err := createKnativeService(r.Client, graph.ObjectMeta, graph, routerConfig)
+		if err != nil {
+			return ctrl.Result{}, errors.Wrapf(err, "fails to create new knative service")
+		}
+
 		err = controllerutil.SetControllerReference(graph, desired, r.Scheme)
 		if err != nil {
 			return reconcile.Result{}, err

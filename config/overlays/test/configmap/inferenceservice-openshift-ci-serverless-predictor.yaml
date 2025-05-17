@@ -5,9 +5,9 @@ metadata:
   namespace: kserve
 data:
   explainers: "{}"
-  oauthProxy: |- 
+  oauthProxy: |-
     {
-      "image" : "$(oauth-proxy)",
+      "image" : "registry.redhat.io/openshift4/ose-oauth-proxy@sha256:bd49cfc8452b3d96467cc222db9487e120abc6cc5ba81349c6b3703706f36a08",
       "memoryRequest": "64Mi",
       "memoryLimit": "128Mi",
       "cpuRequest": "100m",
@@ -15,7 +15,7 @@ data:
     }
   storageInitializer: |-
     {
-        "image" : "$(kserve-storage-initializer)",
+        "image" : "quay.io/opendatahub/kserve-storage-initializer",
         "memoryRequest": "100Mi",
         "memoryLimit": "1Gi",
         "cpuRequest": "100m",
@@ -39,7 +39,7 @@ data:
     }
   logger: |-
     {
-        "image" : "$(kserve-agent)",
+        "image" : "quay.io/opendatahub/kserve-agent",
         "memoryRequest": "100Mi",
         "memoryLimit": "1Gi",
         "cpuRequest": "100m",
@@ -48,7 +48,7 @@ data:
     }
   batcher: |-
     {
-        "image" : "$(kserve-agent)",
+        "image" : "quay.io/opendatahub/kserve-agent",
         "memoryRequest": "1Gi",
         "memoryLimit": "1Gi",
         "cpuRequest": "1",
@@ -56,7 +56,7 @@ data:
     }
   agent: |-
     {
-        "image" : "$(kserve-agent)",
+        "image" : "quay.io/opendatahub/kserve-agent",
         "memoryRequest": "100Mi",
         "memoryLimit": "1Gi",
         "cpuRequest": "100m",
@@ -64,7 +64,7 @@ data:
     }
   router: |-
     {
-        "image" : "$(kserve-router)",
+        "image" : "quay.io/opendatahub/kserve-router",
         "memoryRequest": "100Mi",
         "memoryLimit": "1Gi",
         "cpuRequest": "100m",

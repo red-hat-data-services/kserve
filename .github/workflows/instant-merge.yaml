@@ -6,6 +6,7 @@ on:
       - opened
     paths:
       - config/overlays/odh/params.env
+      - config/overlays/odh/params-synced.env
 
 permissions:
   contents: write

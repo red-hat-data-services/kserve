@@ -1,0 +1,22 @@
+{
+  "baseBranches": ["rhoai-2.22*"],
+  "regexManagers": [
+    {
+      "fileMatch": [".*\\.env$", ".*\\.json$"],
+      "matchStrings": [
+        "^([a-zA-Z0-9_-]+)=(?<depName>[^@=]+)@sha256:(?<currentValue>[a-f0-9]{64})$"
+      ],
+      "datasourceTemplate": "docker",
+      "versioningTemplate": "redhat"
+    }
+  ],
+  "packageRules": [
+    {
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["*"],
+      "matchDepTypes": ["regex"],
+      "matchBaseBranches": ["rhoai-2.22*"],
+      "depNameTemplate": "{{depName}}:rhoai-2.22"
+    }
+  ]
+}

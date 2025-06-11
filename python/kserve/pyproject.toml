@@ -65,10 +65,11 @@ boto3 = { version = "^1.29.0", optional = true }
 huggingface-hub = { version = "^0.24.5", optional = true }
 
 # Logging dependencies. They can be opted into by apps.
+
 asgi-logger = { version = "^0.1.0", optional = true }
 
 # Ray dependency
-ray = { version = "~2.35.0", extras = ["serve"], optional = true }
+ray = { version = ">=2.43.0", extras = ["serve"], optional = true }
 
 [tool.poetry.extras]
 storage = [
@@ -79,7 +80,6 @@ storage = [
     "azure-identity",
     "boto3",
     "huggingface-hub"
-
 ]
 logging = [
     "asgi-logger"

@@ -12,7 +12,7 @@ packages = [
 [tool.poetry.dependencies]
 python = ">=3.9,<3.13"
 kserve = { path = "../kserve", extras = ["storage"], develop = true }
-scikit-learn = "~1.5.1"
+scikit-learn = "~1.7.0"
 joblib = "^1.4.0"
 pandas = "^2.2.0"
 

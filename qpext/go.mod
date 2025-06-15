@@ -73,7 +73,7 @@ require (
 	k8s.io/apimachinery v0.31.0 // indirect
 	k8s.io/client-go v0.31.0 // indirect
 	k8s.io/klog/v2 v2.130.1 // indirect
-	k8s.io/utils v0.0.0-20240821151609-f90d01438635 // indirect
+	k8s.io/utils v0.0.0-20250604170112-4c0f3b243397 // indirect
 	knative.dev/networking v0.0.0-20240815142417-37fdbdd0854b // indirect
 	knative.dev/pkg v0.0.0-20240815051656-89743d9bbf7c // indirect
 	sigs.k8s.io/json v0.0.0-20221116044647-bc3834ca7abd // indirect

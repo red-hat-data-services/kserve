@@ -25,7 +25,7 @@ require (
 	github.com/stretchr/testify v1.9.0
 	github.com/tidwall/gjson v1.17.3
 	go.uber.org/zap v1.27.0
-	gomodules.xyz/jsonpatch/v2 v2.4.0
+	gomodules.xyz/jsonpatch/v3 v3.0.1
 	google.golang.org/api v0.195.0
 	google.golang.org/protobuf v1.34.2
 	gopkg.in/go-playground/validator.v9 v9.31.0
@@ -37,6 +37,7 @@ require (
 	k8s.io/code-generator v0.31.0
 	k8s.io/component-helpers v0.30.4
 	k8s.io/klog v1.0.0
+	k8s.io/klog/v2 v2.130.1
 	k8s.io/kube-openapi v0.0.0-20240827152857-f7e401e7b4c2
 	k8s.io/utils v0.0.0-20240821151609-f90d01438635
 	knative.dev/networking v0.0.0-20240815142417-37fdbdd0854b
@@ -129,6 +130,8 @@ require (
 	golang.org/x/text v0.21.0 // indirect
 	golang.org/x/time v0.6.0 // indirect
 	golang.org/x/tools v0.24.0 // indirect
+	gomodules.xyz/jsonpatch/v2 v2.4.0 // indirect
+	gomodules.xyz/orderedmap v0.1.0 // indirect
 	google.golang.org/genproto v0.0.0-20240827150818-7e3bb234dfed // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20240827150818-7e3bb234dfed // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240827150818-7e3bb234dfed // indirect
@@ -140,7 +143,6 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	k8s.io/apiextensions-apiserver v0.31.0 // indirect
 	k8s.io/gengo/v2 v2.0.0-20240826214909-a7b603a56eb7 // indirect
-	k8s.io/klog/v2 v2.130.1 // indirect
 	sigs.k8s.io/json v0.0.0-20221116044647-bc3834ca7abd // indirect
 	sigs.k8s.io/structured-merge-diff/v4 v4.4.1 // indirect
 )

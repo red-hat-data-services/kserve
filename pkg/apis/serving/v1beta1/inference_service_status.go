@@ -123,6 +123,8 @@ const (
 	RoutesReady apis.ConditionType = "RoutesReady"
 	// LatestDeploymentReady is set when underlying configurations for all components have reported readiness.
 	LatestDeploymentReady apis.ConditionType = "LatestDeploymentReady"
+	// Stopped is set when the inference service has been stopped and all related objects are deleted
+	Stopped apis.ConditionType = "Stopped"
 )
 
 type ModelStatus struct {
@@ -193,6 +195,9 @@ const (
 	// All copies of the model failed to load
 	FailedToLoad ModelState = "FailedToLoad"
 )
+
+// Stopped Inference Service reason
+const StoppedISVCReason = "Stopped"
 
 // FailureReason enum
 // +kubebuilder:validation:Enum=ModelLoadFailed;RuntimeUnhealthy;RuntimeDisabled;NoSupportingRuntime;RuntimeNotRecognized;InvalidPredictorSpec

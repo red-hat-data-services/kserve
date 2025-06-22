@@ -4,7 +4,7 @@ go 1.22.9
 
 require (
 	cloud.google.com/go/storage v1.43.0
-	github.com/aws/aws-sdk-go v1.55.5
+	github.com/aws/aws-sdk-go v1.55.7
 	github.com/cloudevents/sdk-go/v2 v2.15.2
 	github.com/fsnotify/fsnotify v1.7.0
 	github.com/getkin/kin-openapi v0.127.0

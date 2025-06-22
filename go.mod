@@ -39,7 +39,7 @@ require (
 	k8s.io/klog v1.0.0
 	k8s.io/klog/v2 v2.130.1
 	k8s.io/kube-openapi v0.0.0-20240827152857-f7e401e7b4c2
-	k8s.io/utils v0.0.0-20240821151609-f90d01438635
+	k8s.io/utils v0.0.0-20250604170112-4c0f3b243397
 	knative.dev/networking v0.0.0-20240815142417-37fdbdd0854b
 	knative.dev/operator v0.42.2
 	knative.dev/pkg v0.0.0-20240815051656-89743d9bbf7c

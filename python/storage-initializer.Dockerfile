@@ -11,7 +11,7 @@ RUN microdnf install -y --setopt=ubi-8-appstream-rpms.module_hotfixes=1 --disabl
 ARG POETRY_HOME=/opt/poetry
 ARG POETRY_VERSION=1.8.3
 
-RUN python -m venv ${POETRY_HOME} && ${POETRY_HOME}/bin/pip install poetry==${POETRY_VERSION}
+RUN python3 -m venv ${POETRY_HOME} && ${POETRY_HOME}/bin/pip install --upgrade pip && ${POETRY_HOME}/bin/pip install poetry==${POETRY_VERSION}
 ENV PATH="$PATH:${POETRY_HOME}/bin"
 
 # Activate virtual env

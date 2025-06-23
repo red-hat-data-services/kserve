@@ -16,7 +16,7 @@ ARG POETRY_HOME=/opt/poetry
 ARG POETRY_VERSION=1.8.3
 
 ENV PATH="$PATH:${POETRY_HOME}/bin"
-RUN python3 -m venv ${POETRY_HOME} && ${POETRY_HOME}/bin/pip install poetry==${POETRY_VERSION}
+RUN python3 -m venv ${POETRY_HOME} &&  ${POETRY_HOME}/bin/pip install --upgrade pip &&  ${POETRY_HOME}/bin/pip install poetry==${POETRY_VERSION}
 
 # Activate virtual env
 ARG VENV_PATH

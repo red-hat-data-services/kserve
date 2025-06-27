@@ -169,9 +169,6 @@ files = [
     {file = "annotated_types-0.7.0.tar.gz", hash = "sha256:aff07c09a53a08bc8cfccb9c85b05f1aa9a2a6f23728d790723543408344ce89"},
 ]
 
-[package.dependencies]
-typing-extensions = {version = ">=4.0.0", markers = "python_version < \"3.9\""}
-
 [[package]]
 name = "anyio"
 version = "4.9.0"
@@ -1112,13 +1109,13 @@ wmi = ["wmi (>=1.5.1)"]
 
 [[package]]
 name = "durationpy"
-version = "0.10"
+version = "0.9"
 description = "Module for converting between datetime.timedelta and Go's Duration strings."
 optional = false
 python-versions = "*"
 files = [
-    {file = "durationpy-0.10-py3-none-any.whl", hash = "sha256:3b41e1b601234296b4fb368338fdcd3e13e0b4fb5b67345948f4f2bf9868b286"},
-    {file = "durationpy-0.10.tar.gz", hash = "sha256:1fa6893409a6e739c9c72334fc65cca1f355dbdd93405d30f726deb5bde42fba"},
+    {file = "durationpy-0.9-py3-none-any.whl", hash = "sha256:e65359a7af5cedad07fb77a2dd3f390f8eb0b74cb845589fa6c057086834dd38"},
+    {file = "durationpy-0.9.tar.gz", hash = "sha256:fd3feb0a69a0057d582ef643c355c40d2fa1c942191f914d12203b1a01ac722a"},
 ]
 
 [[package]]
@@ -4552,7 +4549,7 @@ name = "pyzmq"
 version = "26.4.0"
 description = "Python bindings for 0MQ"
 optional = true
-python-versions = ">=3.9"
+python-versions = ">=3.8"
 files = [
     {file = "pyzmq-26.4.0-cp310-cp310-macosx_10_15_universal2.whl", hash = "sha256:0329bdf83e170ac133f44a233fc651f6ed66ef8e66693b5af7d54f45d1ef5918"},
     {file = "pyzmq-26.4.0-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:398a825d2dea96227cf6460ce0a174cf7657d6f6827807d4d1ae9d0f9ae64315"},
@@ -4700,9 +4697,6 @@ grpcio = [
 jsonschema = "*"
 msgpack = ">=1.0.0,<2.0.0"
 opencensus = {version = "*", optional = true, markers = "extra == \"serve\""}
-opentelemetry-exporter-prometheus = {version = "*", optional = true, markers = "extra == \"serve\""}
-opentelemetry-proto = {version = "*", optional = true, markers = "extra == \"serve\""}
-opentelemetry-sdk = {version = "*", optional = true, markers = "extra == \"serve\""}
 packaging = "*"
 prometheus-client = {version = ">=0.7.1", optional = true, markers = "extra == \"serve\""}
 protobuf = ">=3.15.3,<3.19.5 || >3.19.5"
@@ -6490,4 +6484,4 @@ storage = ["azure-identity", "azure-storage-blob", "azure-storage-file-share", "
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<3.13"
-content-hash = "e9e8a5b3ef7e306a546a1023cbac9d8937e96684c7735598960baf72b3bbdb21"
+content-hash = "da34512212de060436773370b4ecb1bbec482d1e7770facd40496b3b585f9fd3"

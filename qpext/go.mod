@@ -1,8 +1,8 @@
 module github.com/kserve/kserve/qpext
 
-go 1.22.0
+go 1.23
 
-toolchain go1.22.6
+toolchain go1.23.9
 
 require (
 	github.com/hashicorp/go-multierror v1.1.1

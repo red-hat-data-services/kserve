@@ -64,7 +64,27 @@ type LoggerSpec struct {
 	// Matched metadata HTTP headers for propagating to inference logger cloud events.
 	// +optional
 	MetadataHeaders []string `json:"metadataHeaders,omitempty"`
+	// Matched inference service annotations for propagating to inference logger cloud events.
+	// +optional
+	MetadataAnnotations []string `json:"metadataAnnotations,omitempty"`
 }
+
+// MetricsBackend enum
+// +kubebuilder:validation:Enum=prometheus;graphite
+type MetricsBackend string
+
+const (
+	PrometheusBackend MetricsBackend = "prometheus"
+	GraphiteBackend   MetricsBackend = "graphite"
+)
+
+// PodsMetricsBackend enum
+// +kubebuilder:validation:Enum=opentelemetry
+type PodsMetricsBackend string
+
+const (
+	OpenTelemetryBackend PodsMetricsBackend = "opentelemetry"
+)
 
 // Batcher specifies optional payload batching available for all components
 type Batcher struct {
@@ -81,7 +101,6 @@ type Batcher struct {
 
 // InferenceService is the Schema for the InferenceServices API
 // +k8s:openapi-gen=true
-// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +genclient
 // +kubebuilder:object:root=true
 // +kubebuilder:subresource:status
@@ -106,7 +125,6 @@ type InferenceService struct {
 
 // InferenceServiceList contains a list of Service
 // +k8s:openapi-gen=true
-// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
 type InferenceServiceList struct {
 	metav1.TypeMeta `json:",inline"`

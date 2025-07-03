@@ -23,7 +23,6 @@ import (
 	"strings"
 
 	"github.com/google/go-cmp/cmp"
-	isvcutils "github.com/kserve/kserve/pkg/controller/v1beta1/inferenceservice/utils"
 	"github.com/pkg/errors"
 	"google.golang.org/protobuf/testing/protocmp"
 	istiov1beta1 "istio.io/api/networking/v1beta1"
@@ -34,7 +33,6 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
-	"k8s.io/apimachinery/pkg/util/validation"
 	"k8s.io/client-go/kubernetes"
 	"knative.dev/pkg/apis"
 	duckv1 "knative.dev/pkg/apis/duck/v1"
@@ -47,14 +45,14 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 	logf "sigs.k8s.io/controller-runtime/pkg/log"
 
+	isvcutils "github.com/kserve/kserve/pkg/controller/v1beta1/inferenceservice/utils"
+
 	"github.com/kserve/kserve/pkg/apis/serving/v1beta1"
 	"github.com/kserve/kserve/pkg/constants"
 	"github.com/kserve/kserve/pkg/utils"
 )
 
-var (
-	log = logf.Log.WithName("IngressReconciler")
-)
+var log = logf.Log.WithName("IngressReconciler")
 
 type IngressReconciler struct {
 	// client is the client that is used to access the custom resources
@@ -67,7 +65,8 @@ type IngressReconciler struct {
 }
 
 func NewIngressReconciler(client client.Client, clientset kubernetes.Interface, scheme *runtime.Scheme,
-	ingressConfig *v1beta1.IngressConfig, isvcConfig *v1beta1.InferenceServicesConfig) *IngressReconciler {
+	ingressConfig *v1beta1.IngressConfig, isvcConfig *v1beta1.InferenceServicesConfig,
+) *IngressReconciler {
 	return &IngressReconciler{
 		client:        client,
 		clientset:     clientset,
@@ -77,15 +76,14 @@ func NewIngressReconciler(client client.Client, clientset kubernetes.Interface, 
 	}
 }
 
-func (ir *IngressReconciler) Reconcile(isvc *v1beta1.InferenceService) error {
+func (ir *IngressReconciler) Reconcile(ctx context.Context, isvc *v1beta1.InferenceService) error {
 	disableIstioVirtualHost := ir.ingressConfig.DisableIstioVirtualHost
 
-	if err := ir.reconcileVirtualService(isvc); err != nil {
+	if err := ir.reconcileVirtualService(ctx, isvc); err != nil {
 		return errors.Wrapf(err, "fails to reconcile virtual service")
 	}
-
 	// Create external service which points to local gateway
-	if err := ir.reconcileExternalService(isvc, ir.ingressConfig); err != nil {
+	if err := ir.reconcileExternalService(ctx, isvc, ir.ingressConfig); err != nil {
 		return errors.Wrapf(err, "fails to reconcile external name service")
 	}
 
@@ -102,6 +100,7 @@ func (ir *IngressReconciler) Reconcile(isvc *v1beta1.InferenceService) error {
 	serviceHost := getServiceHost(isvc)
 	serviceUrl := getServiceUrl(isvc, ir.ingressConfig)
 	if serviceHost == "" || serviceUrl == "" {
+		log.Info("service host and serviceurl are empty, skipping updating the inference service")
 		return nil
 	}
 
@@ -112,7 +111,7 @@ func (ir *IngressReconciler) Reconcile(isvc *v1beta1.InferenceService) error {
 			// Check if existing kubernetes service name has default suffix
 			existingServiceWithDefaultSuffix := &corev1.Service{}
 			useDefault := false
-			err := ir.client.Get(context.TODO(), types.NamespacedName{Name: constants.DefaultPredictorServiceName(isvc.Name), Namespace: isvc.Namespace}, existingServiceWithDefaultSuffix)
+			err := ir.client.Get(ctx, types.NamespacedName{Name: constants.DefaultPredictorServiceName(isvc.Name), Namespace: isvc.Namespace}, existingServiceWithDefaultSuffix)
 			if err == nil {
 				useDefault = true
 			}
@@ -152,7 +151,7 @@ func getServiceHost(isvc *v1beta1.InferenceService) string {
 				return strings.Replace(transformerStatus.URL.Host, fmt.Sprintf("-%s-default", string(constants.Transformer)), "",
 					1)
 			} else {
-				return strings.Replace(transformerStatus.URL.Host, fmt.Sprintf("-%s", string(constants.Transformer)), "",
+				return strings.Replace(transformerStatus.URL.Host, "-"+string(constants.Transformer), "",
 					1)
 			}
 		}
@@ -167,43 +166,8 @@ func getServiceHost(isvc *v1beta1.InferenceService) string {
 			return strings.Replace(predictorStatus.URL.Host, fmt.Sprintf("-%s-default", string(constants.Predictor)), "",
 				1)
 		} else {
-			return strings.Replace(predictorStatus.URL.Host, fmt.Sprintf("-%s", string(constants.Predictor)), "",
+			return strings.Replace(predictorStatus.URL.Host, "-"+string(constants.Predictor), "",
 				1)
-		}
-	}
-}
-
-func getAdditionalHosts(domainList *[]string, serviceHost string, config *v1beta1.IngressConfig, additionalHosts *[]string) {
-	// Include additional ingressDomain to the domains (both internal and external)
-	subdomain := ""
-	if domainList != nil && len(*domainList) != 0 {
-		for _, domain := range *domainList {
-			res, found := strings.CutSuffix(serviceHost, domain)
-			if found {
-				subdomain = res
-				break
-			}
-		}
-	}
-	if len(subdomain) != 0 && config.AdditionalIngressDomains != nil && len(*config.AdditionalIngressDomains) > 0 {
-		// len(subdomain) != 0 means we have found the subdomain.
-		// If the list of the additionalIngressDomains is not empty, we will append the valid host created by the
-		// additional ingress domain.
-		// Deduplicate the domains in the additionalIngressDomains, making sure that the returned additionalHosts
-		// do not have duplicate domains.
-		deduplicateMap := map[string]bool{}
-		for _, domain := range *config.AdditionalIngressDomains {
-			// If the domain is redundant, go to the next element.
-			if !deduplicateMap[domain] {
-				host := fmt.Sprintf("%s%s", subdomain, domain)
-				if err := validation.IsDNS1123Subdomain(host); len(err) > 0 {
-					log.Error(fmt.Errorf("The domain name %s in the additionalIngressDomains is not valid", domain),
-						"Failed to get the valid host name")
-					continue
-				}
-				*additionalHosts = append(*additionalHosts, host)
-				deduplicateMap[domain] = true
-			}
 		}
 	}
 }
@@ -254,7 +218,7 @@ func getHostBasedServiceUrl(isvc *v1beta1.InferenceService, config *v1beta1.Ingr
 				if strings.Contains(urlString, "-default") {
 					return strings.Replace(urlString, fmt.Sprintf("-%s-default", string(constants.Transformer)), "", 1)
 				} else {
-					return strings.Replace(urlString, fmt.Sprintf("-%s", string(constants.Transformer)), "", 1)
+					return strings.Replace(urlString, "-"+string(constants.Transformer), "", 1)
 				}
 			}
 			return urlString
@@ -273,29 +237,29 @@ func getHostBasedServiceUrl(isvc *v1beta1.InferenceService, config *v1beta1.Ingr
 			if strings.Contains(urlString, "-default") {
 				return strings.Replace(urlString, fmt.Sprintf("-%s-default", string(constants.Predictor)), "", 1)
 			} else {
-				return strings.Replace(urlString, fmt.Sprintf("-%s", string(constants.Predictor)), "", 1)
+				return strings.Replace(urlString, "-"+string(constants.Predictor), "", 1)
 			}
 		}
 		return urlString
 	}
 }
 
-func (ir *IngressReconciler) reconcileVirtualService(isvc *v1beta1.InferenceService) error {
+func (ir *IngressReconciler) reconcileVirtualService(ctx context.Context, isvc *v1beta1.InferenceService) error {
 	disableIstioVirtualHost := ir.ingressConfig.DisableIstioVirtualHost
 
 	// Check if existing knative service name has default suffix
 	defaultNameExisting := &knservingv1.Service{}
 	useDefault := false
-	err := ir.client.Get(context.TODO(), types.NamespacedName{Name: constants.DefaultPredictorServiceName(isvc.Name), Namespace: isvc.Namespace}, defaultNameExisting)
+	err := ir.client.Get(ctx, types.NamespacedName{Name: constants.DefaultPredictorServiceName(isvc.Name), Namespace: isvc.Namespace}, defaultNameExisting)
 	if err == nil {
 		useDefault = true
 	}
 
-	domainList := getDomainList(ir.clientset)
+	domainList := getDomainList(ctx, ir.clientset)
 	desiredIngress := createIngress(isvc, useDefault, ir.ingressConfig, domainList, ir.isvcConfig) // actually the virtual service
 
 	existing := &istioclientv1beta1.VirtualService{}
-	getExistingErr := ir.client.Get(context.TODO(), types.NamespacedName{Name: isvc.Name, Namespace: isvc.Namespace}, existing)
+	getExistingErr := ir.client.Get(ctx, types.NamespacedName{Name: isvc.Name, Namespace: isvc.Namespace}, existing)
 
 	if !utils.GetForceStopRuntime(isvc) {
 		// When Istio virtual host is disabled, we return the underlying component url.
@@ -313,7 +277,7 @@ func (ir *IngressReconciler) reconcileVirtualService(isvc *v1beta1.InferenceServ
 			if getExistingErr != nil {
 				if apierr.IsNotFound(getExistingErr) {
 					log.Info("Creating Ingress for isvc", "namespace", desiredIngress.Namespace, "name", desiredIngress.Name)
-					err = ir.client.Create(context.TODO(), desiredIngress)
+					err = ir.client.Create(ctx, desiredIngress)
 				}
 			} else {
 				if !routeSemanticEquals(desiredIngress, existing) {
@@ -322,7 +286,7 @@ func (ir *IngressReconciler) reconcileVirtualService(isvc *v1beta1.InferenceServ
 					deepCopy.Annotations = desiredIngress.Annotations
 					deepCopy.Labels = desiredIngress.Labels
 					log.Info("Update Ingress for isvc", "namespace", desiredIngress.Namespace, "name", desiredIngress.Name)
-					err = ir.client.Update(context.TODO(), deepCopy)
+					err = ir.client.Update(ctx, deepCopy)
 				}
 			}
 
@@ -336,7 +300,7 @@ func (ir *IngressReconciler) reconcileVirtualService(isvc *v1beta1.InferenceServ
 			// Make sure that we only delete virtual services owned by the isvc
 			if existing.OwnerReferences[0].UID == isvc.UID {
 				log.Info("The InferenceService ", isvc.Name, " is marked as stopped — delete its associated VirtualService")
-				if err := ir.client.Delete(context.TODO(), existing); err != nil {
+				if err := ir.client.Delete(ctx, existing); err != nil {
 					return err
 				}
 			}
@@ -348,7 +312,7 @@ func (ir *IngressReconciler) reconcileVirtualService(isvc *v1beta1.InferenceServ
 	return nil
 }
 
-func (ir *IngressReconciler) reconcileExternalService(isvc *v1beta1.InferenceService, config *v1beta1.IngressConfig) error {
+func (ir *IngressReconciler) reconcileExternalService(ctx context.Context, isvc *v1beta1.InferenceService, config *v1beta1.IngressConfig) error {
 	disableIstioVirtualHost := ir.ingressConfig.DisableIstioVirtualHost
 
 	desired := &corev1.Service{
@@ -362,8 +326,9 @@ func (ir *IngressReconciler) reconcileExternalService(isvc *v1beta1.InferenceSer
 			SessionAffinity: corev1.ServiceAffinityNone,
 		},
 	}
+
 	existing := &corev1.Service{}
-	getExistingErr := ir.client.Get(context.TODO(), types.NamespacedName{Name: desired.Name, Namespace: desired.Namespace}, existing)
+	getExistingErr := ir.client.Get(ctx, types.NamespacedName{Name: isvc.Name, Namespace: isvc.Namespace}, existing)
 
 	if err := controllerutil.SetControllerReference(isvc, desired, ir.scheme); err != nil {
 		return err
@@ -377,7 +342,7 @@ func (ir *IngressReconciler) reconcileExternalService(isvc *v1beta1.InferenceSer
 			if getExistingErr != nil {
 				if apierr.IsNotFound(getExistingErr) {
 					log.Info("Creating external name service", "namespace", desired.Namespace, "name", desired.Name)
-					return ir.client.Create(context.TODO(), desired)
+					return ir.client.Create(ctx, desired)
 				}
 				return getExistingErr
 			}
@@ -397,7 +362,7 @@ func (ir *IngressReconciler) reconcileExternalService(isvc *v1beta1.InferenceSer
 			existing.Spec = desired.Spec
 			existing.ObjectMeta.Labels = desired.ObjectMeta.Labels
 			existing.ObjectMeta.Annotations = desired.ObjectMeta.Annotations
-			err = ir.client.Update(context.TODO(), existing)
+			err = ir.client.Update(ctx, existing)
 			if err != nil {
 				return errors.Wrapf(err, "fails to update external name service")
 			}
@@ -408,7 +373,7 @@ func (ir *IngressReconciler) reconcileExternalService(isvc *v1beta1.InferenceSer
 			// Make sure that we only delete services owned by the isvc
 			if ctrl := metav1.GetControllerOf(existing); ctrl != nil && ctrl.UID == isvc.UID {
 				log.Info("The InferenceService ", isvc.Name, " is marked as stopped — delete its associated Service")
-				if err := ir.client.Delete(context.TODO(), existing); err != nil {
+				if err := ir.client.Delete(ctx, existing); err != nil {
 					return err
 				}
 			}
@@ -489,8 +454,8 @@ func createHTTPMatchRequest(prefix, targetHost, internalHost string, additionalH
 func containsHTTPMatchRequest(matchRequest *istiov1beta1.HTTPMatchRequest, matchRequests []*istiov1beta1.HTTPMatchRequest) bool {
 	for _, matchRequestEle := range matchRequests {
 		// If authority, gateways and uri are all equal, two HTTPMatchRequests will be equal.
-		if stringMatchEqual(matchRequest.Authority, matchRequestEle.Authority) && gatewaysEqual(matchRequest, matchRequestEle) &&
-			stringMatchEqual(matchRequest.Uri, matchRequestEle.Uri) {
+		if stringMatchEqual(matchRequest.GetAuthority(), matchRequestEle.GetAuthority()) && gatewaysEqual(matchRequest, matchRequestEle) &&
+			stringMatchEqual(matchRequest.GetUri(), matchRequestEle.GetUri()) {
 			return true
 		}
 	}
@@ -499,7 +464,7 @@ func containsHTTPMatchRequest(matchRequest *istiov1beta1.HTTPMatchRequest, match
 
 func stringMatchEqual(stringMatch, stringMatchDest *istiov1beta1.StringMatch) bool {
 	if stringMatch != nil && stringMatchDest != nil {
-		return equality.Semantic.DeepEqual(stringMatch.MatchType, stringMatchDest.MatchType)
+		return equality.Semantic.DeepEqual(stringMatch.GetMatchType(), stringMatchDest.GetMatchType())
 	}
 	if stringMatch == nil && stringMatchDest == nil {
 		return true
@@ -508,11 +473,12 @@ func stringMatchEqual(stringMatch, stringMatchDest *istiov1beta1.StringMatch) bo
 }
 
 func gatewaysEqual(matchRequest, matchRequestDest *istiov1beta1.HTTPMatchRequest) bool {
-	return equality.Semantic.DeepEqual(matchRequest.Gateways, matchRequestDest.Gateways)
+	return equality.Semantic.DeepEqual(matchRequest.GetGateways(), matchRequestDest.GetGateways())
 }
 
 func createIngress(isvc *v1beta1.InferenceService, useDefault bool, config *v1beta1.IngressConfig,
-	domainList *[]string, isvcConfig *v1beta1.InferenceServicesConfig) *istioclientv1beta1.VirtualService {
+	domainList *[]string, isvcConfig *v1beta1.InferenceServicesConfig,
+) *istioclientv1beta1.VirtualService {
 	if !isvc.Status.IsConditionReady(v1beta1.PredictorReady) {
 		status := corev1.ConditionFalse
 		if isvc.Status.IsConditionUnknown(v1beta1.PredictorReady) {
@@ -565,12 +531,12 @@ func createIngress(isvc *v1beta1.InferenceService, useDefault bool, config *v1be
 		expBackend = constants.DefaultExplainerServiceName(isvc.Name)
 	}
 
-	additionalHosts := &[]string{}
+	var additionalHosts *[]string
 	hosts := []string{
 		network.GetServiceHostname(isvc.Name, isvc.Namespace),
 	}
 	if !isInternal {
-		getAdditionalHosts(domainList, serviceHost, config, additionalHosts)
+		additionalHosts = GetAdditionalHosts(domainList, serviceHost, config)
 	}
 
 	if isvc.Spec.Explainer != nil {
@@ -729,14 +695,15 @@ func createIngress(isvc *v1beta1.InferenceService, useDefault bool, config *v1be
 
 	if !isInternal {
 		// We only append the additional hosts, when the ingress is not internal.
-		hostMap := map[string]bool{}
+		hostMap := make(map[string]bool, len(hosts))
 		for _, host := range hosts {
 			hostMap[host] = true
 		}
-
-		for _, additionalHost := range *additionalHosts {
-			if !hostMap[additionalHost] {
-				hosts = append(hosts, additionalHost)
+		if additionalHosts != nil && len(*additionalHosts) != 0 {
+			for _, additionalHost := range *additionalHosts {
+				if !hostMap[additionalHost] {
+					hosts = append(hosts, additionalHost)
+				}
 			}
 		}
 	}
@@ -760,7 +727,7 @@ func createIngress(isvc *v1beta1.InferenceService, useDefault bool, config *v1be
 }
 
 // getDomainList gets all the available domain names available with Knative Serving.
-func getDomainList(clientset kubernetes.Interface) *[]string {
+func getDomainList(ctx context.Context, clientset kubernetes.Interface) *[]string {
 	res := new([]string)
 	ns := constants.DefaultNSKnativeServing
 	if namespace := os.Getenv(system.NamespaceEnvKey); namespace != "" {
@@ -768,7 +735,7 @@ func getDomainList(clientset kubernetes.Interface) *[]string {
 	}
 
 	// Leverage the clientset to access the configMap to get all the available domain names
-	configMap, err := clientset.CoreV1().ConfigMaps(ns).Get(context.TODO(),
+	configMap, err := clientset.CoreV1().ConfigMaps(ns).Get(ctx,
 		config.DomainConfigName, metav1.GetOptions{})
 	if err != nil {
 		return res

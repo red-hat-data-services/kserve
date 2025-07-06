@@ -41,14 +41,10 @@ spec:
   - name: path-context
     value: .
   - name: hermetic
-    value: false
+    value: true
   - name: build-source-image
-    value: false
+    value: true
   - name: build-image-index
-    value: true
-  - name: rebuild
-    value: true
-  - name: skip-checks
     value: true
   pipelineRef:
     resolver: git

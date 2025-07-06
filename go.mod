@@ -18,7 +18,7 @@ require (
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/onsi/ginkgo/v2 v2.20.1
 	github.com/onsi/gomega v1.34.2
-	github.com/openshift/api v0.0.0-20241108213852-e22f17d9b7f5
+	github.com/openshift/api ad766c4e6d8e
 	github.com/pkg/errors v0.9.1
 	github.com/spf13/cobra v1.8.1
 	github.com/spf13/pflag v1.0.5

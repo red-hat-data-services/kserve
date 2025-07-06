@@ -28,7 +28,7 @@ require (
 	gomodules.xyz/jsonpatch/v2 v2.4.0
 	google.golang.org/api v0.195.0
 	google.golang.org/protobuf v1.34.2
-	gopkg.in/go-playground/validator.v9 v9.31.0
+	gopkg.in/go-playground/validator.v10 v10.27.0
 	istio.io/api v1.23.0
 	istio.io/client-go v1.23.0
 	k8s.io/api v0.31.2

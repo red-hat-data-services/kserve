@@ -1,5 +1,5 @@
 # Build the inference-router binary
-FROM registry.access.redhat.com/ubi9/go-toolset:1.22.9 as builder
+FROM registry.access.redhat.com/ubi9/go-toolset:9.6-1752083840 as builder
 
 # Copy in the go src
 WORKDIR /go/src/github.com/kserve/kserve

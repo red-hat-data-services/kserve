@@ -22,11 +22,13 @@ RUN CGO_ENABLED=1 GOOS=${TARGETOS} GOARCH=${TARGETARCH} GOFLAGS=-mod=mod GOEXPER
 
 # Use distroless as minimal base image to package the manager binary
 FROM registry.access.redhat.com/ubi9/ubi-minimal:latest
-RUN microdnf install -y shadow-utils && \
+
+RUN microdnf install -y --disablerepo=* --enablerepo=ubi-9-baseos-rpms shadow-utils && \
     microdnf clean all && \
     useradd kserve -m -u 1000
 RUN microdnf remove -y shadow-utils
-COPY third_party/ /third_party/
+
+COPY third_party_manager/ third_party/
 COPY --from=builder /go/src/github.com/kserve/kserve/manager /
 USER 1000:1000
 

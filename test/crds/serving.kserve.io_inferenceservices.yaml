@@ -2560,15 +2560,20 @@ spec:
                               properties:
                                 authenticationRef:
                                   properties:
-                                    name:
+                                    authModes:
                                       type: string
+                                    authenticationRef:
+                                      properties:
+                                        name:
+                                          type: string
+                                      required:
+                                      - name
+                                      type: object
                                   required:
-                                  - name
+                                  - authenticationRef
                                   type: object
                                 metric:
                                   properties:
-                                    authModes:
-                                      type: string
                                     backend:
                                       enum:
                                       - prometheus
@@ -5709,15 +5714,20 @@ spec:
                               properties:
                                 authenticationRef:
                                   properties:
-                                    name:
+                                    authModes:
                                       type: string
+                                    authenticationRef:
+                                      properties:
+                                        name:
+                                          type: string
+                                      required:
+                                      - name
+                                      type: object
                                   required:
-                                  - name
+                                  - authenticationRef
                                   type: object
                                 metric:
                                   properties:
-                                    authModes:
-                                      type: string
                                     backend:
                                       enum:
                                       - prometheus
@@ -20031,15 +20041,20 @@ spec:
                               properties:
                                 authenticationRef:
                                   properties:
-                                    name:
+                                    authModes:
                                       type: string
+                                    authenticationRef:
+                                      properties:
+                                        name:
+                                          type: string
+                                      required:
+                                      - name
+                                      type: object
                                   required:
-                                  - name
+                                  - authenticationRef
                                   type: object
                                 metric:
                                   properties:
-                                    authModes:
-                                      type: string
                                     backend:
                                       enum:
                                       - prometheus

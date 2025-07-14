@@ -30,6 +30,7 @@ COPY kserve/pyproject.toml kserve/poetry.lock kserve/
 RUN cd kserve && \
     if [ "$(uname -m)" = "s390x" ] || [ "$(uname -m)" = "ppc64le" ]; then \
        export GRPC_PYTHON_BUILD_SYSTEM_OPENSSL=true; \
+       ln -sf /usr/bin/python3.11 /usr/bin/python
     fi && \
     poetry install --no-root --no-interaction --no-cache --extras "storage"
 

@@ -23,6 +23,7 @@ RUN /usr/bin/python3.11 -m venv ${POETRY_HOME} && ${POETRY_HOME}/bin/pip install
 # Activate virtual env
 ARG VENV_PATH
 ENV VIRTUAL_ENV=${VENV_PATH}
+ENV PYO3_PYTHON=${VENV_PATH}/bin/python
 RUN /usr/bin/python3.11 -m venv $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
@@ -47,6 +48,7 @@ COPY third_party third_party
 # Activate virtual env
 ARG VENV_PATH
 ENV VIRTUAL_ENV=${VENV_PATH}
+ENV PYO3_PYTHON=${VENV_PATH}/bin/python
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 RUN microdnf install -y  \

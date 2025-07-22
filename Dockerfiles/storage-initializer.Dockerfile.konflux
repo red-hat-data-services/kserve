@@ -69,3 +69,10 @@ WORKDIR /work
 RUN chown -R kserve:kserve /mnt
 USER 1000
 ENTRYPOINT ["/storage-initializer/scripts/initializer-entrypoint"]
+
+LABEL com.redhat.component="odh-kserve-storage-initializer" \
+      name="odh-kserve-storage-initializer" \
+      description="odh-kserve-storage-initializer" \
+      summary="odh-kserve-storage-initializer" \
+      io.k8s.display-name="odh-kserve-storage-initializer" \
+      io.k8s.description="odh-kserve-storage-initializer"

@@ -36,3 +36,10 @@ COPY --from=builder /go/src/github.com/kserve/kserve/agent /ko-app/
 USER 1000:1000
 
 ENTRYPOINT ["/ko-app/agent"]
+
+LABEL com.redhat.component="odh-kserve-agent" \
+      name="odh-kserve-agent" \
+      description="odh-kserve-agent" \
+      summary="odh-kserve-agent" \
+      io.k8s.display-name="odh-kserve-agent" \
+      io.k8s.description="odh-kserve-agent"

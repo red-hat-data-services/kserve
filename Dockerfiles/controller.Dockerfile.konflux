@@ -33,3 +33,10 @@ COPY --from=builder /go/src/github.com/kserve/kserve/manager /
 USER 1000:1000
 
 ENTRYPOINT ["/manager"]
+
+LABEL com.redhat.component="odh-kserve-controller" \
+      name="odh-kserve-controller" \
+      description="odh-kserve-controller" \
+      summary="odh-kserve-controller" \
+      io.k8s.display-name="odh-kserve-controller" \
+      io.k8s.description="odh-kserve-controller"

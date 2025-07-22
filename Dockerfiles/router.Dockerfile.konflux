@@ -35,3 +35,10 @@ COPY --from=builder /go/src/github.com/kserve/kserve/router /ko-app/
 USER 1000:1000
 
 ENTRYPOINT ["/ko-app/router"]
+
+LABEL com.redhat.component="odh-kserve-router" \
+      name="odh-kserve-router" \
+      description="odh-kserve-router" \
+      summary="odh-kserve-router" \
+      io.k8s.display-name="odh-kserve-router" \
+      io.k8s.description="odh-kserve-router"

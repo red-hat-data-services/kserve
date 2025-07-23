@@ -1,0 +1,29 @@
+arches:
+  - x86_64
+  - ppc64le
+  - s390x
+  - aarch64
+contentOrigin:
+  repofiles:
+    - ubi.repo
+packages:
+  - shadow-utils
+  - python3.11
+  - python3.11-pip
+  - python3.11-devel
+  - python3.11-libs
+  - gcc
+  - libffi-devel
+  - openssl-devel
+  - krb5-workstation
+  - expat 
+  - krb5-libs
+  - krb5-devel
+  - pam
+  - gcc-c++
+  - cmake
+  - rust
+  - cargo
+  - perl
+context:
+  containerfile: agent.Dockerfile.konflux

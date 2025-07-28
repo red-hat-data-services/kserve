@@ -1,6 +1,5 @@
 
 # Binaries for programs and plugins
-.tekton
 *.exe
 *.exe~
 *.dll
@@ -23,7 +22,7 @@ venv/
 
 # Mac file system
 **/.DS_Store
- 
+
 # editor and IDE paraphernalia
 .idea
 .editorconfig

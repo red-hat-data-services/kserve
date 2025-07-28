@@ -12,7 +12,7 @@ metadata:
 
   creationTimestamp: null
   labels:
-    appstudio.openshift.io/application: rhoai-v2.24-wznoinsktest
+    appstudio.openshift.io/application: rhoai-v2-24-wznoinsktest
     appstudio.openshift.io/component: odh-kserve-agent-v2-24-wznoinsktest
     pipelines.appstudio.openshift.io/type: build
   name: odh-kserve-agent-v2-24-wznoinsktest-on-push

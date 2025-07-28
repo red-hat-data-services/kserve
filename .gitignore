@@ -77,3 +77,6 @@ istio-*
 test/scripts/openshift-ci/build*.log
 test/scripts/openshift-ci/setup*.log
 test/scripts/openshift-ci/run*.log
+
+# VSCode History extension
+.history/

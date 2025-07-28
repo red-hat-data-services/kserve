@@ -11,7 +11,7 @@ metadata:
       && target_branch == "rhoai-2.24-wznoinsktest"
   creationTimestamp: null
   labels:
-    appstudio.openshift.io/application: wznoinsktest
+    appstudio.openshift.io/application: rhoai-2.24-wznoinsktest
     appstudio.openshift.io/component: odh-kserve-storage-initializer-v2-24-wznoinsktest
     pipelines.appstudio.openshift.io/type: build
   name: odh-kserve-storage-initializer-v2-24-wznoinsktest-on-push

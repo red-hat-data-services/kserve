@@ -9,14 +9,13 @@ metadata:
     pipelinesascode.tekton.dev/on-cel-expression: |
       event == "push"
       && target_branch == "rhoai-2.24-wznoinsktest"
-
   creationTimestamp: null
   labels:
     appstudio.openshift.io/application: wznoinsktest
     appstudio.openshift.io/component: odh-kserve-storage-initializer-v2-24-wznoinsktest
     pipelines.appstudio.openshift.io/type: build
   name: odh-kserve-storage-initializer-v2-24-wznoinsktest-on-push
-  namespace: wznoinsk-tenant
+  namespace: rhoai-tenant
 spec:
   params:
   - name: git-url
@@ -24,7 +23,7 @@ spec:
   - name: revision
     value: '{{revision}}'
   - name: output-image
-    value: quay.io/redhat-user-workloads/wznoinsk-tenant/odh-kserve-storage-initializer-rhel9:{{target_branch}}
+    value: quay.io/rhoai/odh-kserve-storage-initializer-rhel9:{{target_branch}}
   - name: build-platforms
     value:
     - linux/x86_64

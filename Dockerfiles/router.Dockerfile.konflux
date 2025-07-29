@@ -22,6 +22,11 @@ RUN CGO_ENABLED=1 GOOS=${TARGETOS} GOARCH=${TARGETARCH} GOEXPERIMENT=strictfipsr
 
 # Copy the inference-router into a thin image
 FROM registry.access.redhat.com/ubi9/ubi-minimal:latest
+
+# These built-in args are defined in the global scope, and are not automatically accessible within build stages or RUN commands.
+# To expose these arguments inside the build stage, we need to redefine it without a value.
+ARG TARGETOS TARGETARCH
+
 RUN microdnf install -y --disablerepo=* --enablerepo=ubi-9-for-${TARGETARCH}-baseos-rpms shadow-utils && \
     microdnf clean all && \
     useradd kserve -m -u 1000

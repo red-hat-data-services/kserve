@@ -24,7 +24,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/onsi/gomega"
 	gomegaTypes "github.com/onsi/gomega/types"
-	"golang.org/x/net/context"
 	"gomodules.xyz/jsonpatch/v2"
 	"google.golang.org/protobuf/proto"
 	admissionv1 "k8s.io/api/admission/v1"
@@ -34,6 +33,7 @@ import (
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/webhook/admission"
 
+	"github.com/kserve/kserve/pkg/apis/serving/v1beta1"
 	"github.com/kserve/kserve/pkg/constants"
 )
 
@@ -51,7 +51,7 @@ func TestMutator_Handle(t *testing.T) {
 		Status: corev1.NamespaceStatus{},
 	}
 
-	if err := c.Create(context.Background(), &kserveNamespace); err != nil {
+	if err := c.Create(t.Context(), &kserveNamespace); err != nil {
 		t.Errorf("failed to create namespace: %v", err)
 	}
 	mutator := Mutator{Client: c, Clientset: clientset, Decoder: admission.NewDecoder(c.Scheme())}
@@ -74,12 +74,14 @@ func TestMutator_Handle(t *testing.T) {
 				},
 				Immutable: nil,
 				Data: map[string]string{
-					StorageInitializerConfigMapKeyName: `{
+					v1beta1.StorageInitializerConfigMapKeyName: `{
 						"image" : "kserve/storage-initializer:latest",
 						"memoryRequest": "100Mi",
 						"memoryLimit": "1Gi",
 						"cpuRequest": "100m",
 						"cpuLimit": "1",
+						"cpuModelcar": "100m",
+						"memoryModelcar": "50Mi",
 						"storageSpecSecretName": "storage-config"
 					}`,
 					LoggerConfigMapKeyName: `{
@@ -180,12 +182,14 @@ func TestMutator_Handle(t *testing.T) {
 				},
 				Immutable: nil,
 				Data: map[string]string{
-					StorageInitializerConfigMapKeyName: `{
+					v1beta1.StorageInitializerConfigMapKeyName: `{
 						"image" : "kserve/storage-initializer:latest",
 						"memoryRequest": "100Mi",
 						"memoryLimit": "1Gi",
 						"cpuRequest": "100m",
 						"cpuLimit": "1",
+						"cpuModelcar": "100m",
+						"memoryModelcar": "50Mi",
 						"storageSpecSecretName": "storage-config"
 					}`,
 					LoggerConfigMapKeyName: `{
@@ -296,7 +300,7 @@ func TestMutator_Handle(t *testing.T) {
 
 	for name, tc := range cases {
 		t.Run(name, func(t *testing.T) {
-			if err := c.Create(context.Background(), &tc.configMap); err != nil {
+			if err := c.Create(t.Context(), &tc.configMap); err != nil {
 				t.Errorf("failed to create config map: %v", err)
 			}
 			byteData, err := json.Marshal(tc.pod)
@@ -304,10 +308,10 @@ func TestMutator_Handle(t *testing.T) {
 				t.Errorf("failed to marshal pod data: %v", err)
 			}
 			tc.request.Object.Raw = byteData
-			res := mutator.Handle(context.Background(), tc.request)
+			res := mutator.Handle(t.Context(), tc.request)
 			sortPatches(res.Patches)
 			g.Expect(res).Should(tc.matcher)
-			if err := c.Delete(context.Background(), &tc.configMap); err != nil {
+			if err := c.Delete(t.Context(), &tc.configMap); err != nil {
 				t.Errorf("failed to delete configmap %v", err)
 			}
 		})

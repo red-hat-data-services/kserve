@@ -22,7 +22,7 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"google.golang.org/protobuf/proto"
-	v1 "k8s.io/api/core/v1"
+	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -33,7 +33,6 @@ import (
 )
 
 var _ = Describe("InferenceService validator Webhook", func() {
-
 	Context("When deleting InferenceService under Validating Webhook", func() {
 		var validator v1beta1.InferenceServiceValidator
 		var servingRuntime *v1alpha1.ServingRuntime
@@ -57,7 +56,7 @@ var _ = Describe("InferenceService validator Webhook", func() {
 						},
 					},
 					ServingRuntimePodSpec: v1alpha1.ServingRuntimePodSpec{
-						Containers: []v1.Container{
+						Containers: []corev1.Container{
 							{
 								Name:  constants.InferenceServiceContainerName,
 								Image: "tensorflow/serving:1.14.0",
@@ -88,7 +87,7 @@ var _ = Describe("InferenceService validator Webhook", func() {
 			}
 			isvc1.DefaultInferenceService(nil, nil, &v1beta1.SecurityConfig{AutoMountServiceAccountToken: false}, nil)
 			isvc2 = isvc1.DeepCopy()
-			isvc2.Name = isvc2.Name + "-second"
+			isvc2.Name += "-second"
 
 			Expect(k8sClient.Create(ctx, isvc1)).Should(Succeed())
 			Expect(k8sClient.Create(ctx, isvc2)).Should(Succeed())

@@ -19,7 +19,7 @@ package utils
 import (
 	"encoding/json"
 	"fmt"
-	"strconv"
+	"path/filepath"
 	"strings"
 
 	corev1 "k8s.io/api/core/v1"
@@ -44,44 +44,6 @@ var gvResourcesCache map[string]*metav1.APIResourceList
 const (
 	ErrValueExceedsInt32Limit = "value exceeds int32 limit %d"
 )
-
-func Filter(origin map[string]string, predicate func(string) bool) map[string]string {
-	result := make(map[string]string)
-	for k, v := range origin {
-		if predicate(k) {
-			result[k] = v
-		}
-	}
-	return result
-}
-
-func Union(maps ...map[string]string) map[string]string {
-	result := make(map[string]string)
-	for _, m := range maps {
-		for k, v := range m {
-			result[k] = v
-		}
-	}
-	return result
-}
-
-func Includes(slice []string, value string) bool {
-	for _, v := range slice {
-		if v == value {
-			return true
-		}
-	}
-	return false
-}
-
-func IncludesArg(slice []string, arg string) bool {
-	for _, v := range slice {
-		if v == arg || strings.HasPrefix(v, arg) {
-			return true
-		}
-	}
-	return false
-}
 
 func AppendVolumeIfNotExists(slice []corev1.Volume, volume corev1.Volume) []corev1.Volume {
 	for i := range slice {
@@ -170,6 +132,27 @@ func AppendEnvVarIfNotExists(slice []corev1.EnvVar, elems ...corev1.EnvVar) []co
 	return slice
 }
 
+// Add an environment variable with the given value to the environments
+// variables of the given container, potentially replacing an env var that already exists
+// with this name
+func AddOrReplaceEnv(container *corev1.Container, envKey string, envValue string) {
+	if container.Env == nil {
+		container.Env = []corev1.EnvVar{}
+	}
+
+	for i, envVar := range container.Env {
+		if envVar.Name == envKey {
+			container.Env[i].Value = envValue
+			return
+		}
+	}
+
+	container.Env = append(container.Env, corev1.EnvVar{
+		Name:  envKey,
+		Value: envValue,
+	})
+}
+
 func AppendPortIfNotExists(slice []corev1.ContainerPort, elems ...corev1.ContainerPort) []corev1.ContainerPort {
 	for _, elem := range elems {
 		isElemExists := false
@@ -252,6 +235,40 @@ func GetEnvVarValue(envVars []corev1.EnvVar, key string) (string, bool) {
 		}
 	}
 	return "", false // if key does not exist, return "", false
+}
+
+func GetContainerWithName(podSpec *corev1.PodSpec, name string) *corev1.Container {
+	for idx, container := range podSpec.Containers {
+		if strings.Compare(container.Name, name) == 0 {
+			return &podSpec.Containers[idx]
+		}
+	}
+	return nil
+}
+
+func GetInitContainerWithName(podSpec *corev1.PodSpec, name string) *corev1.Container {
+	for idx, container := range podSpec.InitContainers {
+		if strings.Compare(container.Name, name) == 0 {
+			return &podSpec.InitContainers[idx]
+		}
+	}
+	return nil
+}
+
+// AddVolumeMountIfNotPresent adds a volume mount to a given container but only if no volume mount
+// with this name has been already added. Container must not be nil
+func AddVolumeMountIfNotPresent(container *corev1.Container, mountName, mountPath string, readOnly bool) {
+	for _, v := range container.VolumeMounts {
+		if v.Name == mountName {
+			return
+		}
+	}
+	modelMount := corev1.VolumeMount{
+		Name:      mountName,
+		MountPath: mountPath,
+		ReadOnly:  readOnly,
+	}
+	container.VolumeMounts = append(container.VolumeMounts, modelMount)
 }
 
 // Returns the value of the stop annotation
@@ -346,41 +363,6 @@ func IsValidCustomGPUArray(s string) ([]string, bool) {
 	return customGPUTypes, true
 }
 
-const PLACEHOLDER_FOR_DELETION = "env_marked_for_deletion"
-
-// CheckEnvsToRemove checks the current envs against the desired ones and returns the envs that needs to be
-// removed from the target env list and envs that need to be kept.
-// Returns envsToRemove, envsToKeep
-func CheckEnvsToRemove(desired, current []corev1.EnvVar) ([]corev1.EnvVar, []corev1.EnvVar) {
-	var envsToRemove []corev1.EnvVar
-	var envsToKeep []corev1.EnvVar
-	for _, currentEnv := range current {
-		found := false
-		for _, desiredEnv := range desired {
-			if currentEnv.Name == desiredEnv.Name {
-				envsToKeep = append(envsToKeep, currentEnv)
-				found = true
-				break
-			}
-		}
-		if !found {
-			// replace the value of the found env to a placeholder to mark it for deletion
-			currentEnv.Value = PLACEHOLDER_FOR_DELETION
-			envsToRemove = append(envsToRemove, currentEnv)
-		}
-	}
-	return envsToRemove, envsToKeep
-}
-
-// StringToInt32 converts a given integer to int32. If the number exceeds the int32 limit, it returns an error.
-func StringToInt32(number string) (int32, error) {
-	converted, err := strconv.ParseInt(number, 10, 32)
-	if err != nil {
-		return 0, err
-	}
-	return int32(converted), err
-}
-
 // UpdateGPUResourceTypeListByAnnotation updates the GPU resource type list
 // by combining the global GPU resource types from inferenceservice-config with custom GPU resource types specified in the annotations.
 func UpdateGPUResourceTypeListByAnnotation(isvcAnnotations map[string]string) ([]string, error) {
@@ -452,4 +434,18 @@ func GetGPUResourceQtyByType(resourceRequirements *corev1.ResourceRequirements, 
 	qty := resource.NewQuantity(0, resource.DecimalSI)
 
 	return "", qty, false
+}
+
+// GetParentDirectory returns the parent directory of the given path,
+// or "/" if the path is a top-level directory.
+func GetParentDirectory(path string) string {
+	// Get the parent directory
+	parentDir := filepath.Dir(path)
+
+	// Check if it's a top-level directory
+	if parentDir == "." || parentDir == "/" {
+		return "/"
+	}
+
+	return parentDir
 }

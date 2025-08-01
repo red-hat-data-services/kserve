@@ -5,6 +5,7 @@ metadata:
     build.appstudio.openshift.io/repo: https://github.com/red-hat-data-services/kserve?rev={{revision}}
     build.appstudio.redhat.com/commit_sha: '{{revision}}'
     build.appstudio.redhat.com/target_branch: '{{target_branch}}'
+    build.appstudio.redhat.com/pull_request_number: "{{pull_request_number}}"
     pipelinesascode.tekton.dev/max-keep-runs: "3"
     pipelinesascode.tekton.dev/on-comment: "^/build-konflux router"
     pipelinesascode.tekton.dev/on-event: "[pull_request]"
@@ -23,13 +24,13 @@ spec:
     value: '{{revision}}'
   - name: additional-tags
     value:
-    - '{{target_branch}}-{{revision}}'
+    - 'pr-{{pull_request_number}}-into-{{target_branch}}'
   - name: additional-labels
     value:
     - version=v2.24.0
     - io.openshift.tags=odh-kserve-router
   - name: output-image
-    value: quay.io/rhoai/odh-kserve-router-rhel9:{{target_branch}}
+    value: quay.io/rhoai/odh-kserve-router-rhel9:on-pr-{{revision}}
   - name: build-platforms
     value:
     - linux/x86_64

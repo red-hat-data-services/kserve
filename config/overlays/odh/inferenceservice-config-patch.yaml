@@ -23,11 +23,12 @@ data:
         "enableDirectPvcVolumeMount": true,
         "cpuModelcar": "10m",
         "memoryModelcar": "15Mi",
-        "enableModelcar": true,
-        "uidModelcar": 1010
+        "enableModelcar": true
     }
   ingress: |-
     {
+        "enableGatewayApi": false,
+        "kserveIngressGateway": "openshift-ingress/openshift-ai-inference",
         "ingressGateway" : "knative-serving/knative-ingress-gateway",
         "knativeLocalGatewayService" : "knative-local-gateway.istio-system.svc.cluster.local",
         "ingressService" : "istio-ingressgateway.istio-system.svc.cluster.local",

@@ -13,7 +13,11 @@ RUN microdnf install -y --setopt=ubi-9-appstream-rpms.module_hotfixes=1 --disabl
       openssl-devel \
       krb5-workstation \
       krb5-libs  \
-      krb5-devel  \
+      krb5-devel && \
+    if [ "$(uname -m)" = "s390x" ] || [ "$(uname -m)" = "ppc64le" ] || [ "$(uname -m)" = "aarch64" ]; then \
+       echo "Installing packages" && \
+       microdnf install -y gcc-c++ cmake rust cargo perl; \
+    fi \
     && microdnf clean all \
     && alternatives --install /usr/bin/python python /usr/bin/python3.11 1
 
@@ -32,7 +36,11 @@ RUN python -m venv $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 COPY kserve/pyproject.toml kserve/poetry.lock kserve/
-RUN cd kserve && poetry install --no-root --no-interaction --no-cache --extras "storage"
+RUN cd kserve && \
+    if [ "$(uname -m)" = "s390x" ] || [ "$(uname -m)" = "ppc64le" ] || [ "$(uname -m)" = "aarch64" ]; then \
+       export GRPC_PYTHON_BUILD_SYSTEM_OPENSSL=true; \
+    fi && \
+    poetry install --no-root --no-interaction --no-cache --extras "storage"
 COPY kserve kserve
 RUN cd kserve && poetry install --no-interaction --no-cache --extras "storage"
 

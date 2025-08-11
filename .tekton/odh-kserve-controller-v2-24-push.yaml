@@ -1,6 +1,6 @@
 apiVersion: tekton.dev/v1
 kind: PipelineRun
-# retry konflux build to fix RHOAIENG-31914
+# retrigger Konflux builds to fix https://issues.redhat.com/browse/RHOAIENG-31914
 metadata:
   annotations:
     build.appstudio.openshift.io/repo: https://github.com/red-hat-data-services/kserve?rev={{revision}}
@@ -9,8 +9,8 @@ metadata:
     pipelinesascode.tekton.dev/max-keep-runs: "3"
     build.appstudio.openshift.io/build-nudge-files: "build/operator-nudging.yaml"
     pipelinesascode.tekton.dev/on-cel-expression: |
-      event == "push" 
-      && target_branch == "rhoai-2.24" 
+      event == "push"
+      && target_branch == "rhoai-2.24"
       && ( !".tekton/**".pathChanged() || ".tekton/odh-kserve-controller-v2-24-push.yaml".pathChanged() )
   creationTimestamp: null
   labels:

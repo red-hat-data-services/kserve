@@ -25,7 +25,9 @@ spec:
   - name: output-image
     value: quay.io/redhat-user-workloads/rhoai-tenant/kserve-local-model-hermatic:{{revision}}
   - name: dockerfile
-    value: Dockerfile
+    value: localmodel.Dockerfile
+  - name: prefetch-input
+    value: '("type": "gomod", "path": ".")'
   pipelineSpec:
     description: |
       This pipeline is ideal for building container images from a Containerfile while maintaining trust after pipeline customization.
@@ -75,7 +77,7 @@ spec:
       description: Skip checks against built image
       name: skip-checks
       type: string
-    - default: "false"
+    - default: "true"
       description: Execute the build with network isolation
       name: hermetic
       type: string

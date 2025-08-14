@@ -26,7 +26,7 @@ spec:
     value: quay.io/redhat-user-workloads/rhoai-tenant/kserve-local-model-hermatic:{{revision}}
   - name: dockerfile
     value: localmodel.Dockerfile
-  - name: prefetch-input
+  #- name: prefetch-input
     value: '{"type": "gomod", "path": "."}'
   pipelineSpec:
     description: |
@@ -77,7 +77,7 @@ spec:
       description: Skip checks against built image
       name: skip-checks
       type: string
-    - default: "true"
+    - default: "false"
       description: Execute the build with network isolation
       name: hermetic
       type: string

@@ -3,7 +3,7 @@ FROM registry.access.redhat.com/ubi9/go-toolset:1.24 AS builder
 
 WORKDIR /workspace
 USER root
-# RUN . /cachi2/cachi2.env && cp /cachi2/output/deps/generic/go-licenses /workspace
+RUN cp /cachi2/output/deps/generic/go-licenses /workspace
 
 # Copy in the go src
 WORKDIR /go/src/github.com/kserve/kserve

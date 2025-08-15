@@ -3,7 +3,7 @@ FROM registry.access.redhat.com/ubi9/go-toolset:1.24 AS builder
 
 WORKDIR /workspace
 USER root
-cp  /cachi2/output/deps/generic/v1.6.0.tar.gz  /workspace
+RUN tar -xzf /workspace/v1.6.0.tar.gz -C /workspace/
 
 # Copy in the go src
 WORKDIR /go/src/github.com/kserve/kserve

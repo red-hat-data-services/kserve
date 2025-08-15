@@ -1,8 +1,8 @@
-# ---
-# metadata:
-#   version: "1.0"
-# artifacts:
-#   - filename: "go-licenses"
-#     download_url: "https://github.com/google/go-licenses/archive/refs/tags/v1.6.0.tar.gz"
-#     checksum: sha256:70c1ceb7c342ceb79b63a76caafb13ea3796a51715c742a482eb9d85277311e7
+---
+metadata:
+  version: "1.0"
+artifacts:
+  - filename: "go-licenses"
+    download_url: "https://github.com/google/go-licenses/archive/refs/tags/v1.6.0.tar.gz"
+    checksum: sha256:70c1ceb7c342ceb79b63a76caafb13ea3796a51715c742a482eb9d85277311e7
   

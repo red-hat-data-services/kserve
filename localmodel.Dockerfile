@@ -3,6 +3,9 @@ FROM registry.access.redhat.com/ubi9/go-toolset:1.24 AS builder
 
 WORKDIR /workspace
 USER root
+RUN . /cachi2/cachi2.env && \
+    cp /cachi2/output/deps/generic/v1.6.0.tar.gz /workspace/
+
 RUN tar -xzf /workspace/v1.6.0.tar.gz -C /workspace/
 
 # Copy in the go src

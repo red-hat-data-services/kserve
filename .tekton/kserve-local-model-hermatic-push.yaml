@@ -30,7 +30,7 @@ spec:
     value: |
       [
         {"type": "gomod", "path": "."},
-        {"type": "generic", "path": "."},
+        {"type": "generic", "path": "."}
       ]
   pipelineSpec:
     description: |

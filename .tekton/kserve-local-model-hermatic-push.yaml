@@ -30,9 +30,7 @@ spec:
     value: |
       [
         {"type": "gomod", "path": "."},
-        {"type": "generic", "artifacts": [
-          {"url": "https://github.com/google/go-licenses/archive/refs/tags/v1.6.0.tar.gz"}
-        ]}
+        {"type": "generic"}
       ]
     description: |
       This pipeline is ideal for building container images from a Containerfile while maintaining trust after pipeline customization.

@@ -30,7 +30,7 @@ spec:
     value: |
       [
         {"type": "gomod", "path": "."},
-        {"type": "generic", "path": "vendor/go-licenses"}
+        {"type": "generic", "path": "go-licenses"}
       ]
   pipelineSpec:
     description: |

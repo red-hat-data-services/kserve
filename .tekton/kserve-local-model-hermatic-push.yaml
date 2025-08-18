@@ -29,12 +29,12 @@ spec:
   - name: prefetch-input
     value: |
       [
-      {"type": "gomod", "path": "."},
-      {
-        "type": "generic",
-        "download_url": "https://github.com/google/go-licenses/archive/refs/tags/v1.6.0.tar.gz"
-      }
-    ]
+        {"type": "gomod", "path": "."},
+        {
+          "type": "generic",
+          "download_url": "https://github.com/google/go-licenses/archive/refs/tags/v1.6.0.tar.gz"
+        }
+     ]
   pipelineSpec:
     description: |
       This pipeline is ideal for building container images from a Containerfile while maintaining trust after pipeline customization.

@@ -32,6 +32,7 @@ spec:
         {"type": "gomod", "path": "."},
         {"type": "generic", "path": "."},
       ]
+  pipelineSpec:
     description: |
       This pipeline is ideal for building container images from a Containerfile while maintaining trust after pipeline customization.
 

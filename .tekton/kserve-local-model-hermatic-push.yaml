@@ -28,13 +28,11 @@ spec:
     value: localmodel.Dockerfile
   - name: prefetch-input
     value: |
-      [
-        {"type": "gomod", "path": "."},
-        {
-          "type": "generic",
-          "url": "https://github.com/google/go-licenses/archive/refs/tags/v1.6.0.tar.gz"
-        }
-      ]
+      value: |
+        [
+          {"type": "gomod", "path": "."},
+          {"type": "generic", "path": "vendor/go-licenses"}
+        ]
   pipelineSpec:
     description: |
       This pipeline is ideal for building container images from a Containerfile while maintaining trust after pipeline customization.

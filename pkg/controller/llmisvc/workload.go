@@ -49,19 +49,20 @@ func (r *LLMInferenceServiceReconciler) reconcileWorkload(ctx context.Context, l
 	defer llmSvc.DetermineWorkloadReadiness()
 
 	if err := r.reconcileSelfSignedCertsSecret(ctx, llmSvc); err != nil {
+		llmSvc.MarkMainWorkloadNotReady("ReconcileCertsError", err.Error())
 		return fmt.Errorf("failed to reconcile self-signed certificates secret: %w", err)
 	}
 
 	// We need to always reconcile every type of workload to handle transitions from P/D to another topology (meaning
 	// finalizing superfluous workloads).
 
-	if err := r.reconcileMultiNodeWorkload(ctx, llmSvc); err != nil {
-		llmSvc.MarkWorkloadNotReady("ReconcileMultiNodeWorkloadError", err.Error())
+	if err := r.reconcileMultiNodeWorkload(ctx, llmSvc, storageConfig); err != nil {
+		llmSvc.MarkMainWorkloadNotReady("ReconcileMultiNodeWorkloadError", err.Error())
 		return fmt.Errorf("failed to reconcile multi node workload: %w", err)
 	}
 
 	if err := r.reconcileSingleNodeWorkload(ctx, llmSvc, storageConfig); err != nil {
-		llmSvc.MarkWorkloadNotReady("ReconcileSingleNodeWorkloadError", err.Error())
+		llmSvc.MarkMainWorkloadNotReady("ReconcileSingleNodeWorkloadError", err.Error())
 		return fmt.Errorf("failed to reconcile single node workload: %w", err)
 	}
 

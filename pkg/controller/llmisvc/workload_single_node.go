@@ -18,7 +18,6 @@ package llmisvc
 
 import (
 	"context"
-	"errors"
 	"fmt"
 
 	appsv1 "k8s.io/api/apps/v1"
@@ -47,7 +46,7 @@ func (r *LLMInferenceServiceReconciler) reconcileSingleNodeWorkload(ctx context.
 		return fmt.Errorf("failed to reconcile main workload: %w", err)
 	}
 
-	if err := r.reconcileSingleNodePrefill(ctx, llmSvc); err != nil {
+	if err := r.reconcileSingleNodePrefill(ctx, llmSvc, storageConfig); err != nil {
 		return fmt.Errorf("failed to reconcile prefill workload: %w", err)
 	}
 	return nil
@@ -68,10 +67,6 @@ func (r *LLMInferenceServiceReconciler) reconcileSingleNodeMainWorkload(ctx cont
 }
 
 func (r *LLMInferenceServiceReconciler) expectedSingleNodeMainDeployment(ctx context.Context, llmSvc *v1alpha1.LLMInferenceService, storageConfig *types.StorageInitializerConfig) (*appsv1.Deployment, error) {
-	if llmSvc.Spec.Template == nil {
-		return nil, errors.New("llmSvc.Spec.Template must not be nil")
-	}
-
 	role := "decode"
 	if llmSvc.Spec.Prefill == nil {
 		role = "both"
@@ -119,10 +114,10 @@ func (r *LLMInferenceServiceReconciler) expectedSingleNodeMainDeployment(ctx con
 				})
 			}
 		}
-	}
 
-	if err := r.attachModelArtifacts(llmSvc, &d.Spec.Template.Spec, storageConfig); err != nil {
-		return nil, fmt.Errorf("failed to attach model artifacts to main deployment: %w", err)
+		if err := r.attachModelArtifacts(llmSvc, &d.Spec.Template.Spec, storageConfig); err != nil {
+			return nil, fmt.Errorf("failed to attach model artifacts to main deployment: %w", err)
+		}
 	}
 
 	log.FromContext(ctx).V(2).Info("Expected main deployment", "deployment", d)
@@ -130,9 +125,12 @@ func (r *LLMInferenceServiceReconciler) expectedSingleNodeMainDeployment(ctx con
 	return d, nil
 }
 
-func (r *LLMInferenceServiceReconciler) reconcileSingleNodePrefill(ctx context.Context, llmSvc *v1alpha1.LLMInferenceService) error {
-	prefill := r.expectedPrefillMainDeployment(ctx, llmSvc)
-	if llmSvc.Spec.Prefill == nil {
+func (r *LLMInferenceServiceReconciler) reconcileSingleNodePrefill(ctx context.Context, llmSvc *v1alpha1.LLMInferenceService, storageConfig *types.StorageInitializerConfig) error {
+	prefill, err := r.expectedPrefillMainDeployment(ctx, llmSvc, storageConfig)
+	if err != nil {
+		return fmt.Errorf("failed to get expected prefill deployment: %w", err)
+	}
+	if llmSvc.Spec.Prefill == nil || llmSvc.Spec.Prefill.Worker != nil {
 		if err := Delete(ctx, r, llmSvc, prefill); err != nil {
 			return fmt.Errorf("failed to delete prefill main deployment: %w", err)
 		}
@@ -144,7 +142,7 @@ func (r *LLMInferenceServiceReconciler) reconcileSingleNodePrefill(ctx context.C
 	return r.propagateDeploymentStatus(ctx, prefill, llmSvc.MarkPrefillWorkloadReady, llmSvc.MarkPrefillWorkloadNotReady)
 }
 
-func (r *LLMInferenceServiceReconciler) expectedPrefillMainDeployment(ctx context.Context, llmSvc *v1alpha1.LLMInferenceService) *appsv1.Deployment {
+func (r *LLMInferenceServiceReconciler) expectedPrefillMainDeployment(ctx context.Context, llmSvc *v1alpha1.LLMInferenceService, storageConfig *types.StorageInitializerConfig) (*appsv1.Deployment, error) {
 	labels := map[string]string{
 		"app.kubernetes.io/component": "llminferenceservice-workload-prefill",
 		"app.kubernetes.io/name":      llmSvc.GetName(),
@@ -180,11 +178,15 @@ func (r *LLMInferenceServiceReconciler) expectedPrefillMainDeployment(ctx contex
 
 	if llmSvc.Spec.Prefill != nil && llmSvc.Spec.Prefill.Template != nil {
 		d.Spec.Template.Spec = *llmSvc.Spec.Prefill.Template.DeepCopy()
+
+		if err := r.attachModelArtifacts(llmSvc, &d.Spec.Template.Spec, storageConfig); err != nil {
+			return nil, fmt.Errorf("failed to attach model artifacts to prefill deployment: %w", err)
+		}
 	}
 
 	log.FromContext(ctx).V(2).Info("Expected prefill deployment", "deployment", d)
 
-	return d
+	return d, nil
 }
 
 func (r *LLMInferenceServiceReconciler) propagateDeploymentStatus(ctx context.Context, expected *appsv1.Deployment, ready func(), notReady func(reason, messageFormat string, messageA ...interface{})) error {
@@ -213,7 +215,10 @@ func (r *LLMInferenceServiceReconciler) propagateDeploymentStatus(ctx context.Co
 }
 
 func semanticDeploymentIsEqual(expected *appsv1.Deployment, curr *appsv1.Deployment) bool {
-	return equality.Semantic.DeepDerivative(expected.Spec, curr.Spec) &&
+	// Use DeepEqual for the Pod Spec so that when fields are removed (like resource requirements, we push them down to the
+	// child resource)
+	return equality.Semantic.DeepEqual(expected.Spec.Template.Spec, curr.Spec.Template.Spec) &&
+		equality.Semantic.DeepDerivative(expected.Spec, curr.Spec) &&
 		equality.Semantic.DeepDerivative(expected.Labels, curr.Labels) &&
 		equality.Semantic.DeepDerivative(expected.Annotations, curr.Annotations)
 }

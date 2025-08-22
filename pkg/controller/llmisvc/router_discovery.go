@@ -23,11 +23,14 @@ import (
 	"net"
 	"slices"
 
+	"k8s.io/apimachinery/pkg/api/meta"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/utils/ptr"
 	"knative.dev/pkg/apis"
 
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/log"
 	gatewayapi "sigs.k8s.io/gateway-api/apis/v1"
 )
 
@@ -210,4 +213,88 @@ func filter[T any](s []T, predicateFn func(T) bool) []T {
 		}
 	}
 	return out
+}
+
+// EvaluateGatewayReadiness checks the readiness status of Gateways and returns those that are not ready
+func EvaluateGatewayReadiness(ctx context.Context, gateways []*gatewayapi.Gateway) []*gatewayapi.Gateway {
+	logger := log.FromContext(ctx)
+	notReadyGateways := make([]*gatewayapi.Gateway, 0)
+
+	for _, gateway := range gateways {
+		ready := IsGatewayReady(gateway)
+		logger.Info("Gateway readiness evaluated", "gateway", fmt.Sprintf("%s/%s", gateway.Namespace, gateway.Name), "ready", ready)
+
+		if !ready {
+			notReadyGateways = append(notReadyGateways, gateway)
+		}
+	}
+
+	return notReadyGateways
+}
+
+// IsGatewayReady determines if a Gateway is ready based on its status conditions
+func IsGatewayReady(gateway *gatewayapi.Gateway) bool {
+	// Check for the standard Gateway API "Programmed" condition
+	for _, condition := range gateway.Status.Conditions {
+		if condition.Type == string(gatewayapi.GatewayConditionProgrammed) {
+			return condition.Status == metav1.ConditionTrue
+		}
+	}
+
+	// If no Programmed condition is found, Gateway is considered not ready
+	return false
+}
+
+// EvaluateHTTPRouteReadiness checks the readiness status of HTTPRoutes and returns those that are not ready
+func EvaluateHTTPRouteReadiness(ctx context.Context, routes []*gatewayapi.HTTPRoute) []*gatewayapi.HTTPRoute {
+	logger := log.FromContext(ctx)
+	notReadyRoutes := make([]*gatewayapi.HTTPRoute, 0)
+
+	for _, route := range routes {
+		ready := IsHTTPRouteReady(route)
+		logger.Info("HTTPRoute readiness evaluated", "route", fmt.Sprintf("%s/%s", route.Namespace, route.Name), "ready", ready)
+
+		if !ready {
+			notReadyRoutes = append(notReadyRoutes, route)
+		}
+	}
+
+	return notReadyRoutes
+}
+
+// IsHTTPRouteReady determines if an HTTPRoute is ready based on its status conditions.
+func IsHTTPRouteReady(route *gatewayapi.HTTPRoute) bool {
+	if route == nil || len(route.Spec.ParentRefs) == 0 {
+		return false
+	}
+
+	if len(route.Status.RouteStatus.Parents) != len(route.Spec.ParentRefs) {
+		// HTTPRoute is ready only when _all_ parents have accepted the route.
+		return false
+	}
+
+	if cond, missing := nonReadyHTTPRouteTopLevelCondition(route); cond != nil || missing {
+		return false
+	}
+
+	return true
+}
+
+func nonReadyHTTPRouteTopLevelCondition(route *gatewayapi.HTTPRoute) (*metav1.Condition, bool) {
+	if route == nil {
+		return nil, true
+	}
+
+	for _, parent := range route.Status.RouteStatus.Parents {
+		cond := meta.FindStatusCondition(parent.Conditions, string(gatewayapi.RouteConditionAccepted))
+		if cond == nil {
+			return nil, true
+		}
+		staleCondition := cond.ObservedGeneration > 0 && cond.ObservedGeneration < route.Generation
+		if cond.Status != metav1.ConditionTrue || staleCondition {
+			return cond, false
+		}
+	}
+
+	return nil, false
 }

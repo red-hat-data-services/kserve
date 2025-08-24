@@ -34,12 +34,12 @@ require (
 	gopkg.in/go-playground/validator.v9 v9.31.0
 	istio.io/api v1.24.2
 	istio.io/client-go v1.24.2
-	k8s.io/api v0.33.1
-	k8s.io/apiextensions-apiserver v0.33.1
-	k8s.io/apimachinery v0.33.1
-	k8s.io/client-go v0.33.1
-	k8s.io/code-generator v0.33.1
-	k8s.io/component-helpers v0.33.1
+	k8s.io/api v0.33.4
+	k8s.io/apiextensions-apiserver v0.33.4
+	k8s.io/apimachinery v0.33.4
+	k8s.io/client-go v0.33.4
+	k8s.io/code-generator v0.33.4
+	k8s.io/component-helpers v0.33.4
 	k8s.io/klog/v2 v2.130.1
 	k8s.io/kube-openapi v0.0.0-20250318190949-c8a335a9a2ff
 	k8s.io/utils v0.0.0-20241210054802-24370beab758

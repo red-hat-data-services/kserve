@@ -33,6 +33,7 @@ import (
 	"k8s.io/apimachinery/pkg/api/equality"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"knative.dev/pkg/kmeta"
+	igwapi "sigs.k8s.io/gateway-api-inference-extension/api/v1alpha2"
 	gatewayapi "sigs.k8s.io/gateway-api/apis/v1"
 
 	"sigs.k8s.io/controller-runtime/pkg/log"
@@ -47,6 +48,10 @@ func (r *LLMInferenceServiceReconciler) reconcileRouter(ctx context.Context, llm
 	logger.Info("Reconciling Router")
 
 	defer llmSvc.DetermineRouterReadiness()
+
+	if err := r.validateRouterReferences(ctx, llmSvc); err != nil {
+		return err
+	}
 
 	if err := r.reconcileScheduler(ctx, llmSvc); err != nil {
 		llmSvc.MarkSchedulerWorkloadNotReady("SchedulerReconcileError", "Failed to reconcile scheduler: %v", err.Error())
@@ -65,7 +70,11 @@ func (r *LLMInferenceServiceReconciler) reconcileRouter(ctx context.Context, llm
 		return fmt.Errorf("failed to reconcile istio destination rules: %w", err)
 	}
 
-	// Evaluate Gateway conditions and set GatewaysReady condition
+	// Evaluate the subconditions
+	if err := r.EvaluateInferencePoolConditions(ctx, llmSvc); err != nil {
+		return fmt.Errorf("failed to evaluate Inference Pool conditions: %w", err)
+	}
+
 	if err := r.EvaluateGatewayConditions(ctx, llmSvc); err != nil {
 		return fmt.Errorf("failed to evaluate gateway conditions: %w", err)
 	}
@@ -83,8 +92,7 @@ func (r *LLMInferenceServiceReconciler) reconcileHTTPRoutes(ctx context.Context,
 
 	expectedHTTPRoute := r.expectedHTTPRoute(ctx, llmSvc)
 
-	// TODO should we remove "llmSvc.Spec.Router.Route.HTTP == nil" from the condition below so that a non nil Route meeans "all type of routes are enabled"?
-	if llmSvc.Spec.Router == nil || llmSvc.Spec.Router.Route == nil || llmSvc.Spec.Router.Route.HTTP == nil {
+	if llmSvc.Spec.Router == nil || llmSvc.Spec.Router.Route == nil {
 		return Delete(ctx, r, llmSvc, expectedHTTPRoute)
 	}
 
@@ -99,7 +107,6 @@ func (r *LLMInferenceServiceReconciler) reconcileHTTPRoutes(ctx context.Context,
 		return Delete(ctx, r, llmSvc, expectedHTTPRoute)
 	}
 
-	// TODO(validation): referenced gateway exists
 	if route.HTTP.HasSpec() {
 		if err := Reconcile(ctx, r, llmSvc, &gatewayapi.HTTPRoute{}, expectedHTTPRoute, semanticHTTPRouteIsEqual); err != nil {
 			return fmt.Errorf("failed to reconcile HTTPRoute %s/%s: %w", expectedHTTPRoute.GetNamespace(), expectedHTTPRoute.GetName(), err)
@@ -116,18 +123,20 @@ func (r *LLMInferenceServiceReconciler) collectReferencedRoutes(ctx context.Cont
 	}
 
 	referencedRoutes := make([]*gatewayapi.HTTPRoute, 0, len(llmSvc.Spec.Router.Route.HTTP.Refs))
+
 	for _, routeRef := range llmSvc.Spec.Router.Route.HTTP.Refs {
 		route := &gatewayapi.HTTPRoute{}
 		if err := r.Client.Get(ctx, types.NamespacedName{Namespace: llmSvc.GetNamespace(), Name: routeRef.Name}, route); err != nil {
 			if apierrors.IsNotFound(err) {
-				// TODO(follow-up) mark condition if not found
+				// Skip missing routes - validation is handled separately
 				continue
 			}
-			return referencedRoutes, fmt.Errorf("failed to get HTTPRoute %s/%s: %w", routeRef.Name, llmSvc.GetName(), err)
+			return referencedRoutes, fmt.Errorf("failed to get HTTPRoute %s/%s: %w", llmSvc.GetName(), routeRef.Name, err)
 		}
 
 		referencedRoutes = append(referencedRoutes, route)
 	}
+
 	return referencedRoutes, nil
 }
 
@@ -233,6 +242,13 @@ func (r *LLMInferenceServiceReconciler) EvaluateGatewayConditions(ctx context.Co
 		return nil
 	}
 
+	// Check if there's already a validation failure condition set
+	condition := llmSvc.GetStatus().GetCondition(v1alpha1.GatewaysReady)
+	if condition != nil && condition.IsFalse() && condition.Reason == RefsInvalidReason {
+		logger.Info("Gateway validation failed, skipping readiness evaluation", "reason", condition.Reason, "message", condition.Message)
+		return nil
+	}
+
 	gateways, err := r.CollectReferencedGateways(ctx, llmSvc)
 	if err != nil {
 		llmSvc.MarkGatewaysNotReady("GatewayFetchError", "Failed to fetch referenced Gateways: %v", err.Error())
@@ -320,6 +336,13 @@ func (r *LLMInferenceServiceReconciler) EvaluateHTTPRouteConditions(ctx context.
 		return nil
 	}
 
+	// Check if there's already a validation failure condition set
+	condition := llmSvc.GetStatus().GetCondition(v1alpha1.HTTPRoutesReady)
+	if condition != nil && condition.IsFalse() && condition.Reason == RefsInvalidReason {
+		logger.Info("HTTPRoute validation failed, skipping readiness evaluation", "reason", condition.Reason, "message", condition.Message)
+		return nil
+	}
+
 	// Collect all HTTPRoutes (both referenced and managed)
 	var allRoutes []*gatewayapi.HTTPRoute
 
@@ -370,5 +393,60 @@ func (r *LLMInferenceServiceReconciler) EvaluateHTTPRouteConditions(ctx context.
 
 	llmSvc.MarkHTTPRoutesReady()
 	logger.V(2).Info("All HTTPRoutes are ready", "routes", allRoutes)
+	return nil
+}
+
+// EvaluateInferencePoolConditions evaluates the readiness of all Inference Pools in the LLMInferenceService
+// and updates the InferencePoolReady condition accordingly
+func (r *LLMInferenceServiceReconciler) EvaluateInferencePoolConditions(ctx context.Context, llmSvc *v1alpha1.LLMInferenceService) error {
+	logger := log.FromContext(ctx).WithName("EvaluateInferencePoolConditions")
+
+	// If no router or scheduler configuration, mark Inference Pools as ready (no Inference Pools to evaluate)
+	if llmSvc.Spec.Router == nil || llmSvc.Spec.Router.Scheduler == nil {
+		logger.V(2).Info("Scheduler is disabled, marking InferencePoolReady as True")
+		llmSvc.MarkInferencePoolReady()
+		return nil
+	}
+
+	curr := &igwapi.InferencePool{}
+
+	if llmSvc.Spec.Router.Scheduler.Pool != nil && llmSvc.Spec.Router.Scheduler.Pool.Ref != nil && llmSvc.Spec.Router.Scheduler.Pool.Ref.Name != "" {
+		poolRef := llmSvc.Spec.Router.Scheduler.Pool.Ref
+		err := r.Client.Get(ctx, types.NamespacedName{Namespace: llmSvc.Namespace, Name: poolRef.Name}, curr)
+		if err != nil {
+			err := fmt.Errorf("failed to fetch referenced Inference Pool %s/%s: %w", llmSvc.Namespace, poolRef.Name, err)
+			llmSvc.MarkInferencePoolNotReady("InferencePoolFetchError", err.Error())
+			return err
+		}
+	} else {
+		expected := r.expectedSchedulerInferencePool(ctx, llmSvc)
+		err := r.Client.Get(ctx, types.NamespacedName{Namespace: expected.Namespace, Name: expected.Name}, curr)
+		if err != nil {
+			err := fmt.Errorf("failed to fetch embedded Inference Pool %s/%s: %w", llmSvc.Namespace, llmSvc.Name, err)
+			llmSvc.MarkInferencePoolNotReady("InferencePoolFetchError", err.Error())
+			return err
+		}
+	}
+
+	if !IsInferencePoolReady(curr) {
+		topLevelCondition, _ := nonReadyInferencePoolTopLevelCondition(curr)
+		if topLevelCondition != nil {
+			llmSvc.MarkInferencePoolNotReady("InferencePoolNotReady", fmt.Sprintf(
+				"%s/%s: %v=%#v (reason %q, message %q)",
+				curr.Namespace,
+				curr.Name,
+				topLevelCondition.Type,
+				topLevelCondition.Status,
+				topLevelCondition.Reason,
+				topLevelCondition.Message,
+			))
+		} else {
+			llmSvc.MarkInferencePoolNotReady("InferencePoolNotReady", fmt.Sprintf("The inference pool %s/%s is not ready", curr.Namespace, curr.Name))
+		}
+		return nil
+	}
+
+	llmSvc.MarkInferencePoolReady()
+	logger.V(2).Info("Inference Pool is ready", "pool", curr)
 	return nil
 }

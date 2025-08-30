@@ -122,7 +122,7 @@ attrs==23.1.0 \
 azure-core==1.26.4 \
     --hash=sha256:075fe06b74c3007950dd93d49440c2f3430fd9b4a5a2756ec8c79454afc989c6 \
     --hash=sha256:d9664b4bc2675d72fba461a285ac43ae33abb2967014a955bf136d9703a2ab3c
-azure-identity==1.13.0 \
+azure-identity==1.24.0 \
     --hash=sha256:c931c27301ffa86b07b4dcf574e29da73e3deba9ab5d1fe4f445bb6a3117e260 \
     --hash=sha256:bd700cebb80cd9862098587c29d8677e819beca33c62568ced6d5a8e5e332b82
 azure-storage-blob==12.16.0 \

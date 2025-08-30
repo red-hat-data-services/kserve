@@ -754,7 +754,7 @@ nvidia-ml-py==11.525.112 \
 oauthlib==3.2.2 \
     --hash=sha256:8139f29aac13e25d502680e9e19963e83f16838d48a0d71c287fe40e7067fbca \
     --hash=sha256:9859c40929662bec5d64f34d01c99e093149682a3f38915dc0655d5a633dd918
-opencensus==0.11.2 \
+opencensus==0.11.4 \
     --hash=sha256:7a1a34b87c8db3d9984e97ff05739058342f24de1d700766d59044eee8fb3b3f \
     --hash=sha256:6154042a236b9ecdd55a23dfbb2743bb3deacd0687e3e0391ec2e0c74950d66f
 opencensus-context==0.1.3 \

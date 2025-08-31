@@ -70,7 +70,7 @@ require (
 	k8s.io/client-go v0.32.3 // indirect
 	k8s.io/klog/v2 v2.130.1 // indirect
 	k8s.io/utils v0.0.0-20241210054802-24370beab758 // indirect
-	knative.dev/networking v0.0.0-20250315042440-ad8767c3190c // indirect
+	knative.dev/networking 8f495ee80e52 // indirect
 	knative.dev/pkg v0.0.0-20250312035536-b7bbf4be5dbd // indirect
 	sigs.k8s.io/json v0.0.0-20241014173422-cfa47c3a1cc8 // indirect
 	sigs.k8s.io/structured-merge-diff/v4 v4.6.0 // indirect

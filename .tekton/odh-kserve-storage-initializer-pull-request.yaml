@@ -42,10 +42,7 @@ spec:
   - name: path-context
     value: python
   - name: hermetic
-    value: true
-  - name: prefetch-input
-    value: |
-      [{"path": ".", "type": "rpm"}]
+    value: false
   - name: build-image-index
     value: true
   - name: image-expires-after

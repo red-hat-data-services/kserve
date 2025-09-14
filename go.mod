@@ -21,7 +21,7 @@ require (
 	github.com/onsi/ginkgo/v2 v2.23.3
 	github.com/onsi/gomega v1.36.3
 	github.com/open-telemetry/opentelemetry-operator v0.113.0
-	github.com/openshift/api v0.0.0-20241108213852-e22f17d9b7f5
+	github.com/openshift/api v0.0.0-20250913232110-61248d910ff7
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring v0.76.2
 	github.com/spf13/cobra v1.8.1
@@ -35,9 +35,9 @@ require (
 	gopkg.in/go-playground/validator.v9 v9.31.0
 	istio.io/api v1.24.2
 	istio.io/client-go v1.24.2
-	k8s.io/api v0.33.1
+	k8s.io/api v0.33.2
 	k8s.io/apiextensions-apiserver v0.33.1
-	k8s.io/apimachinery v0.33.1
+	k8s.io/apimachinery v0.33.2
 	k8s.io/client-go v0.33.1
 	k8s.io/code-generator v0.33.1
 	k8s.io/component-helpers v0.33.1

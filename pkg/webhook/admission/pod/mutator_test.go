@@ -24,7 +24,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/onsi/gomega"
 	gomegaTypes "github.com/onsi/gomega/types"
-	"gomodules.xyz/jsonpatch/v2"
+	"gomodules.xyz/jsonpatch/v3"
 	"google.golang.org/protobuf/proto"
 	admissionv1 "k8s.io/api/admission/v1"
 	corev1 "k8s.io/api/core/v1"

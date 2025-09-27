@@ -140,7 +140,7 @@ boto3==1.26.137 \
 botocore==1.29.137 \
     --hash=sha256:5921a15c0a2a438f5ba9de4189d846f31d3770c690b0ffb237da5069444f2ba5 \
     --hash=sha256:1909fe368c08b4879d52ac1e3963f8bfcbebe3a84366c3f2000a45bd4510b027
-cachetools==5.3.0 \
+cachetools==5.5.2 \
     --hash=sha256:429e1a1e845c008ea6c85aa35d4b98b65d6a9763eeef3e37e92728a12d1de9d4 \
     --hash=sha256:13dfddc7b8df938c21a940dfa6557ce6e94a2f1cdfa58eb90c805721d58f2c14
 certifi==2023.5.7 \

@@ -1176,7 +1176,7 @@ wcwidth==0.2.6 \
 websocket-client==1.5.1 \
     --hash=sha256:3f09e6d8230892547132177f575a4e3e73cfdf06526e20cc02aa1c3b47184d40 \
     --hash=sha256:cdf5877568b7e83aa7cf2244ab56a3213de587bbe0ce9d8b9600fc77b455d89e
-yarl==1.9.2 \
+yarl==1.22.0 \
     --hash=sha256:8c2ad583743d16ddbdf6bb14b5cd76bf43b0d0006e918809d5d4ddf7bde8dd82 \
     --hash=sha256:82aa6264b36c50acfb2424ad5ca537a2060ab6de158a5bd2a72a032cc75b9eb8 \
     --hash=sha256:c0c77533b5ed4bcc38e943178ccae29b9bcf48ffd1063f5821192f23a1bd27b9 \

@@ -1154,7 +1154,7 @@ tabulate==0.9.0 \
 timing-asgi==0.3.0 \
     --hash=sha256:24436a33597236c60d90b60a892d2789514014f07304b5f407eb701599cff9e0 \
     --hash=sha256:8eb021550230d6fae5d0d3ca7ca7bf6eb9ab8d49bb5823ff4a1af52daaeec0a2
-tritonclient==2.33.0 \
+tritonclient==2.61.0 \
     --hash=sha256:8fd7db59c76a6e3e4506e682a3d5ba549685b70baf7c7ff560701852774ba0f5 \
     --hash=sha256:92c162dac8ed25724bc80d8d8cc6dd77d8518cd6d8fa0903dae75261a609c24c \
     --hash=sha256:959b0108cb39f83d500fe27f83741ec5222149612db69565ad8aa44ffd1274af

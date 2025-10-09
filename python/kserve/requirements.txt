@@ -128,7 +128,7 @@ azure-identity==1.13.0 \
 azure-storage-blob==12.16.0 \
     --hash=sha256:43b45f19a518a5c6895632f263b3825ebc23574f25cc84b66e1630a6160e466f \
     --hash=sha256:91bb192b2a97939c4259c72373bac0f41e30810bbc853d5184f0f45904eacafd
-azure-storage-file-share==12.7.0 \
+azure-storage-file-share==12.22.0 \
     --hash=sha256:91836e82258d957120af228bc2bcf2b5c6bf5bedb8f3546aa9409b7495aba832 \
     --hash=sha256:7dc8111a1a12e26356443639732f1424787883ab42913656cebed46a729cc654
 blessed==1.20.0 \

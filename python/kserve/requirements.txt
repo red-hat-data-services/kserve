@@ -1351,7 +1351,7 @@ mypy==0.991 \
     --hash=sha256:74e259b5c19f70d35fcc1ad3d56499065c601dfe94ff67ae48b85596b9ec1461 \
     --hash=sha256:de32edc9b0a7e67c2775e574cb061a537660e51210fbf6006b0b36ea695ae9bb \
     --hash=sha256:3c0165ba8f354a6d9881809ef29f1a9318a236a6d81c690094c5df32107bde06
-mypy-extensions==1.0.0 \
+mypy-extensions==1.1.0 \
     --hash=sha256:4392f6c0eb8a5668a69e23d168ffa70f0be9ccfd32b5cc2d26a34ae5b844552d \
     --hash=sha256:75dbf8955dc00442a438fc4d0666508a9a97b6bd41aa2f0ffe9d2f2725af0782
 pluggy==1.0.0 \

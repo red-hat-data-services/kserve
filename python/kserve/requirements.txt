@@ -1401,7 +1401,7 @@ tomli==2.0.1; (python_full_version <= "3.11.0a6" and extra == "toml") or (python
 tomlkit==0.11.8 \
     --hash=sha256:8c726c4c202bdb148667835f68d68780b9a003a9ec34167b6c673b38eff2a171 \
     --hash=sha256:9330fc7faa1db67b541b28e62018c17d20be733177d290a13b24c62d1614e0c3
-poetry==1.4.0 \
+poetry==1.8.5 \
     --hash=sha256:f88a7a812a5d8c1f5a378e0924f898926b2ac10c3b5c03f7282f2182f90d8507 \
     --hash=sha256:151ad741e163a329c8b13ea602dde979b7616fc350cfcff74b604e93263934a8
 krbcontext==0.10 \

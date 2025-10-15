@@ -17,11 +17,32 @@ spec:
             - "-c"
           args:
             - |-
+              # In some versions, ZMQ bind doesn't resolve the address through DNS
+              # Retry DP_ADDRESS resolution (configurable attempts, default 30)
+              RESOLVE_ATTEMPTS=${DP_ADDRESS_RESOLVE_ATTEMPTS:-30}
+              for ((i=1; i<=RESOLVE_ATTEMPTS; i++)); do
+                DP_ADDRESS=$(getent hosts ${LWS_LEADER_ADDRESS} | cut -d' ' -f1)
+                if [ -n "$DP_ADDRESS" ]; then
+                  echo "DP_ADDRESS=${DP_ADDRESS} (resolved on attempt $i)"
+                  break
+                else
+                  echo "DP_ADDRESS resolution failed on attempt $i, retrying..."
+                  sleep 1
+                fi
+              done
+
+              if [ -z "$DP_ADDRESS" ]; then
+                echo "WARNING: Failed to resolve DP_ADDRESS after ${RESOLVE_ATTEMPTS} attempts, falling back to LWS_LEADER_ADDRESS"
+                DP_ADDRESS=${LWS_LEADER_ADDRESS}
+                echo "DP_ADDRESS=${DP_ADDRESS} (fallback)"
+              fi
 
               if [ "$KSERVE_INFER_ROCE" = "true" ]; then
                 echo "Trying to infer RoCE configs ... "
                 grep -H . /sys/class/infiniband/*/ports/*/gids/* 2>/dev/null
                 grep -H . /sys/class/infiniband/*/ports/*/gid_attrs/types/* 2>/dev/null
+              
+                cat /proc/driver/nvidia/params
               
                 KSERVE_INFER_IB_GID_INDEX_GREP=${KSERVE_INFER_IB_GID_INDEX_GREP:-"RoCE v2"}
               
@@ -56,7 +77,7 @@ spec:
                     hcas=$(IFS=,; echo "${active_hcas[*]}")
                     echo "[Infer RoCE] Setting active HCAs: ${hcas}"
                     export NCCL_IB_HCA=${NCCL_IB_HCA:-${hcas}}
-                    export NVSHMEM_HCA_LIST=${NVSHMEM_HCA_LIST:-${hcas}}
+                    export NVSHMEM_HCA_LIST=${NVSHMEM_HCA_LIST:-${ucx_hcas}}
                     export UCX_NET_DEVICES=${UCX_NET_DEVICES:-${ucx_hcas}}
 
                     echo "[Infer RoCE] NCCL_IB_HCA=${NCCL_IB_HCA}"
@@ -147,7 +168,7 @@ spec:
                 {{- if .Spec.Prefill.Parallelism.Tensor -}}--tensor-parallel-size {{ .Spec.Prefill.Parallelism.Tensor }}{{- end }} \
                 --data-parallel-size {{ or .Spec.Prefill.Parallelism.Data 1 }} \
                 --data-parallel-size-local {{ or .Spec.Prefill.Parallelism.DataLocal 1 }} \
-                --data-parallel-address $(LWS_LEADER_ADDRESS) \
+                --data-parallel-address ${DP_ADDRESS} \
                 --data-parallel-rpc-port {{ if .Spec.Prefill.Parallelism.DataRPCPort }}{{ .Spec.Prefill.Parallelism.DataRPCPort }}{{ else }}5555{{- end }} \
                 --data-parallel-start-rank $START_RANK \
                 ${VLLM_ADDITIONAL_ARGS} \
@@ -213,7 +234,7 @@ spec:
           name: home
         - emptyDir:
             medium: Memory
-            sizeLimit: 1Gi
+            sizeLimit: 8Gi
           name: dshm
         - emptyDir: { }
           name: model-cache
@@ -233,11 +254,32 @@ spec:
             - "-c"
           args:
             - |-
+              # In some versions, ZMQ bind doesn't resolve the address through DNS
+              # Retry DP_ADDRESS resolution (configurable attempts, default 30)
+              RESOLVE_ATTEMPTS=${DP_ADDRESS_RESOLVE_ATTEMPTS:-30}
+              for ((i=1; i<=RESOLVE_ATTEMPTS; i++)); do
+                DP_ADDRESS=$(getent hosts ${LWS_LEADER_ADDRESS} | cut -d' ' -f1)
+                if [ -n "$DP_ADDRESS" ]; then
+                  echo "DP_ADDRESS=${DP_ADDRESS} (resolved on attempt $i)"
+                  break
+                else
+                  echo "DP_ADDRESS resolution failed on attempt $i, retrying..."
+                  sleep 1
+                fi
+              done
+
+              if [ -z "$DP_ADDRESS" ]; then
+                echo "WARNING: Failed to resolve DP_ADDRESS after ${RESOLVE_ATTEMPTS} attempts, falling back to LWS_LEADER_ADDRESS"
+                DP_ADDRESS=${LWS_LEADER_ADDRESS}
+                echo "DP_ADDRESS=${DP_ADDRESS} (fallback)"
+              fi
 
               if [ "$KSERVE_INFER_ROCE" = "true" ]; then
                 echo "Trying to infer RoCE configs ... "
                 grep -H . /sys/class/infiniband/*/ports/*/gids/* 2>/dev/null
                 grep -H . /sys/class/infiniband/*/ports/*/gid_attrs/types/* 2>/dev/null
+              
+                cat /proc/driver/nvidia/params
               
                 KSERVE_INFER_IB_GID_INDEX_GREP=${KSERVE_INFER_IB_GID_INDEX_GREP:-"RoCE v2"}
               
@@ -272,7 +314,7 @@ spec:
                     hcas=$(IFS=,; echo "${active_hcas[*]}")
                     echo "[Infer RoCE] Setting active HCAs: ${hcas}"
                     export NCCL_IB_HCA=${NCCL_IB_HCA:-${hcas}}
-                    export NVSHMEM_HCA_LIST=${NVSHMEM_HCA_LIST:-${hcas}}
+                    export NVSHMEM_HCA_LIST=${NVSHMEM_HCA_LIST:-${ucx_hcas}}
                     export UCX_NET_DEVICES=${UCX_NET_DEVICES:-${ucx_hcas}}
 
                     echo "[Infer RoCE] NCCL_IB_HCA=${NCCL_IB_HCA}"
@@ -362,7 +404,7 @@ spec:
                 {{- if .Spec.Prefill.Parallelism.Tensor }}--tensor-parallel-size {{ .Spec.Prefill.Parallelism.Tensor }}{{- end }} \
                 --data-parallel-size {{ or .Spec.Prefill.Parallelism.Data 1 }} \
                 --data-parallel-size-local {{ or .Spec.Prefill.Parallelism.DataLocal 1 }} \
-                --data-parallel-address $(LWS_LEADER_ADDRESS) \
+                --data-parallel-address ${DP_ADDRESS} \
                 --data-parallel-rpc-port {{ if .Spec.Prefill.Parallelism.DataRPCPort }}{{ .Spec.Prefill.Parallelism.DataRPCPort }}{{ else }}5555{{- end }} \
                 --data-parallel-start-rank $START_RANK \
                 ${VLLM_ADDITIONAL_ARGS} \
@@ -411,7 +453,7 @@ spec:
           name: home
         - emptyDir:
             medium: Memory
-            sizeLimit: 1Gi
+            sizeLimit: 8Gi
           name: dshm
         - emptyDir: { }
           name: model-cache

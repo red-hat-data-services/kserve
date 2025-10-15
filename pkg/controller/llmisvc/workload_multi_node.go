@@ -19,7 +19,6 @@ package llmisvc
 import (
 	"context"
 	"fmt"
-	"strings"
 
 	corev1 "k8s.io/api/core/v1"
 	rbacv1 "k8s.io/api/rbac/v1"
@@ -34,8 +33,10 @@ import (
 	lwsapi "sigs.k8s.io/lws/api/leaderworkerset/v1"
 
 	"github.com/kserve/kserve/pkg/apis/serving/v1alpha1"
+	"github.com/kserve/kserve/pkg/constants"
 	"github.com/kserve/kserve/pkg/credentials"
 	kserveTypes "github.com/kserve/kserve/pkg/types"
+	"github.com/kserve/kserve/pkg/utils"
 )
 
 func (r *LLMInferenceServiceReconciler) reconcileMultiNodeWorkload(ctx context.Context, llmSvc *v1alpha1.LLMInferenceService, storageConfig *kserveTypes.StorageInitializerConfig, credentialConfig *credentials.CredentialConfig) error {
@@ -183,7 +184,7 @@ func (r *LLMInferenceServiceReconciler) expectedMainMultiNodeLWS(ctx context.Con
 		}
 		expected.Spec.LeaderWorkerTemplate.LeaderTemplate.Spec.ServiceAccountName = serviceAccount.GetName()
 
-		if err := r.attachModelArtifacts(ctx, llmSvc, &expected.Spec.LeaderWorkerTemplate.LeaderTemplate.Spec, storageConfig, credentialConfig); err != nil {
+		if err := r.attachModelArtifacts(ctx, serviceAccount, llmSvc, &expected.Spec.LeaderWorkerTemplate.LeaderTemplate.Spec, storageConfig, credentialConfig); err != nil {
 			return nil, fmt.Errorf("failed to attach model artifacts to leader template: %w", err)
 		}
 
@@ -208,7 +209,7 @@ func (r *LLMInferenceServiceReconciler) expectedMainMultiNodeLWS(ctx context.Con
 		}
 		expected.Spec.LeaderWorkerTemplate.WorkerTemplate.Spec.ServiceAccountName = serviceAccount.GetName()
 
-		if err := r.attachModelArtifacts(ctx, llmSvc, &expected.Spec.LeaderWorkerTemplate.WorkerTemplate.Spec, storageConfig, credentialConfig); err != nil {
+		if err := r.attachModelArtifacts(ctx, serviceAccount, llmSvc, &expected.Spec.LeaderWorkerTemplate.WorkerTemplate.Spec, storageConfig, credentialConfig); err != nil {
 			return nil, fmt.Errorf("failed to attach model artifacts to worker template: %w", err)
 		}
 
@@ -294,7 +295,7 @@ func (r *LLMInferenceServiceReconciler) expectedPrefillMultiNodeLWS(ctx context.
 			}
 			expected.Spec.LeaderWorkerTemplate.LeaderTemplate.Spec.ServiceAccountName = serviceAccount.GetName()
 
-			if err := r.attachModelArtifacts(ctx, llmSvc, &expected.Spec.LeaderWorkerTemplate.LeaderTemplate.Spec, storageConfig, credentialConfig); err != nil {
+			if err := r.attachModelArtifacts(ctx, serviceAccount, llmSvc, &expected.Spec.LeaderWorkerTemplate.LeaderTemplate.Spec, storageConfig, credentialConfig); err != nil {
 				return nil, fmt.Errorf("failed to attach model artifacts to prefill leader template: %w", err)
 			}
 		}
@@ -302,7 +303,7 @@ func (r *LLMInferenceServiceReconciler) expectedPrefillMultiNodeLWS(ctx context.
 			expected.Spec.LeaderWorkerTemplate.WorkerTemplate.Spec = *llmSvc.Spec.Prefill.Worker.DeepCopy()
 			expected.Spec.LeaderWorkerTemplate.WorkerTemplate.Spec.ServiceAccountName = serviceAccount.GetName()
 
-			if err := r.attachModelArtifacts(ctx, llmSvc, &expected.Spec.LeaderWorkerTemplate.WorkerTemplate.Spec, storageConfig, credentialConfig); err != nil {
+			if err := r.attachModelArtifacts(ctx, serviceAccount, llmSvc, &expected.Spec.LeaderWorkerTemplate.WorkerTemplate.Spec, storageConfig, credentialConfig); err != nil {
 				return nil, fmt.Errorf("failed to attach model artifacts to prefill worker template: %w", err)
 			}
 		}
@@ -417,7 +418,7 @@ func (r *LLMInferenceServiceReconciler) expectedMultiNodeMainServiceAccount(ctx 
 		existingServiceAccount := &corev1.ServiceAccount{}
 		err := r.Client.Get(ctx, types.NamespacedName{Name: existingServiceAccountName, Namespace: llmSvc.Namespace}, existingServiceAccount)
 		if err != nil {
-			return nil, fmt.Errorf("failed to fetch existing multi node service account %s/%s: %w", existingServiceAccountName, llmSvc.Namespace, err)
+			return nil, fmt.Errorf("failed to fetch existing multi node main service account %s/%s: %w", llmSvc.Namespace, existingServiceAccountName, err)
 		}
 		expectedServiceAccount.Annotations = existingServiceAccount.Annotations
 		expectedServiceAccount.Labels = existingServiceAccount.Labels
@@ -460,7 +461,7 @@ func (r *LLMInferenceServiceReconciler) expectedMultiNodePrefillServiceAccount(c
 		existingServiceAccount := &corev1.ServiceAccount{}
 		err := r.Client.Get(ctx, types.NamespacedName{Name: existingServiceAccountName, Namespace: llmSvc.Namespace}, existingServiceAccount)
 		if err != nil {
-			return nil, fmt.Errorf("failed to fetch existing multi node service account %s/%s: %w", existingServiceAccountName, llmSvc.Namespace, err)
+			return nil, fmt.Errorf("failed to fetch existing multi node prefill service account %s/%s: %w", llmSvc.Namespace, existingServiceAccountName, err)
 		}
 		expectedServiceAccount.Annotations = existingServiceAccount.Annotations
 		expectedServiceAccount.Labels = existingServiceAccount.Labels
@@ -524,35 +525,47 @@ func (r *LLMInferenceServiceReconciler) expectedMultiNodeRoleBinding(llmSvc *v1a
 }
 
 func (r *LLMInferenceServiceReconciler) propagateLeaderWorkerSetMetadata(llmSvc *v1alpha1.LLMInferenceService, expected *lwsapi.LeaderWorkerSet) {
-	ann := make(map[string]string, len(expected.Annotations))
-	for k, v := range llmSvc.GetAnnotations() {
-		if strings.HasPrefix(k, "leaderworkerset.sigs.k8s.io") ||
-			strings.HasPrefix(k, "k8s.v1.cni.cncf.io") {
-			ann[k] = v
-			if expected.Annotations == nil {
-				expected.Annotations = make(map[string]string, 1)
-			}
-			expected.Annotations[k] = v
-		}
+	// Define the prefixes to approve for annotations and labels
+	approvedAnnotationPrefixes := []string{
+		"leaderworkerset.sigs.k8s.io",
+		"k8s.v1.cni.cncf.io",
+		constants.KueueAPIGroupName,
 	}
+	approvedLabelPrefixes := []string{
+		constants.KueueAPIGroupName,
+	}
+
+	// Propagate approved annotations to the LeaderWorkerSet's top-level metadata
+	utils.PropagatePrefixedMap(llmSvc.GetAnnotations(), &expected.Annotations, approvedAnnotationPrefixes...)
 
 	if expected.Spec.LeaderWorkerTemplate.LeaderTemplate != nil {
-		if expected.Spec.LeaderWorkerTemplate.LeaderTemplate.Annotations == nil {
-			expected.Spec.LeaderWorkerTemplate.LeaderTemplate.Annotations = ann
-		} else {
-			for k, v := range ann {
-				expected.Spec.LeaderWorkerTemplate.LeaderTemplate.Annotations[k] = v
-			}
-		}
+		utils.PropagatePrefixedMap(
+			llmSvc.GetAnnotations(),
+			&expected.Spec.LeaderWorkerTemplate.LeaderTemplate.Annotations,
+			approvedAnnotationPrefixes...,
+		)
 	}
 
-	if expected.Spec.LeaderWorkerTemplate.WorkerTemplate.Annotations == nil {
-		expected.Spec.LeaderWorkerTemplate.WorkerTemplate.Annotations = ann
-	} else {
-		for k, v := range ann {
-			expected.Spec.LeaderWorkerTemplate.WorkerTemplate.Annotations[k] = v
-		}
+	utils.PropagatePrefixedMap(
+		llmSvc.GetAnnotations(),
+		&expected.Spec.LeaderWorkerTemplate.WorkerTemplate.Annotations,
+		approvedAnnotationPrefixes...,
+	)
+
+	// Propagate approved labels
+	utils.PropagatePrefixedMap(llmSvc.GetLabels(), &expected.Labels, approvedLabelPrefixes...)
+	if expected.Spec.LeaderWorkerTemplate.LeaderTemplate != nil {
+		utils.PropagatePrefixedMap(
+			llmSvc.GetLabels(),
+			&expected.Spec.LeaderWorkerTemplate.LeaderTemplate.Labels,
+			approvedLabelPrefixes...,
+		)
 	}
+	utils.PropagatePrefixedMap(
+		llmSvc.GetLabels(),
+		&expected.Spec.LeaderWorkerTemplate.WorkerTemplate.Labels,
+		approvedLabelPrefixes...,
+	)
 }
 
 func semanticLWSIsEqual(expected *lwsapi.LeaderWorkerSet, curr *lwsapi.LeaderWorkerSet) bool {

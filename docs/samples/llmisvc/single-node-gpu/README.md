@@ -16,9 +16,8 @@ testing, or production deployments of smaller models (e.g., 7B parameter models)
 
 ## Examples
 
-### 1. Basic Deployment with Default Scheduler ([
-
-`llm-inference-service-qwen2-7b-gpu.yaml`](llm-inference-service-qwen2-7b-gpu.yaml))
+### 1. Basic Deployment with Default Scheduler 
+[`llm-inference-service-qwen2-7b-gpu.yaml`](llm-inference-service-qwen2-7b-gpu.yaml)
 
 Simplest deployment with default scheduler configuration.
 
@@ -41,9 +40,8 @@ Simplest deployment with default scheduler configuration.
 kubectl apply -f llm-inference-service-qwen2-7b-gpu.yaml
 ```
 
-### 2. Deployment Without Scheduler ([
-
-`llm-inference-service-qwen2-7b-gpu-no-scheduler.yaml`](llm-inference-service-qwen2-7b-gpu-no-scheduler.yaml))
+### 2. Deployment Without Scheduler 
+[`llm-inference-service-qwen2-7b-gpu-no-scheduler.yaml`](llm-inference-service-qwen2-7b-gpu-no-scheduler.yaml)
 
 Direct routing without scheduler component.
 
@@ -73,9 +71,8 @@ Direct routing without scheduler component.
 kubectl apply -f llm-inference-service-qwen2-7b-gpu-no-scheduler.yaml
 ```
 
-### 3. Prefill-Decode Separation ([
-
-`llm-inference-service-pd-qwen2-7b-gpu.yaml`](llm-inference-service-pd-qwen2-7b-gpu.yaml))
+### 3. Prefill-Decode Separation 
+[`llm-inference-service-pd-qwen2-7b-gpu.yaml`](llm-inference-service-pd-qwen2-7b-gpu.yaml)
 
 Advanced configuration separating prefill and decode workloads with KV cache transfer over RDMA.
 

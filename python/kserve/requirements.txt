@@ -977,7 +977,7 @@ pyrsistent==0.19.3 \
 python-dateutil==2.8.2 \
     --hash=sha256:0123cacc1627ae19ddf3c27a5de5bd67ee4586fbdd6440d9748f8abb483d3e86 \
     --hash=sha256:961d03dc3453ebbc59dbdea9e4e11c5651520a876d0f4db161e8674aae935da9
-python-rapidjson==1.10 \
+python-rapidjson==1.21 \
     --hash=sha256:acfecbf5edb91ec72a20a125de7f56b8c2f6161eff4c65382c8ee6a2484d3540 \
     --hash=sha256:1db7b0af882999f5685eb7046a0f3b3aca5d55a3e84b3089747d29a4ec6fdade \
     --hash=sha256:a87c8c8b615513f9dc414af1554140589036d14840f5e1f1845965e1c0a080e1 \

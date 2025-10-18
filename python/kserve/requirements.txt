@@ -1357,7 +1357,7 @@ mypy-extensions==1.0.0 \
 pluggy==1.0.0 \
     --hash=sha256:74134bbf457f031a36d68416e1509f34bd5ccc019f0bcc952c7b909d06b37bd3 \
     --hash=sha256:4224373bacce55f955a878bf9cfa763c1e360858e330072059e10bad68531159
-portforward==0.4.5 \
+portforward==0.7.3 \
     --hash=sha256:0ab9e2c155de1738d898a05dd46cdcfdaefd0f2bc9c09b527855dfe225f0b698 \
     --hash=sha256:5588ade92061c71fb667a3ee3b9ad2ffdcd7076ebdb8f91d330f1f54e48a1fc2 \
     --hash=sha256:ebbf8f4108e522b2469bd3734cab45ced9400dc41037ceb842394bcc36580b05 \

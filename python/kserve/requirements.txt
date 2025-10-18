@@ -1034,7 +1034,7 @@ python-rapidjson==1.10 \
     --hash=sha256:3706a5c4f21073c04be133c36565efc6e3f5646a03c8d19af78c19d7c70eb708 \
     --hash=sha256:47f9078ea6884f700166a8728d863609fec62232e66a33b8fb4a7706ce7c731c \
     --hash=sha256:9e4921ab7002ae9faad7f439a7c50aa195039f177e9e51a76c34c97966c79a79
-pytz==2023.3 \
+pytz==2023.4 \
     --hash=sha256:a151b3abb88eda1d4e34a9814df37de2a80e301e68ba0fd856fb9b46bfbbbffb \
     --hash=sha256:1d8ce29db189191fb55338ee6d0387d82ab59f3d00eac103412d64e0ebd0c588
 pywin32==306; (platform_system == "Windows") \

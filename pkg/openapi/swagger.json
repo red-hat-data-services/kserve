@@ -4195,6 +4195,9 @@
         "memoryRequest": {
           "type": "string",
           "default": ""
+        },
+        "upstreamTimeoutSeconds": {
+          "type": "string"
         }
       }
     },

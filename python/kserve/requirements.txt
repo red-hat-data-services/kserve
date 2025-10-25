@@ -1383,7 +1383,7 @@ portforward==0.4.5 \
     --hash=sha256:bcdee23d9e1ea582c0d1b4b4bbaa6b4e72de5382e9cbd02cb888946ed0c0ef2e \
     --hash=sha256:cf0446d19b9268e19ef3311001ecd703af2512d8d449fbc3cf7e7c49e5cb21f4 \
     --hash=sha256:0af1c501f2e74b2ac1c8997624bae1f55b938e51656c9516c7605201812927f9
-pytest==7.3.1 \
+pytest==7.4.4 \
     --hash=sha256:3799fa815351fea3a5e96ac7e503a96fa51cc9942c3753cda7651b93c1cfa362 \
     --hash=sha256:434afafd78b1d78ed0addf160ad2b77a30d35d4bdf8af234fe621919d9ed15e3
 pytest-asyncio==0.20.3 \

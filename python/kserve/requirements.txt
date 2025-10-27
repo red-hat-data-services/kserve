@@ -1406,7 +1406,7 @@ poetry==1.4.0 \
     --hash=sha256:151ad741e163a329c8b13ea602dde979b7616fc350cfcff74b604e93263934a8
 krbcontext==0.10 \
     --hash=sha256:f7f1bdc33a86f18f3d119a631eb250d1389378fdaea1a983eef8ef0996d64ab8
-hdfs==2.6.0 \
+hdfs==2.7.3 \
     --hash=sha256:05912125cfc68075387f271654dac185dc1aba8b347519f6a14d1395e39d7749 \
     --hash=sha256:bc92ce4347f106d48b541f756caa930476998cfd3eed477ffbd63ae9ad1cdc22
 requests-kerberos==0.14.0 \

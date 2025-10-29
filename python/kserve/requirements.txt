@@ -1,7 +1,7 @@
 #
 # Default dependencies
 #
-aiohttp==3.8.4 \
+aiohttp==3.13.2 \
     --hash=sha256:5ce45967538fb747370308d3145aa68a074bdecb4f3a300869590f725ced69c1 \
     --hash=sha256:b744c33b6f14ca26b7544e8d8aadff6b765a80ad6164fb1a430bbadd593dfb1a \
     --hash=sha256:1a45865451439eb320784918617ba54b7a377e3501fb70402ab84d38c2cd891b \

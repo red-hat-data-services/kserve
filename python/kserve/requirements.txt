@@ -1395,7 +1395,7 @@ pytest-cov==4.0.0 \
 pytest-xdist==3.3.1 \
     --hash=sha256:d5ee0520eb1b7bcca50a60a518ab7a7707992812c578198f8b44fdfac78e8c93 \
     --hash=sha256:ff9daa7793569e6a68544850fd3927cd257cc03a7ef76c95e86915355e82b5f2
-tomli==2.0.1; (python_full_version <= "3.11.0a6" and extra == "toml") or (python_version < "3.11") or (python_version < "3.11") \
+tomli==2.3.0; (python_full_version <= "3.11.0a6" and extra == "toml") or (python_version < "3.11") or (python_version < "3.11") \
     --hash=sha256:939de3e7a6161af0c887ef91b7d41a53e7c5a1ca976325f429cb46ea9bc30ecc \
     --hash=sha256:de526c12914f0c550d15924c62d72abc48d6fe7364aa87328337a31007fe8a4f
 tomlkit==0.11.8 \

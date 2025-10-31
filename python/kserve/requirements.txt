@@ -1259,7 +1259,7 @@ zipp==3.15.0; (python_version < "3.10") \
 #
 avro==1.11.1 \
     --hash=sha256:f123623ecc648d0e20ce14f8ed85162140c13cc4b108865d1b2529fbfa06c008
-coverage[toml]==7.2.5 \
+coverage[toml]==7.11.0 \
     --hash=sha256:883123d0bbe1c136f76b56276074b0c79b5817dd4238097ffa64ac67257f4b6c \
     --hash=sha256:d2fbc2a127e857d2f8898aaabcc34c37771bf78a4d5e17d3e1f5c30cd0cbc62a \
     --hash=sha256:5f3671662dc4b422b15776cdca89c041a6349b4864a43aa2350b6b0b03bbcc7f \

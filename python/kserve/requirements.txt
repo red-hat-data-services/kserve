@@ -847,7 +847,7 @@ platformdirs==3.5.1 \
 portalocker==2.7.0 \
     --hash=sha256:a07c5b4f3985c3cf4798369631fb7011adb498e2a46d8440efc75a8f29a0f983 \
     --hash=sha256:032e81d534a88ec1736d03f780ba073f047a06c478b06e2937486f334e955c51
-prometheus-client==0.13.1 \
+prometheus-client==0.23.1 \
     --hash=sha256:357a447fd2359b0a1d2e9b311a0c5778c330cfbe186d880ad5a6b39884652316 \
     --hash=sha256:ada41b891b79fca5638bd5cfe149efa86512eaa55987893becd2c6d8d0a5dfc5
 protobuf==3.20.3 \

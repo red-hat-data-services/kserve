@@ -1,6 +1,8 @@
 module github.com/kserve/kserve
 
-go 1.21
+go 1.23.0
+
+toolchain go1.23.7
 
 require (
 	cloud.google.com/go/storage v1.35.1
@@ -25,7 +27,7 @@ require (
 	go.uber.org/zap v1.27.0
 	gomodules.xyz/jsonpatch/v2 v2.4.0
 	google.golang.org/api v0.151.0
-	google.golang.org/protobuf v1.33.0
+	google.golang.org/protobuf v1.36.6
 	istio.io/api v1.19.4
 	istio.io/client-go v1.19.4
 	k8s.io/api v0.28.4
@@ -115,7 +117,7 @@ require (
 	google.golang.org/appengine v1.6.8 // indirect
 	google.golang.org/genproto v0.0.0-20231106174013-bbf56f31fb17 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20231106174013-bbf56f31fb17 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20231106174013-bbf56f31fb17 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20250324211829-b45e905df463 // indirect
 	google.golang.org/grpc v1.59.0 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect

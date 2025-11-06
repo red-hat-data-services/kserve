@@ -1,8 +1,8 @@
 module github.com/kserve/kserve/qpext
 
-go 1.22.0
+go 1.23
 
-toolchain go1.22.6
+toolchain go1.23.9
 
 require (
 	github.com/hashicorp/go-multierror v1.1.1
@@ -78,7 +78,7 @@ require (
 	k8s.io/utils v0.0.0-20240821151609-f90d01438635 // indirect
 	knative.dev/networking v0.0.0-20240815142417-37fdbdd0854b // indirect
 	knative.dev/pkg v0.0.0-20240815051656-89743d9bbf7c // indirect
-	sigs.k8s.io/json v0.0.0-20221116044647-bc3834ca7abd // indirect
+	sigs.k8s.io/json v0.0.0-20241014173422-cfa47c3a1cc8 // indirect
 	sigs.k8s.io/structured-merge-diff/v4 v4.4.1 // indirect
 	sigs.k8s.io/yaml v1.4.0 // indirect
 )

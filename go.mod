@@ -88,10 +88,6 @@ require (
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
-	github.com/nats-io/jwt/v2 v2.5.3 // indirect
-	github.com/nats-io/nats-server/v2 v2.10.9 // indirect
-	github.com/nats-io/nkeys v0.4.7 // indirect
-	github.com/nats-io/nuid v1.0.1 // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/perimeterx/marshmallow v1.1.4 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
@@ -124,7 +120,7 @@ require (
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	istio.io/gogo-genproto v0.0.0-20190930162913-45029607206a // indirect
+	istio.io/gogo-genproto v0.0.0-20230705213215-8f59b5a7ddde // indirect
 	k8s.io/apiextensions-apiserver v0.27.6 // indirect
 	k8s.io/component-base v0.27.6 // indirect
 	k8s.io/gengo v0.0.0-20221011193443-fad74ee6edd9 // indirect

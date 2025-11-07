@@ -6,7 +6,7 @@ All Tekton file updates **must be made in the `konflux-central` repository**.
 
 ## ✅ How to Make Changes
 
-To modify the pipelines for `kserve` in the `main` branch:
+To modify the pipelines for `kserve` in the `rhoai-3.2` release:
 
 - Clone the [`konflux-central`](https://github.com/red-hat-data-services/konflux-central) repository.
 
@@ -15,10 +15,10 @@ git clone git@github.com:red-hat-data-services/konflux-central.git
 cd konflux-central
 ```
 
-- Check out the branch
+- Check out the release branch
 
 ```bash
-git checkout main
+git checkout rhoai-3.2
 ```
 
 - Navigate to the Tekton files for your component(s).
@@ -32,8 +32,8 @@ cd pipelineruns/kserve/.tekton
 - Commit and push your changes.
 
 ```bash
-git commit -am "Update pipelinerun for kserve (main)"
-git push origin main
+git commit -am "Update pipelinerun for kserve (rhoai-3.2)"
+git push origin rhoai-3.2
 ```
 
 - Once pushed, automation will automatically sync your updates to the corresponding component repository.

@@ -1164,7 +1164,7 @@ typing-extensions==4.5.0 \
 urllib3==1.26.15 \
     --hash=sha256:aa751d169e23c7479ce47a0cb0da579e3ede798f994f5816a74e4f4500dcea42 \
     --hash=sha256:8a388717b9476f934a21484e8c8e61875ab60644d29b9b39e11e4b9dc1c6b305
-uvicorn==0.16.0 \
+uvicorn==0.38.0 \
     --hash=sha256:d8c839231f270adaa6d338d525e2652a0b4a5f4c2430b5c4ef6ae4d11776b0d2 \
     --hash=sha256:eacb66afa65e0648fcbce5e746b135d09722231ffffc61883d4fac2b62fbea8d
 virtualenv==20.21.0 \

@@ -760,7 +760,7 @@ opencensus==0.11.2 \
 opencensus-context==0.1.3 \
     --hash=sha256:a03108c3c10d8c80bb5ddf5c8a1f033161fa61972a9917f9b9b3a18517f0088c \
     --hash=sha256:073bb0590007af276853009fac7e4bab1d523c3f03baf4cb4511ca38967c6039
-orjson==3.8.12 \
+orjson==3.11.4 \
     --hash=sha256:c84046e890e13a119404a83f2e09e622509ed4692846ff94c4ca03654fbc7fb5 \
     --hash=sha256:29706dd8189835bcf1781faed286e99ae54fd6165437d364dfdbf0276bf39b19 \
     --hash=sha256:f4e22b0aa70c963ac01fcd620de15be21a5027711b0e5d4b96debcdeea43e3ae \

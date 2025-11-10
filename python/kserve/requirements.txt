@@ -296,7 +296,7 @@ cloudevents==1.9.0 \
 colorama==0.4.6; (platform_system == "Windows") or (platform_system == "Windows") or (sys_platform == "win32") \
     --hash=sha256:4f1d9991f5acc0ca119f9d443620b77f9d6b33703e51011c16baf57afb285fc6 \
     --hash=sha256:08695f5cb7ed6e0531a20572697297273c47b8cae5a63ffc6d6ed5c201be6e44
-colorful==0.5.5 \
+colorful==0.5.8 \
     --hash=sha256:62c187e27c1433db9463ff93b1451898d1e7e23a7e553583fd9daeb6325182e4 \
     --hash=sha256:66f8c1264b2a26f7293b96a03bb7a76c4bc8b9634369a0bffdcd12d618056a1d
 cryptography==40.0.2 \

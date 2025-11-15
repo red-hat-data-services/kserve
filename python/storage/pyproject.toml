@@ -27,7 +27,7 @@ azure-storage-blob = { version = "^12.20.0"}
 azure-storage-file-share = { version = "^12.16.0"}
 azure-identity = { version = "^1.15.0"}
 boto3 = { version = "^1.29.0"}
-huggingface-hub = { version = "^0.30.0", extras = ["hf-transfer"]}
+huggingface-hub = { version = "^1.0.0", extras = ["hf-transfer"]}
 
 
 #[tool.poetry-version-plugin]

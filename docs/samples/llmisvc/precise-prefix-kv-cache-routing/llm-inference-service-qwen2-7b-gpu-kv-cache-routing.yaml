@@ -26,6 +26,8 @@ spec:
               - "{{ ChildName .ObjectMeta.Name `-inference-pool` }}"
               - --pool-namespace
               - "{{ .ObjectMeta.Namespace }}"
+              - --pool-group
+              - inference.networking.x-k8s.io
               - --zap-encoder
               - json
               - --grpc-port

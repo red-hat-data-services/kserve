@@ -125,9 +125,9 @@ azure-core==1.26.4 \
 azure-identity==1.13.0 \
     --hash=sha256:c931c27301ffa86b07b4dcf574e29da73e3deba9ab5d1fe4f445bb6a3117e260 \
     --hash=sha256:bd700cebb80cd9862098587c29d8677e819beca33c62568ced6d5a8e5e332b82
-azure-storage-blob==12.16.0 \
-    --hash=sha256:43b45f19a518a5c6895632f263b3825ebc23574f25cc84b66e1630a6160e466f \
-    --hash=sha256:91bb192b2a97939c4259c72373bac0f41e30810bbc853d5184f0f45904eacafd
+azure-storage-blob==12.27.1 \
+    --hash=sha256:65d1e25a4628b7b6acd20ff7902d8da5b4fde8e46e19c8f6d213a3abc3ece272 \
+    --hash=sha256:a1596cc4daf5dac9be115fcb5db67245eae894cf40e4248243754261f7b674a6
 azure-storage-file-share==12.7.0 \
     --hash=sha256:91836e82258d957120af228bc2bcf2b5c6bf5bedb8f3546aa9409b7495aba832 \
     --hash=sha256:7dc8111a1a12e26356443639732f1424787883ab42913656cebed46a729cc654

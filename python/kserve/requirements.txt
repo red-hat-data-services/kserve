@@ -105,9 +105,9 @@ azure-storage-blob==12.19.1 ; python_version >= "3.8" and python_version < "3.12
 azure-storage-file-share==12.15.0 ; python_version >= "3.8" and python_version < "3.12" \
     --hash=sha256:0098f1cfa9344c4f781ce0cd504ff3a35255751553c01e720dccd0caa8d8aa2a \
     --hash=sha256:69cb8ec09f15dc5259126ceebff59a6dec4a5f23c37bfac4488dce4711385e60
-boto3==1.34.98 ; python_version >= "3.8" and python_version < "3.12" \
-    --hash=sha256:030e43b8efe22b4cf10b9f3ef9e30cd4cf9ef9784b26efe9a4583339f2b2bcec \
-    --hash=sha256:28c10956033fa79e64529f48c3b62db86d5e4b77024a7343764b6bde6b553543
+boto3==1.37.23; python_version >= "3.8" and python_version < "3.12" \
+    --hash=sha256:82f4599a34f5eb66e916b9ac8547394f6e5899c19580e74b60237db04cf66d1e \
+    --hash=sha256:fc462b9fd738bd8a1c121d94d237c6b6a05a2c1cc709d16f5223acb752f7310b
 botocore==1.34.98 ; python_version >= "3.8" and python_version < "3.12" \
     --hash=sha256:4cee65df02f4b0be08ad1401965cc89efafebc50ef0727d2d17083c7f1ed2831 \
     --hash=sha256:631c0031d8ce922b5752ab395ead896a0281b0dc74745a754d0351a27c5d83de

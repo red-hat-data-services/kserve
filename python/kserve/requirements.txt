@@ -748,7 +748,7 @@ numpy==1.24.3 \
     --hash=sha256:1a7d6acc2e7524c9955e5c903160aa4ea083736fde7e91276b0e5d98e6332812 \
     --hash=sha256:35400e6a8d102fd07c71ed7dcadd9eb62ee9a6e84ec159bd48c28235bbb0f8e4 \
     --hash=sha256:ab344f1bf21f140adab8e47fdbc7c35a477dc01408791f8ba00d018dd0bc5155
-nvidia-ml-py==11.525.112 \
+nvidia-ml-py==11.525.150 \
     --hash=sha256:c64e473953b65ec0ccc76cf3601c3130a0ac8060bbcaea912cc00fa8e4c9868d \
     --hash=sha256:bcb978afc52f44a98c48b3f619e16f567abf745d8796aaa8d36093fe7665d356
 oauthlib==3.2.2 \

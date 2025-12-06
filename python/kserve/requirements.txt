@@ -309,9 +309,9 @@ cryptography==42.0.5 ; python_version >= "3.8" and python_version < "3.12" \
 deprecation==2.1.0 ; python_version >= "3.8" and python_version < "3.12" \
     --hash=sha256:72b3bde64e5d778694b0cf68178aed03d15e15477116add3fb773e581f9518ff \
     --hash=sha256:a10811591210e1fb0e768a8c25517cabeabcba6f0bf96564f8ff45189f90b14a
-distlib==0.3.8 ; python_version >= "3.8" and python_version < "3.12" \
-    --hash=sha256:034db59a0b96f8ca18035f36290806a9a6e6bd9d1ff91e45a7f172eb17e51784 \
-    --hash=sha256:1530ea13e350031b6312d8580ddb6b27a104275a31106523b8f123787f494f64
+distlib==0.3.9; python_version >= "3.8" and python_version < "3.12" \
+    --hash=sha256:47f8c22fd27c27e25a65601af709b38e4f0a45ea4fc2e710f65755fa8caaaf87 \
+    --hash=sha256:a60f20dea646b8a33f3e7772f74dc0b2d0772d2837ee1342a00645c81edf9403
 exceptiongroup==1.2.1 ; python_version >= "3.8" and python_version < "3.11" \
     --hash=sha256:5258b9ed329c5bbdd31a309f53cbfb0b155341807f6ff7606a1e801a891b29ad \
     --hash=sha256:a4785e48b045528f5bfe627b6ad554ff32def154f42372786903b7abcfe1aa16

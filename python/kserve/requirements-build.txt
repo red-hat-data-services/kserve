@@ -9,7 +9,7 @@ Cython==3.0.11
 decorator==5.1.1
 docopt==0.6.2
 dulwich==0.21.7
-fastjsonschema==2.20.0
+fastjsonschema==2.21.1
 gssapi==1.8.3
 hdfs==2.6.0
 importlib-metadata==8.5.0

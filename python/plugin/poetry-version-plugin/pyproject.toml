@@ -41,7 +41,7 @@ poetry-version-plugin = "poetry_version_plugin.plugin:VersionPlugin"
 
 
 [tool.poetry.group.dev.dependencies]
-black = "^22.10.0"
+black = "^25.0.0"
 mypy = "^0.982"
 pytest = "^7.1.3"
 coverage = "^6.5.0"

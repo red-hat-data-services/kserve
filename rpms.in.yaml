@@ -19,20 +19,6 @@ contentOrigin:
 
 packages:
   - shadow-utils #most kserve components need this
-  - python3.11 # needed for storage-initializer
-  - python3.11-pip
-  - python3.11-devel
-  - gcc
-  - libffi-devel
-  - openssl-devel
-  - krb5-workstation
-  - krb5-libs
-  - krb5-devel
-  - gcc-c++ # this and below - needed for storage-initializer on power/z
-  - cmake
-  - rust
-  - cargo
-  - perl
 context:
   containerfile:
     file: Dockerfiles/controller.Dockerfile.konflux

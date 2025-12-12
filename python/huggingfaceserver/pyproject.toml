@@ -36,7 +36,7 @@ openai = "^1.59.9"
 optional = true
 
 [tool.poetry.group.dev.dependencies]
-black = { version = "~24.3.0", extras = ["colorama"] }
+black = { version = "~24.10.0", extras = ["colorama"] }
 
 [tool.poetry-version-plugin]
 source = "file"

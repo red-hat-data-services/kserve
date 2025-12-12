@@ -2,7 +2,7 @@ module github.com/kserve/kserve/qpext
 
 go 1.22.0
 
-toolchain go1.22.6
+toolchain go1.25.4
 
 require (
 	github.com/hashicorp/go-multierror v1.1.1

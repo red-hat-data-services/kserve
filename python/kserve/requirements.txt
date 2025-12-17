@@ -1555,9 +1555,8 @@ zipp==3.17.0 ; python_version >= "3.8" and python_version < "3.9" \
     --hash=sha256:84e64a1c28cf7e91ed2078bb8cc8c259cb19b76942096c8d7b84947690cabaf0
 krbcontext==0.10 \
     --hash=sha256:f7f1bdc33a86f18f3d119a631eb250d1389378fdaea1a983eef8ef0996d64ab8
-hdfs==2.6.0 \
-    --hash=sha256:05912125cfc68075387f271654dac185dc1aba8b347519f6a14d1395e39d7749 \
-    --hash=sha256:bc92ce4347f106d48b541f756caa930476998cfd3eed477ffbd63ae9ad1cdc22
+hdfs==2.7.3 \
+    --hash=sha256:752a21e43f82197dce43697c73f454ba490838108c73a57a9247efb66d1c0479
 requests-kerberos==0.14.0 \
     --hash=sha256:da74ea478ccd8584de88092bdcd17a7c29d494374a340d1d8677189903c9ac6a \
     --hash=sha256:cda9d1240ae5392e081869881c8742d0e171fd6a893a7ac0875db2748e966fd1

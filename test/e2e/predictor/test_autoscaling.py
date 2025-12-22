@@ -638,7 +638,6 @@ async def test_scaling_sklearn_with_keda_otel_add_on(rest_v1_client, network_lay
             namespace=KSERVE_TEST_NAMESPACE,
             annotations=annotations,
             labels=labels,
-        ),
         spec=V1beta1InferenceServiceSpec(predictor=predictor),
     )
 

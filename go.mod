@@ -160,7 +160,7 @@ require (
 	gopkg.in/evanphx/json-patch.v4 v4.12.0 // indirect
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
-	gopkg.in/yaml.v2 v2.4.0 // indirect
+	gopkg.in/yaml.v3 v3.0.1 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	k8s.io/gengo/v2 v2.0.0-20250207200755-1244d31929d7 // indirect
 	sigs.k8s.io/json v0.0.0-20241014173422-cfa47c3a1cc8 // indirect

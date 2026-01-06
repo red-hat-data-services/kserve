@@ -30,7 +30,7 @@ spec:
     - '{{target_branch}}-{{revision}}'
   - name: additional-labels
     value:
-    - version=v2.25.1
+    - version=v2.25.2
     - io.openshift.tags=odh-kserve-router
   - name: output-image
     value: quay.io/rhoai/odh-kserve-router-rhel9:{{target_branch}}

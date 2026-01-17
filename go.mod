@@ -40,7 +40,7 @@ require (
 	k8s.io/kube-openapi v0.0.0-20240827152857-f7e401e7b4c2
 	k8s.io/utils v0.0.0-20240821151609-f90d01438635
 	knative.dev/networking v0.0.0-20240815142417-37fdbdd0854b
-	knative.dev/pkg v0.0.0-20240815051656-89743d9bbf7c
+	knative.dev/pkg 8c840449eed2
 	knative.dev/serving v0.42.2
 	sigs.k8s.io/controller-runtime v0.19.1
 	sigs.k8s.io/yaml v1.4.0

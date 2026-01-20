@@ -19,7 +19,7 @@ bitsandbytes = ">=0.45.3"
 flashinfer-python = "~0.2.5"
 modelscope = "^1.16.0"
 setuptools = ">=70.0.0"
-torchaudio = {version = ">=2.7.0,<2.8.0", source = "pytorch-cpu"}
+torchaudio = {version = ">=2.10.0,<2.11.0", source = "pytorch-cpu"}
 torchvision = {version = ">=0.22.0,<0.23.0", source = "pytorch-cpu"}
 
 [tool.poetry.group.test]

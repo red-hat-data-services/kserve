@@ -42,7 +42,7 @@ spec:
   - name: path-context
     value: python
   - name: hermetic
-    value: true
+    value: false
   - name: prefetch-input
     value: |
       [{"path": ".", "type": "rpm"}]

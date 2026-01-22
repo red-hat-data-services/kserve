@@ -12,7 +12,6 @@ metadata:
       && target_branch == "rhoai-2.16"
       && ( !".tekton/**".pathChanged() || ".tekton/kserve-router-216-push.yaml".pathChanged() )
       && !"config/overlays/odh/params.env".pathChanged()
-  creationTimestamp:
   labels:
     appstudio.openshift.io/application: kserve-router
     appstudio.openshift.io/component: kserve-router-216
@@ -42,6 +41,8 @@ spec:
     value: true
   - name: skip-checks
     value: "true"
+  - name: rhoai-version
+    value: "2.16.4"
   pipelineRef:
     resolver: git
     params:

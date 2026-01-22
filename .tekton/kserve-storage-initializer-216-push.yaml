@@ -12,7 +12,6 @@ metadata:
       && target_branch == "rhoai-2.16"
       && ( "python/**".pathChanged() || ".tekton/kserve-storage-initializer-216-push.yaml".pathChanged() )
       && !"config/overlays/odh/params.env".pathChanged()
-  creationTimestamp:
   labels:
     appstudio.openshift.io/application: kserve-storage-initializer
     appstudio.openshift.io/component: kserve-storage-initializer-216
@@ -44,6 +43,8 @@ spec:
     value: true
   - name: skip-checks
     value: "true"
+  - name: rhoai-version
+    value: "2.16.4"
   pipelineRef:
     resolver: git
     params:

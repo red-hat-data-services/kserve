@@ -34,7 +34,7 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = "^3.7"
-poetry = "^1.2.2"
+poetry = "^2.0.0"
 
 [tool.poetry.plugins."poetry.plugin"]
 poetry-version-plugin = "poetry_version_plugin.plugin:VersionPlugin"

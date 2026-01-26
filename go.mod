@@ -21,7 +21,7 @@ require (
 	github.com/onsi/ginkgo/v2 v2.23.4
 	github.com/onsi/gomega v1.37.0
 	github.com/open-telemetry/opentelemetry-operator v0.113.0
-	github.com/openshift/api v0.0.0-20241108213852-e22f17d9b7f5
+	github.com/openshift/api 606bd613f9f7
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring v0.76.2
 	github.com/spf13/cobra v1.8.1

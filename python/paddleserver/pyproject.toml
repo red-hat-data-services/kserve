@@ -13,7 +13,7 @@ packages = [
 python = ">=3.10,<3.13"
 kserve = {path = "../kserve", extras = ["storage"], develop = true}
 paddlepaddle = {version="^2.6.1", markers = "platform_system != 'Windows'"}
-setuptools = "^70.0.0"
+setuptools = "^80.0.0"
 
 [tool.poetry.group.test]
 optional = true

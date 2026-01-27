@@ -490,9 +490,9 @@ google-crc32c==1.5.0 \
 google-resumable-media==2.5.0; (python_version >= "3.6") \
     --hash=sha256:218931e8e2b2a73a58eb354a288e03a0fd5fb1c4583261ac6e4c078666468c93 \
     --hash=sha256:da1bd943e2e114a56d85d6848497ebf9be6a14d3db23e9fc57581e7c3e8170ec
-googleapis-common-protos==1.59.0 \
-    --hash=sha256:4168fcb568a826a52f23510412da405abd93f4d23ba544bb68d943b14ba3cb44 \
-    --hash=sha256:b287dc48449d1d41af0c69f4ea26242b5ae4c3d7249a38b0984c86a4caffff1f
+googleapis-common-protos==1.70.0 \
+    --hash=sha256:0e1b44e0ea153e6594f9f394fef15193a68aaaea2d843f83e2742717ca753257 \
+    --hash=sha256:b8bfcca8c25a2bb253e0e0b0adaf8c00773e5e6af6fd92397576680b807e0fd8
 gpustat==1.1 \
     --hash=sha256:c8fc105404aac11884f70ed2fa06cfd210d3cd389ccae4a9bc38579c72460cee
 grpcio==1.51.3 \

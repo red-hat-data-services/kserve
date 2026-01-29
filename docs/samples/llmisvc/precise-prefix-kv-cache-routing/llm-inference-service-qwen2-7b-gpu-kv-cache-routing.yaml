@@ -50,7 +50,7 @@ spec:
                   topicFilter: kv
                 indexerConfig:
                   tokenProcessorConfig:
-                    blockSize: 16
+                    blockSize: 64
                     hashSeed: '42'
                   kvBlockIndexConfig:
                     enableMetrics: true
@@ -94,7 +94,7 @@ spec:
             value: "42"
           # Configure vLLM for prefix caching with KV cache event publishing
           - name: VLLM_ADDITIONAL_ARGS
-            value: '--enable-prefix-caching --prefix-caching-hash-algo sha256_cbor --block-size 16 --kv-events-config ''{"enable_kv_cache_events": true, "publisher": "zmq", "endpoint": "tcp://qwen2-7b-kv-cache-routing-epp-service:5557", "topic": "kv@$(POD_IP)@$(MODEL_NAME)"}'''
+            value: '--enable-prefix-caching --prefix-caching-hash-algo sha256_cbor --block-size 64 --kv-events-config ''{"enable_kv_cache_events": true, "publisher": "zmq", "endpoint": "tcp://qwen2-7b-kv-cache-routing-epp-service:5557", "topic": "kv@$(POD_IP)@$(MODEL_NAME)"}'''
         resources:
           limits:
             cpu: '4'

@@ -24,7 +24,7 @@ This example demonstrates precise prefix cache routing with cache block tracking
 - Replicas: 2
 - GPU per replica: 1
 - Prefix caching algorithm: `sha256_cbor`
-- Block size: 16 tokens
+- Block size: 64 tokens
 - KV cache tracking: Enabled via ZMQ
 
 **Key Features:**
@@ -32,7 +32,7 @@ This example demonstrates precise prefix cache routing with cache block tracking
 - **Precise Prefix Cache Scorer**: Routes requests to endpoints with matching KV cache blocks (weight: 2.0)
 - **Load-Aware Scorer**: Balances load across endpoints (weight: 1.0)
 - **Cache Tracking**: Real-time tracking of KV cache blocks using ZMQ events via kvEventsConfig
-- **Block Size**: 16 tokens (configurable, must match between vLLM and scheduler)
+- **Block Size**: 64 tokens (configurable, must match between vLLM and scheduler)
 - **Hash Seed**: PYTHONHASHSEED=42 (must match across all components)
 
 ## How It Works
@@ -52,7 +52,7 @@ The example uses a custom scheduler configuration with the following plugins:
 - **single-profile-handler**: Single scheduling profile for all requests
 - **precise-prefix-cache-scorer**:
   - kvEventsConfig: ZMQ endpoint `tcp://*:5557` with topic filter `kv`
-  - Block size: 16 tokens (must match vLLM `--block-size`)
+  - Block size: 64 tokens (must match vLLM `--block-size`)
   - Hash seed: 42 (must match `PYTHONHASHSEED`)
   - Metrics enabled with 10-second logging interval
 - **load-aware-scorer**: Balances load across endpoints
@@ -66,7 +66,7 @@ Key vLLM settings for cache routing:
 VLLM_ADDITIONAL_ARGS:
   - --enable-prefix-caching
   - --prefix-caching-hash-algo sha256_cbor
-  - --block-size 16
+  - --block-size 64
   - --kv-events-config '{"enable_kv_cache_events":true,"publisher":"zmq","endpoint":"tcp://...:5557","topic":"kv@$(POD_IP)@$(MODEL_NAME)"}'
 
 PYTHONHASHSEED: "42"
@@ -78,7 +78,7 @@ PYTHONHASHSEED: "42"
 
 The block size must match between vLLM and the scheduler. Common values:
 - Default: 16 tokens
-- This example: 16 tokens
+- This example: 64 tokens
 - Larger blocks = fewer cache blocks, but less granular matching
 
 ### Hash Seed

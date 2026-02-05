@@ -69,7 +69,7 @@ func (r *LLMInferenceServiceReconciler) reconcileIstioDestinationRules(ctx conte
 	}
 
 	if llmSvc.Spec.Router != nil && llmSvc.Spec.Router.Route != nil && !llmSvc.Spec.Router.Route.HTTP.HasRefs() {
-		routes = append(routes, r.expectedHTTPRoute(llmSvc))
+		routes = append(routes, r.expectedHTTPRoute(ctx, llmSvc))
 	}
 
 	cfg, err := LoadConfig(ctx, r.Clientset)
@@ -222,7 +222,7 @@ func (r *LLMInferenceServiceReconciler) expectedIstioDestinationRuleForShadowSer
 	if shadowSvc != nil {
 		hostname := network.GetServiceHostname(shadowSvc.GetName(), shadowSvc.GetNamespace())
 		dr.Spec.Host = hostname
-		dr.Spec.TrafficPolicy.Tls.Sni = hostname
+		dr.Spec.TrafficPolicy.Tls.Sni = network.GetServiceHostname(kmeta.ChildName(llmSvc.GetName(), "-kserve-workload-svc"), llmSvc.GetNamespace())
 	}
 
 	log.FromContext(ctx).V(2).Info("Expected destination rule for workload shadow service", "destinationrule", dr)

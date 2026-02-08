@@ -1,6 +1,6 @@
 module github.com/kserve/kserve/qpext
 
-go 1.23.6
+go 1.24.0
 
 require (
 	github.com/hashicorp/go-multierror v1.1.1
@@ -50,7 +50,7 @@ require (
 	go.uber.org/automaxprocs v1.6.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/net v0.37.0 // indirect
-	golang.org/x/oauth2 v0.28.0 // indirect
+	golang.org/x/oauth2 v0.35.0 // indirect
 	golang.org/x/sync v0.12.0 // indirect
 	golang.org/x/sys v0.31.0 // indirect
 	golang.org/x/term v0.30.0 // indirect

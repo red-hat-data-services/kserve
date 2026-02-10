@@ -156,9 +156,17 @@ func (r *LLMInferenceServiceReconciler) expectedIstioDestinationRuleForScheduler
 		Spec: istionetworking.DestinationRule{
 			TrafficPolicy: &istionetworking.TrafficPolicy{
 				Tls: &istionetworking.ClientTLSSettings{
-					Mode:               istionetworking.ClientTLSSettings_SIMPLE,
-					CaCertificates:     "/var/run/secrets/kubernetes.io/serviceaccount/service-ca.crt",
-					InsecureSkipVerify: &pbwrappers.BoolValue{Value: false},
+					Mode: istionetworking.ClientTLSSettings_SIMPLE,
+					// TODO: after 3.4, we can flip this back to false
+					//CaCertificates: IstioCACertificatePath,
+					//
+					// The scheduler didn't support watching and auto-reloading certificates
+					// in previous versions.
+					// It is fixed by https://github.com/kubernetes-sigs/gateway-api-inference-extension/pull/1765.
+					// Without a restart, on upgrade, we will get errors like
+					// '{"object":"error","message":"[{'type': 'missing', 'loc': ('body',), 'msg': 'Field required', 'input': None}]","type":"Bad Request","param":null,"code":400}'
+					// Once the upgrade to 3.4 is done, the certs will have the expected SAN.
+					InsecureSkipVerify: &pbwrappers.BoolValue{Value: true},
 				},
 			},
 			// Export to all namespaces, this is the default, however, we keep the configuration explicit.
@@ -210,9 +218,17 @@ func (r *LLMInferenceServiceReconciler) expectedIstioDestinationRuleForShadowSer
 		Spec: istionetworking.DestinationRule{
 			TrafficPolicy: &istionetworking.TrafficPolicy{
 				Tls: &istionetworking.ClientTLSSettings{
-					Mode:               istionetworking.ClientTLSSettings_SIMPLE,
-					CaCertificates:     "/var/run/secrets/kubernetes.io/serviceaccount/service-ca.crt",
-					InsecureSkipVerify: &pbwrappers.BoolValue{Value: false},
+					Mode: istionetworking.ClientTLSSettings_SIMPLE,
+					// TODO: after 3.4, we can flip this back to false
+					//CaCertificates: IstioCACertificatePath,
+					//
+					// The scheduler didn't support watching and auto-reloading certificates
+					// in previous versions.
+					// It is fixed by https://github.com/kubernetes-sigs/gateway-api-inference-extension/pull/1765.
+					// Without a restart, on upgrade, we will get errors like
+					// '{"object":"error","message":"[{'type': 'missing', 'loc': ('body',), 'msg': 'Field required', 'input': None}]","type":"Bad Request","param":null,"code":400}'
+					// Once the upgrade to 3.4 is done, the certs will have the expected SAN.
+					InsecureSkipVerify: &pbwrappers.BoolValue{Value: true},
 				},
 			},
 			// Export to all namespaces, this is the default, however, we keep the configuration explicit.
@@ -258,6 +274,12 @@ func (r *LLMInferenceServiceReconciler) expectedIstioDestinationRuleForWorkload(
 			// Export to all namespaces, this is the default, however, we keep the configuration explicit.
 			ExportTo: []string{"*"},
 		},
+	}
+
+	if llmSvc.Spec.Prefill != nil {
+		// This is kept for backward compatibility, the sidecar doesn't support watching and auto-reloading certificates yet.
+		dr.Spec.TrafficPolicy.Tls.CaCertificates = ""
+		dr.Spec.TrafficPolicy.Tls.InsecureSkipVerify = &pbwrappers.BoolValue{Value: true}
 	}
 
 	log.FromContext(ctx).V(2).Info("Expected destination rule for workload service", "destinationrule", dr)

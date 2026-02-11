@@ -42,15 +42,15 @@ func (r *LLMInferenceServiceReconciler) validateGatewayOCP(ctx context.Context, 
 	// security issue, if that ever happens we need to delete the HTTPRoute immediately to make the service inaccessible.
 	//
 	// if it gets installed after Kserve startup, the controller needs to be restarted.
-	if ok, _ := utils.IsCrdAvailable(r.Config, authPolicyGVK.GroupVersion().String(), authPolicyGVK.Kind); !ok && llmSvc.IsAuthEnabled() {
-		route := r.expectedHTTPRoute(llmSvc)
+	if ok, _ := utils.IsCrdAvailable(r.Config, authPolicyGVK.GroupVersion().String(), authPolicyGVK.Kind); !ok && isAuthEnabledForService(llmSvc) {
+		route := r.expectedHTTPRoute(ctx, llmSvc)
 		if err := Delete(ctx, r, llmSvc, route); err != nil {
 			return fmt.Errorf("AuthPolicy CRD is not available, please install Red Hat Connectivity Link: %w", err)
 		}
 		return errors.New("AuthPolicy CRD is not available, please install Red Hat Connectivity Link")
 	}
 
-	logger.Info("Connectivity Link is installed or Auth is disabled", "authEnabled", llmSvc.IsAuthEnabled())
+	logger.Info("Red Hat Connectivity Link (Kuadrant) is installed or Auth is disabled", "authEnabled", isAuthEnabledForService(llmSvc))
 
 	return nil
 }

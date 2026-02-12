@@ -25,6 +25,7 @@ import (
 	monitoringv1 "github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/fields"
+	"k8s.io/utils/env"
 	"sigs.k8s.io/controller-runtime/pkg/cache"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
@@ -34,6 +35,7 @@ import (
 	istioclientv1beta1 "istio.io/client-go/pkg/apis/networking/v1beta1"
 	corev1 "k8s.io/api/core/v1"
 	rbacv1 "k8s.io/api/rbac/v1"
+	"k8s.io/client-go/dynamic"
 	"k8s.io/client-go/kubernetes"
 	typedcorev1 "k8s.io/client-go/kubernetes/typed/core/v1"
 	_ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
@@ -72,6 +74,14 @@ var setupLog = ctrl.Log.WithName("setup")
 
 const (
 	LeaderLockName = "kserve-controller-manager-leader-lock"
+)
+
+// Environment variable names for enabling/disabling controllers
+const (
+	EnvEnableISVCController           = "ENABLE_ISVC_CONTROLLER"
+	EnvEnableLLMISVCController        = "ENABLE_LLMISVC_CONTROLLER"
+	EnvEnableTrainedModelController   = "ENABLE_TRAINED_MODEL_CONTROLLER"
+	EnvEnableInferenceGraphController = "ENABLE_INFERENCE_GRAPH_CONTROLLER"
 )
 
 // Options defines the program configurable options that may be passed on the command line.
@@ -130,6 +140,13 @@ func main() {
 	clientSet, err := kubernetes.NewForConfig(cfg)
 	if err != nil {
 		setupLog.Error(err, "unable to create clientSet")
+		os.Exit(1)
+	}
+
+	// Setup dynamic client for unstructured resource operations (e.g., v1 InferencePool)
+	dynamicClient, err := dynamic.NewForConfig(cfg)
+	if err != nil {
+		setupLog.Error(err, "unable to create dynamicClient")
 		os.Exit(1)
 	}
 
@@ -306,62 +323,82 @@ func main() {
 	}
 
 	// Setup all Controllers
-	setupLog.Info("Setting up v1beta1 controller")
 	eventBroadcaster := record.NewBroadcaster()
 	eventBroadcaster.StartRecordingToSink(&typedcorev1.EventSinkImpl{Interface: clientSet.CoreV1().Events("")})
-	if err = (&v1beta1controller.InferenceServiceReconciler{
-		Client:    mgr.GetClient(),
-		Clientset: clientSet,
-		Log:       ctrl.Log.WithName("v1beta1Controllers").WithName("InferenceService"),
-		Scheme:    scheme,
-		Recorder: eventBroadcaster.NewRecorder(
-			scheme, corev1.EventSource{Component: "v1beta1Controllers"}),
-	}).SetupWithManager(mgr, deployConfig, ingressConfig); err != nil {
-		setupLog.Error(err, "unable to create controller", "v1beta1Controller", "InferenceService")
-		os.Exit(1)
+
+	// Setup InferenceService controller (enabled by default)
+	if isEnabled, _ := env.GetBool(EnvEnableISVCController, true); isEnabled {
+		setupLog.Info("Setting up v1beta1 InferenceService controller")
+		if err = (&v1beta1controller.InferenceServiceReconciler{
+			Client:    mgr.GetClient(),
+			Clientset: clientSet,
+			Log:       ctrl.Log.WithName("v1beta1Controllers").WithName("InferenceService"),
+			Scheme:    scheme,
+			Recorder: eventBroadcaster.NewRecorder(
+				scheme, corev1.EventSource{Component: "v1beta1Controllers"}),
+		}).SetupWithManager(mgr, deployConfig, ingressConfig); err != nil {
+			setupLog.Error(err, "unable to create controller", "v1beta1Controller", "InferenceService")
+			os.Exit(1)
+		}
+	} else {
+		setupLog.Info("InferenceService controller is disabled")
 	}
 
-	setupLog.Info("Setting up LLMInferenceService controller")
-	llmEventBroadcaster := record.NewBroadcaster()
-	llmEventBroadcaster.StartRecordingToSink(&typedcorev1.EventSinkImpl{Interface: clientSet.CoreV1().Events("")})
-	if err = (&llmisvc.LLMInferenceServiceReconciler{
-		Client:        mgr.GetClient(),
-		Config:        mgr.GetConfig(),
-		Clientset:     clientSet,
-		EventRecorder: llmEventBroadcaster.NewRecorder(scheme, corev1.EventSource{Component: "LLMInferenceServiceController"}),
-	}).SetupWithManager(mgr); err != nil {
-		setupLog.Error(err, "unable to create controller", "v1beta1Controller", "InferenceService")
-		os.Exit(1)
+	// Setup LLMInferenceService controller (enabled by default)
+	if isEnabled, _ := env.GetBool(EnvEnableLLMISVCController, true); isEnabled {
+		setupLog.Info("Setting up LLMInferenceService controller")
+		llmEventBroadcaster := record.NewBroadcaster()
+		llmEventBroadcaster.StartRecordingToSink(&typedcorev1.EventSinkImpl{Interface: clientSet.CoreV1().Events("")})
+		if err = (&llmisvc.LLMInferenceServiceReconciler{
+			Client:        mgr.GetClient(),
+			Config:        mgr.GetConfig(),
+			Clientset:     clientSet,
+			DynamicClient: dynamicClient,
+			EventRecorder: llmEventBroadcaster.NewRecorder(scheme, corev1.EventSource{Component: "LLMInferenceServiceController"}),
+		}).SetupWithManager(mgr); err != nil {
+			setupLog.Error(err, "unable to create controller", "controller", "LLMInferenceService")
+			os.Exit(1)
+		}
+	} else {
+		setupLog.Info("LLMInferenceService controller is disabled")
 	}
 
-	// Setup TrainedModel controller
-	trainedModelEventBroadcaster := record.NewBroadcaster()
-	setupLog.Info("Setting up v1beta1 TrainedModel controller")
-	trainedModelEventBroadcaster.StartRecordingToSink(&typedcorev1.EventSinkImpl{Interface: clientSet.CoreV1().Events("")})
-	if err = (&trainedmodelcontroller.TrainedModelReconciler{
-		Client:                mgr.GetClient(),
-		Log:                   ctrl.Log.WithName("v1beta1Controllers").WithName("TrainedModel"),
-		Scheme:                scheme,
-		Recorder:              eventBroadcaster.NewRecorder(scheme, corev1.EventSource{Component: "v1beta1Controllers"}),
-		ModelConfigReconciler: modelconfig.NewModelConfigReconciler(mgr.GetClient(), clientSet, scheme),
-	}).SetupWithManager(mgr); err != nil {
-		setupLog.Error(err, "unable to create controller", "v1beta1Controllers", "TrainedModel")
-		os.Exit(1)
+	// Setup TrainedModel controller (enabled by default)
+	if isEnabled, _ := env.GetBool(EnvEnableTrainedModelController, true); isEnabled {
+		setupLog.Info("Setting up TrainedModel controller")
+		trainedModelEventBroadcaster := record.NewBroadcaster()
+		trainedModelEventBroadcaster.StartRecordingToSink(&typedcorev1.EventSinkImpl{Interface: clientSet.CoreV1().Events("")})
+		if err = (&trainedmodelcontroller.TrainedModelReconciler{
+			Client:                mgr.GetClient(),
+			Log:                   ctrl.Log.WithName("v1beta1Controllers").WithName("TrainedModel"),
+			Scheme:                scheme,
+			Recorder:              eventBroadcaster.NewRecorder(scheme, corev1.EventSource{Component: "v1beta1Controllers"}),
+			ModelConfigReconciler: modelconfig.NewModelConfigReconciler(mgr.GetClient(), clientSet, scheme),
+		}).SetupWithManager(mgr); err != nil {
+			setupLog.Error(err, "unable to create controller", "controller", "TrainedModel")
+			os.Exit(1)
+		}
+	} else {
+		setupLog.Info("TrainedModel controller is disabled")
 	}
 
-	// Setup Inference graph controller
-	inferenceGraphEventBroadcaster := record.NewBroadcaster()
-	setupLog.Info("Setting up InferenceGraph controller")
-	inferenceGraphEventBroadcaster.StartRecordingToSink(&typedcorev1.EventSinkImpl{Interface: clientSet.CoreV1().Events("")})
-	if err = (&graphcontroller.InferenceGraphReconciler{
-		Client:    mgr.GetClient(),
-		Clientset: clientSet,
-		Log:       ctrl.Log.WithName("v1alpha1Controllers").WithName("InferenceGraph"),
-		Scheme:    scheme,
-		Recorder:  eventBroadcaster.NewRecorder(scheme, corev1.EventSource{Component: "InferenceGraphController"}),
-	}).SetupWithManager(mgr, deployConfig); err != nil {
-		setupLog.Error(err, "unable to create controller", "v1alpha1Controllers", "InferenceGraph")
-		os.Exit(1)
+	// Setup InferenceGraph controller (enabled by default)
+	if isEnabled, _ := env.GetBool(EnvEnableInferenceGraphController, true); isEnabled {
+		setupLog.Info("Setting up InferenceGraph controller")
+		inferenceGraphEventBroadcaster := record.NewBroadcaster()
+		inferenceGraphEventBroadcaster.StartRecordingToSink(&typedcorev1.EventSinkImpl{Interface: clientSet.CoreV1().Events("")})
+		if err = (&graphcontroller.InferenceGraphReconciler{
+			Client:    mgr.GetClient(),
+			Clientset: clientSet,
+			Log:       ctrl.Log.WithName("v1alpha1Controllers").WithName("InferenceGraph"),
+			Scheme:    scheme,
+			Recorder:  eventBroadcaster.NewRecorder(scheme, corev1.EventSource{Component: "InferenceGraphController"}),
+		}).SetupWithManager(mgr, deployConfig); err != nil {
+			setupLog.Error(err, "unable to create controller", "controller", "InferenceGraph")
+			os.Exit(1)
+		}
+	} else {
+		setupLog.Info("InferenceGraph controller is disabled")
 	}
 
 	setupLog.Info("setting up webhook server")

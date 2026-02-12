@@ -51,7 +51,6 @@ ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 RUN microdnf install -y  \
         shadow-utils python3.11 \
-       python3.11-pip python3.11-devel \
     &&  microdnf clean all \
     && alternatives --install /usr/bin/unversioned-python python /usr/bin/python3.11 1
 
@@ -60,6 +59,12 @@ RUN useradd kserve -m -u 1000 -d /home/kserve
 COPY --from=builder --chown=kserve:kserve $VIRTUAL_ENV $VIRTUAL_ENV
 COPY --from=builder kserve kserve
 COPY ./storage-initializer /storage-initializer
+
+# Remove kserve manifest and not needed files from final image, this can lead to false positives in regards to
+# CVEs since there are optional libraries which are not installed by storage-initializer
+RUN rm -rf /kserve/{*.toml,Makefile,*.lock,requirements.txt,setup.cfg,docs,git-push.sh,test,test-requirements.txt,tox.ini}
+# clean hidden files/directories
+RUN cd /kserve && rm -rf .??*
 
 RUN chmod +x /storage-initializer/scripts/initializer-entrypoint
 RUN mkdir /work

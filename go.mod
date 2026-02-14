@@ -78,7 +78,7 @@ require (
 	github.com/envoyproxy/go-control-plane/envoy v1.32.4 // indirect
 	github.com/envoyproxy/protoc-gen-validate v1.2.1 // indirect
 	github.com/evanphx/json-patch/v5 v5.9.11 // indirect
-	github.com/expr-lang/expr v1.17.2 // indirect
+	github.com/expr-lang/expr v1.17.8 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
 	github.com/fxamacker/cbor/v2 v2.8.0 // indirect
 	github.com/go-kit/log v0.2.1 // indirect
@@ -180,4 +180,4 @@ exclude google.golang.org/grpc/stats/opentelemetry v0.0.0-00010101000000-0000000
 replace sigs.k8s.io/controller-runtime => sigs.k8s.io/controller-runtime v0.19.7
 
 // CVE-2025-68156: Update expr-lang/expr to v1.17.7
-replace github.com/expr-lang/expr => github.com/expr-lang/expr v1.17.7
+replace github.com/expr-lang/expr => github.com/expr-lang/expr v1.17.8

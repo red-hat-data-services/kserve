@@ -1,0 +1,40 @@
+arches:
+  - x86_64
+  - aarch64
+  - ppc64le
+  - s390x
+contentOrigin:
+  repos:
+  - repoid: ubi-9-for-$basearch-baseos-rpms
+    baseurl: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/$basearch/baseos/os
+
+  - repoid: ubi-9-for-$basearch-baseos-source-rpms
+    baseurl: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/$basearch/baseos/source/SRPMS
+
+  - repoid: ubi-9-for-$basearch-appstream-rpms
+    baseurl: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/$basearch/appstream/os
+
+  - repoid: ubi-9-for-$basearch-appstream-source-rpms
+    baseurl: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/$basearch/appstream/source/SRPMS
+
+packages:
+  - shadow-utils #most kserve components need this
+  - python3.11 # needed for storage-initializer
+  - python3.11-pip
+  - python3.11-devel
+  - gcc
+  - libffi-devel
+  - openssl-devel
+  - krb5-workstation
+  - krb5-libs
+  - krb5-devel
+  - gcc-c++ # this and below - needed for storage-initializer on power/z
+  - cmake
+  - rust
+  - cargo
+  - perl
+context:
+  containerfile:
+    file: Dockerfiles/controller.Dockerfile.konflux
+    imagePattern: ubi9/ubi-minimal
+

@@ -28,7 +28,7 @@ spec:
     value:
     - '{{target_branch}}-{{revision}}'
   - name: rhoai-version
-    value: "2.25.2"
+    value: "2.25.3"
   - name: output-image
     value: quay.io/rhoai/odh-kserve-router-rhel9:{{target_branch}}
   - name: build-platforms

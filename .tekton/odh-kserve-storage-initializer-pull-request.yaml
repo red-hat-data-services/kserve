@@ -42,16 +42,15 @@ spec:
   - name: path-context
     value: python
   - name: hermetic
-    value: true
-  - name: prefetch-input
-    value: |
-      [{"path": ".", "type": "rpm"}]
+    value: false
   - name: build-image-index
     value: true
   - name: image-expires-after
     value: 5d
   - name: enable-slack-failure-notification
     value: "false"
+  - name: rhoai-version
+    value: "2.25.0"
   pipelineRef:
     resolver: git
     params:

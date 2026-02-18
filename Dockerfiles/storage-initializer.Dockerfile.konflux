@@ -8,7 +8,8 @@ RUN microdnf install -y \
        python3.11-pip python3.11-devel gcc libffi-devel openssl-devel krb5-workstation krb5-libs krb5-devel && \
     if [ "$(uname -m)" = "s390x" ] || [ "$(uname -m)" = "ppc64le" ]; then \
        echo "Installing packages" && \
-       microdnf install -y gcc-c++ cmake rust cargo perl; \
+       microdnf install -y gcc-c++ cmake perl git && \
+       curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y ; \
     fi \
     && microdnf clean all \
     && alternatives --install /usr/bin/unversioned-python python /usr/bin/python3.11 1
@@ -27,14 +28,32 @@ RUN /usr/bin/python3.11 -m venv $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 COPY kserve/pyproject.toml kserve/poetry.lock kserve/
+
+# Install hf_xet from source for s390x and ppc64le
+RUN if [ "$(uname -m)" = "s390x" ] || [ "$(uname -m)" = "ppc64le" ]; then \
+       export PATH=/root/.cargo/bin:$PATH  && \
+       export HF_XET_VERSION=$(poetry -C kserve  show hf-xet | awk '/version/ {print $3}') && \
+       git clone https://github.com/huggingface/xet-core.git && \
+       cd xet-core/hf_xet && git checkout v${HF_XET_VERSION} && \
+       sed -i '/python-source = "python"/d' pyproject.toml && \
+       pip install maturin && \
+       maturin build --release --out /hf_xet/wheels/ ; \
+    fi
+
 RUN cd kserve && \
     if [ "$(uname -m)" = "s390x" ] || [ "$(uname -m)" = "ppc64le" ]; then \
-       export GRPC_PYTHON_BUILD_SYSTEM_OPENSSL=true; \
+       export GRPC_PYTHON_BUILD_SYSTEM_OPENSSL=true && \
+       poetry add /hf_xet/wheels/*.whl ; \
     fi && \
     poetry install --no-root --no-interaction --no-cache --extras "storage"
 
 COPY kserve kserve
-RUN cd kserve && poetry install --no-interaction --no-cache --extras "storage"
+RUN cd kserve && \
+    if [ "$(uname -m)" = "s390x" ] || [ "$(uname -m)" = "ppc64le" ]; then \
+        export GRPC_PYTHON_BUILD_SYSTEM_OPENSSL=true && \
+        poetry add /hf_xet/wheels/*.whl ; \
+    fi && \
+    poetry install --no-interaction --no-cache --extras "storage"
 
 RUN /usr/bin/pip3.11 install --no-cache-dir krbcontext==0.10 hdfs~=2.6.0 requests-kerberos==0.14.0
 

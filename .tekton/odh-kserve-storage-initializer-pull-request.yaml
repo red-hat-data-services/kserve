@@ -14,7 +14,7 @@ metadata:
     appstudio.openshift.io/application: automation
     appstudio.openshift.io/component: pull-request-pipelines-odh-kserve-storage-initializer
     pipelines.appstudio.openshift.io/type: build
-  name: odh-kserve-storage-initializer-on-pull-request
+  name: odh-kserve-storage-initializer-on-pull-request-97524
   namespace: rhoai-tenant
 spec:
   params:

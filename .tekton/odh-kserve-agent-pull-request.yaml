@@ -14,7 +14,7 @@ metadata:
     appstudio.openshift.io/application: automation
     appstudio.openshift.io/component: pull-request-pipelines-odh-kserve-agent
     pipelines.appstudio.openshift.io/type: build
-  name: odh-kserve-agent-on-pull-request
+  name: odh-kserve-agent-on-pull-request-26938
   namespace: rhoai-tenant
 spec:
   params:

@@ -12,7 +12,7 @@ packages = [
 [tool.poetry.dependencies]
 python = ">=3.9,<3.13"
 kserve = { path = "../kserve", extras = ["storage"], develop = true }
-jpmml-evaluator = "~0.10.3"
+jpmml-evaluator = "~0.16.0"
 setuptools = "^70.0.0"
 
 [tool.poetry.group.test]

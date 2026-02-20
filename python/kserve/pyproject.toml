@@ -54,7 +54,7 @@ orjson = "^3.9.15"
 httpx = "^0.27.2"
 timing-asgi = "^0.3.0"
 tabulate = "^0.9.0"
-pandas =  "^2.2.0"
+pandas =  "^3.0.0"
 pydantic = "^2.5.0"
 pyyaml = "^6.0.0"
 

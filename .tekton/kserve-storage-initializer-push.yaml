@@ -27,6 +27,8 @@ spec:
     value: quay.io/opendatahub/kserve-storage-initializer:odh-v3.3
   - name: dockerfile
     value: storage-initializer.Dockerfile
+  - name: odh-version
+    value: "3.3.0"
   - name: path-context
     value: python
   pipelineSpec:

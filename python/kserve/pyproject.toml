@@ -80,7 +80,7 @@ asgi-logger = { version = "^0.1.0", optional = true }
 ray = { version = ">=2.43.0", extras = ["serve"], optional = true }
 
 # OpenAI Types dependency
-vllm = { version = "0.9.2", optional = true }
+vllm = { version = "0.16.0", optional = true }
 
 [tool.poetry.extras]
 storage = [

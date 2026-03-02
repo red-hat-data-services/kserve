@@ -78,6 +78,9 @@ ray = { version = ">=2.43.0", extras = ["serve"], optional = true }
 # OpenAI Types dependency
 vllm = { version = "0.9.2", optional = true }
 
+# Security: CVE-2026-1260 - sentencepiece vulnerability fix
+sentencepiece = { version = ">=0.2.1", optional = true }
+
 [tool.poetry.extras]
 storage = [
   "requests",
@@ -91,7 +94,7 @@ storage = [
 ]
 logging = ["asgi-logger"]
 ray = ["ray"]
-llm = ["vllm"]
+llm = ["vllm", "sentencepiece"]
 
 [tool.poetry.group.test]
 optional = true

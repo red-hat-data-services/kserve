@@ -73,7 +73,7 @@ require (
 	knative.dev/networking v0.0.0-20250315042440-ad8767c3190c // indirect
 	knative.dev/pkg v0.0.0-20250312035536-b7bbf4be5dbd // indirect
 	sigs.k8s.io/json v0.0.0-20241014173422-cfa47c3a1cc8 // indirect
-	sigs.k8s.io/structured-merge-diff/v4 v4.6.0 // indirect
+	sigs.k8s.io/structured-merge-diff/v4 v4.5.0 // indirect
 	sigs.k8s.io/yaml v1.4.0 // indirect
 )
 

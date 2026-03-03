@@ -443,7 +443,7 @@ kserve:
   security:
     autoMountServiceAccountToken: true
   oauthProxy:
-    oauthProxyImage: registry.redhat.io/openshift4/ose-oauth-proxy-rhel9@sha256:aa00b068c4c6a2428fd7832d8b53e2c8b0d2bb03799bb2a874ceb00be2bef33f
+    oauthProxyImage: registry.redhat.io/openshift4/ose-oauth-proxy-rhel9@sha256:7671ff7c84dc5a0aa85252a72feb72f1ac29b37a6bc172b0bfd3f5a3915626ac
     kubeRbacProxyImage: registry.redhat.io/rhoai/odh-kube-auth-proxy-rhel9@sha256:1f4b2b9bb5061faf17299c2ae2405ab408e2b7ce349d9831eb6045990e6da005
     memoryRequest: "64Mi"
     memoryLimit: "128Mi"

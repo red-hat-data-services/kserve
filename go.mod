@@ -1,6 +1,6 @@
 module github.com/kserve/kserve
 
-go 1.24.1
+go 1.25.0
 
 require (
 	cloud.google.com/go/storage v1.51.0
@@ -147,7 +147,7 @@ require (
 	golang.org/x/exp v0.0.0-20250606033433-dcc06ee1d476 // indirect
 	golang.org/x/mod v0.25.0 // indirect
 	golang.org/x/net v0.41.0 // indirect
-	golang.org/x/oauth2 v0.30.0 // indirect
+	golang.org/x/oauth2 v0.36.0 // indirect
 	golang.org/x/sync v0.15.0 // indirect
 	golang.org/x/sys v0.33.0 // indirect
 	golang.org/x/term v0.32.0 // indirect

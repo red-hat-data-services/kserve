@@ -14,12 +14,8 @@ RUN microdnf install -y \
     && microdnf clean all \
     && alternatives --install /usr/bin/unversioned-python python /usr/bin/python3.11 1
 
-# Install Poetry
-ARG POETRY_HOME=/opt/poetry
-ARG POETRY_VERSION=1.8.3
-
-ENV PATH="$PATH:${POETRY_HOME}/bin"
-RUN /usr/bin/python3.11 -m venv ${POETRY_HOME} && ${POETRY_HOME}/bin/pip install --upgrade pip && ${POETRY_HOME}/bin/pip install poetry==${POETRY_VERSION}
+# Install uv
+RUN /usr/bin/pip3.11 install --no-cache-dir uv
 
 # Activate virtual env
 ARG VENV_PATH
@@ -27,12 +23,12 @@ ENV VIRTUAL_ENV=${VENV_PATH}
 RUN /usr/bin/python3.11 -m venv $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
-COPY kserve/pyproject.toml kserve/poetry.lock kserve/
+COPY storage/pyproject.toml storage/uv.lock storage/
 
 # Install hf_xet from source for s390x and ppc64le
 RUN if [ "$(uname -m)" = "s390x" ] || [ "$(uname -m)" = "ppc64le" ]; then \
        export PATH=/root/.cargo/bin:$PATH  && \
-       export HF_XET_VERSION=$(poetry -C kserve  show hf-xet | awk '/version/ {print $3}') && \
+       export HF_XET_VERSION=$(uv pip show hf-xet 2>/dev/null | awk '/Version/ {print $2}') && \
        git clone https://github.com/huggingface/xet-core.git && \
        cd xet-core/hf_xet && git checkout v${HF_XET_VERSION} && \
        sed -i '/python-source = "python"/d' pyproject.toml && \
@@ -40,22 +36,17 @@ RUN if [ "$(uname -m)" = "s390x" ] || [ "$(uname -m)" = "ppc64le" ]; then \
        maturin build --release --out /hf_xet/wheels/ ; \
     fi
 
-RUN cd kserve && \
+RUN cd storage && \
     if [ "$(uname -m)" = "s390x" ] || [ "$(uname -m)" = "ppc64le" ]; then \
        export GRPC_PYTHON_BUILD_SYSTEM_OPENSSL=true && \
-       poetry add /hf_xet/wheels/*.whl ; \
+       uv pip install /hf_xet/wheels/*.whl ; \
     fi && \
-    poetry install --no-root --no-interaction --no-cache --extras "storage"
+    uv sync --active --no-cache
 
-COPY kserve kserve
-RUN cd kserve && \
-    if [ "$(uname -m)" = "s390x" ] || [ "$(uname -m)" = "ppc64le" ]; then \
-        export GRPC_PYTHON_BUILD_SYSTEM_OPENSSL=true && \
-        poetry add /hf_xet/wheels/*.whl ; \
-    fi && \
-    poetry install --no-interaction --no-cache --extras "storage"
+COPY storage storage
+RUN cd storage && uv pip install . --no-cache
 
-RUN /usr/bin/pip3.11 install --no-cache-dir krbcontext==0.10 hdfs~=2.6.0 requests-kerberos==0.14.0
+RUN uv pip install --no-cache krbcontext==0.10 hdfs~=2.6.0 requests-kerberos==0.14.0
 
 ########################################################################
 # Runtime
@@ -76,14 +67,14 @@ RUN microdnf install -y  \
 RUN useradd kserve -m -u 1000 -d /home/kserve
 
 COPY --from=builder --chown=kserve:kserve $VIRTUAL_ENV $VIRTUAL_ENV
-COPY --from=builder kserve kserve
+COPY --from=builder storage storage
 COPY ./storage-initializer /storage-initializer
 
 # Remove kserve manifest and not needed files from final image, this can lead to false positives in regards to
 # CVEs since there are optional libraries which are not installed by storage-initializer
-RUN rm -rf /kserve/{*.toml,Makefile,*.lock,requirements.txt,setup.cfg,docs,git-push.sh,test,test-requirements.txt,tox.ini}
+RUN rm -rf /storage/{*.toml,Makefile,*.lock,requirements.txt,setup.cfg,docs,git-push.sh,test,test-requirements.txt,tox.ini}
 # clean hidden files/directories
-RUN cd /kserve && rm -rf .??*
+RUN cd /storage && rm -rf .??*
 
 RUN chmod +x /storage-initializer/scripts/initializer-entrypoint
 RUN mkdir /work

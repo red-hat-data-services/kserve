@@ -1,0 +1,102 @@
+ARG VENV_PATH=/prod_venv
+
+FROM registry.access.redhat.com/ubi9/ubi-minimal:latest AS builder
+
+# Install Python and dependencies
+RUN microdnf install -y \
+    python3.11 \
+       python3.11-pip python3.11-devel gcc libffi-devel openssl-devel krb5-workstation krb5-libs krb5-devel && \
+    if [ "$(uname -m)" = "s390x" ] || [ "$(uname -m)" = "ppc64le" ]; then \
+       echo "Installing packages" && \
+       microdnf install -y gcc-c++ cmake perl git && \
+       curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y ; \
+    fi \
+    && microdnf clean all \
+    && alternatives --install /usr/bin/unversioned-python python /usr/bin/python3.11 1
+
+# Install Poetry
+ARG POETRY_HOME=/opt/poetry
+ARG POETRY_VERSION=1.8.3
+
+ENV PATH="$PATH:${POETRY_HOME}/bin"
+RUN /usr/bin/python3.11 -m venv ${POETRY_HOME} && ${POETRY_HOME}/bin/pip install --upgrade pip && ${POETRY_HOME}/bin/pip install poetry==${POETRY_VERSION}
+
+# Activate virtual env
+ARG VENV_PATH
+ENV VIRTUAL_ENV=${VENV_PATH}
+RUN /usr/bin/python3.11 -m venv $VIRTUAL_ENV
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+
+COPY kserve/pyproject.toml kserve/poetry.lock kserve/
+
+# Install hf_xet from source for s390x and ppc64le
+RUN if [ "$(uname -m)" = "s390x" ] || [ "$(uname -m)" = "ppc64le" ]; then \
+       export PATH=/root/.cargo/bin:$PATH  && \
+       export HF_XET_VERSION=$(poetry -C kserve  show hf-xet | awk '/version/ {print $3}') && \
+       git clone https://github.com/huggingface/xet-core.git && \
+       cd xet-core/hf_xet && git checkout v${HF_XET_VERSION} && \
+       sed -i '/python-source = "python"/d' pyproject.toml && \
+       pip install maturin && \
+       maturin build --release --out /hf_xet/wheels/ ; \
+    fi
+
+RUN cd kserve && \
+    if [ "$(uname -m)" = "s390x" ] || [ "$(uname -m)" = "ppc64le" ]; then \
+       export GRPC_PYTHON_BUILD_SYSTEM_OPENSSL=true && \
+       poetry add /hf_xet/wheels/*.whl ; \
+    fi && \
+    poetry install --no-root --no-interaction --no-cache --extras "storage"
+
+COPY kserve kserve
+RUN cd kserve && \
+    if [ "$(uname -m)" = "s390x" ] || [ "$(uname -m)" = "ppc64le" ]; then \
+        export GRPC_PYTHON_BUILD_SYSTEM_OPENSSL=true && \
+        poetry add /hf_xet/wheels/*.whl ; \
+    fi && \
+    poetry install --no-interaction --no-cache --extras "storage"
+
+RUN /usr/bin/pip3.11 install --no-cache-dir krbcontext==0.10 hdfs~=2.6.0 requests-kerberos==0.14.0
+
+########################################################################
+# Runtime
+FROM registry.access.redhat.com/ubi9/ubi-minimal:latest AS prod
+
+COPY third_party third_party
+
+# Activate virtual env
+ARG VENV_PATH
+ENV VIRTUAL_ENV=${VENV_PATH}
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+
+RUN microdnf install -y  \
+        shadow-utils python3.11 \
+    &&  microdnf clean all \
+    && alternatives --install /usr/bin/unversioned-python python /usr/bin/python3.11 1
+
+RUN useradd kserve -m -u 1000 -d /home/kserve
+
+COPY --from=builder --chown=kserve:kserve $VIRTUAL_ENV $VIRTUAL_ENV
+COPY --from=builder kserve kserve
+COPY ./storage-initializer /storage-initializer
+
+# Remove kserve manifest and not needed files from final image, this can lead to false positives in regards to
+# CVEs since there are optional libraries which are not installed by storage-initializer
+RUN rm -rf /kserve/{*.toml,Makefile,*.lock,requirements.txt,setup.cfg,docs,git-push.sh,test,test-requirements.txt,tox.ini}
+# clean hidden files/directories
+RUN cd /kserve && rm -rf .??*
+
+RUN chmod +x /storage-initializer/scripts/initializer-entrypoint
+RUN mkdir /work
+WORKDIR /work
+
+# Set a writable /mnt folder to avoid permission issue on Huggingface download. See https://huggingface.co/docs/hub/spaces-sdks-docker#permissions
+RUN chown -R kserve:kserve /mnt
+USER 1000
+ENTRYPOINT ["/storage-initializer/scripts/initializer-entrypoint"]
+
+LABEL com.redhat.component="odh-kserve-storage-initializer" \
+      name="odh-kserve-storage-initializer" \
+      description="odh-kserve-storage-initializer" \
+      summary="odh-kserve-storage-initializer" \
+      io.k8s.display-name="odh-kserve-storage-initializer" \
+      io.k8s.description="odh-kserve-storage-initializer"

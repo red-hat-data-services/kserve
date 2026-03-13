@@ -8,7 +8,7 @@ dependencies = [
     "kserve @ file:///${PROJECT_ROOT}/../kserve",
     "kserve-storage @ file:///${PROJECT_ROOT}/../storage",
     "jpmml-evaluator~=0.10.3",
-    "setuptools<71.0.0,>=70.0.0",
+    "setuptools>=70.0.0,<79.0.0",
 ]
 name = "pmmlserver"
 version = "0.17.0rc1"

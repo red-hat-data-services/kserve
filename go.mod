@@ -1,6 +1,6 @@
 module github.com/kserve/kserve
 
-go 1.25.4
+go 1.25.7
 
 require (
 	cloud.google.com/go/storage v1.51.0
@@ -124,7 +124,7 @@ require (
 	github.com/gophercloud/gophercloud/v2 v2.8.0 // indirect
 	github.com/gorilla/websocket v1.5.4-0.20250319132907-e064f32e3674 // indirect
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.27.3 // indirect
-	github.com/hashicorp/consul/api v1.32.0 // indirect
+	github.com/hashicorp/consul/api v1.33.4 // indirect
 	github.com/hashicorp/go-version v1.7.0 // indirect
 	github.com/hashicorp/nomad/api v0.0.0-20250930071859-eaa0fe0e27af // indirect
 	github.com/hetznercloud/hcloud-go/v2 v2.25.1 // indirect

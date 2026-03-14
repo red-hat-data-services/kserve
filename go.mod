@@ -160,7 +160,7 @@ require (
 	github.com/prometheus/otlptranslator v1.0.0 // indirect
 	github.com/prometheus/procfs v0.19.2 // indirect
 	github.com/prometheus/sigv4 v0.2.1 // indirect
-	github.com/scaleway/scaleway-sdk-go v1.0.0-beta.35 // indirect
+	github.com/scaleway/scaleway-sdk-go v1.0.0-beta.36 // indirect
 	github.com/spiffe/go-spiffe/v2 v2.6.0 // indirect
 	github.com/stackitcloud/stackit-sdk-go/core v0.17.3 // indirect
 	github.com/stoewer/go-strcase v1.3.0 // indirect

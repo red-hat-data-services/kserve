@@ -20,7 +20,7 @@ COPY pkg/    pkg/
 USER root
 RUN CGO_ENABLED=1 GOOS=${TARGETOS} GOARCH=${TARGETARCH} GOFLAGS=-mod=mod GOEXPERIMENT=strictfipsruntime go build -tags strictfipsruntime -a -o agent ./cmd/agent
 
-# Generate third-party licenses (same as main agent.Dockerfile)
+# Generate third-party licenses
 COPY LICENSE LICENSE
 RUN go install github.com/google/go-licenses@latest && \
     /opt/app-root/src/go/bin/go-licenses save --save_path third_party/library ./cmd/agent

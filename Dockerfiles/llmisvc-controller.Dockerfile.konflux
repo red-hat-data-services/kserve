@@ -28,12 +28,12 @@ COPY --from=builder /go/src/github.com/kserve/kserve/third_party /third_party
 COPY --from=builder /go/src/github.com/kserve/kserve/manager /
 ENTRYPOINT ["/manager"]
 
-LABEL com.redhat.component="odh-kserve-llmisvc-controller-rhel9" \
-      name="managed-open-data-hub/odh-kserve-llmisvc-controller-rhel9" \
+LABEL com.redhat.component="odh-kserve-llmisvc-controller" \
+      name="managed-open-data-hub/odh-kserve-llmisvc-controller" \
       description="odh-kserve-llmisvc-controller" \
       summary="odh-kserve-llmisvc-controller" \
       maintainer="['managed-open-data-hub@redhat.com']" \
       io.openshift.expose-services="" \
-      io.k8s.display-name="odh-kserve-llmisvc-controller-rhel9" \
-      io.k8s.description="odh-kserve-llmisvc-controller-rhel9" \
+      io.k8s.display-name="odh-kserve-llmisvc-controller" \
+      io.k8s.description="odh-kserve-llmisvc-controller" \
       com.redhat.license_terms="https://www.redhat.com/licenses/Red_Hat_Standard_EULA_20191108.pdf"

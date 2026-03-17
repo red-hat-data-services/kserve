@@ -17,10 +17,10 @@ RUN CGO_ENABLED=0 GOOS=linux go build -tags "${GOTAGS}" -a -o manager ./cmd/llmi
 
 # Generate third-party licenses
 COPY LICENSE LICENSE
-RUN go install github.com/google/go-licenses@latest
+RUN go install github.com/google/go-licenses
 # Forbidden Licenses: https://github.com/google/licenseclassifier/blob/e6a9bb99b5a6f71d5a34336b8245e305f5430f99/license_type.go#L341
-RUN /opt/app-root/src/go/bin/go-licenses check ./cmd/... ./pkg/... --disallowed_types="forbidden,unknown"
-RUN /opt/app-root/src/go/bin/go-licenses save --save_path third_party/library ./cmd/llmisvc
+RUN $(go env GOPATH)/bin/go-licenses check ./cmd/... ./pkg/... --disallowed_types="forbidden,unknown"
+RUN $(go env GOPATH)/bin/go-licenses save --save_path third_party/library ./cmd/llmisvc
 
 # Copy the controller-manager into a thin image
 FROM registry.access.redhat.com/ubi9/ubi-minimal:latest

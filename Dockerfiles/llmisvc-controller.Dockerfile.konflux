@@ -23,7 +23,7 @@ RUN /opt/app-root/src/go/bin/go-licenses check ./cmd/... ./pkg/... --disallowed_
 RUN /opt/app-root/src/go/bin/go-licenses save --save_path third_party/library ./cmd/llmisvc
 
 # Copy the controller-manager into a thin image
-FROM gcr.io/distroless/static:nonroot
+FROM registry.access.redhat.com/ubi9/ubi-minimal:latest
 COPY --from=builder /go/src/github.com/kserve/kserve/third_party /third_party
 COPY --from=builder /go/src/github.com/kserve/kserve/manager /
 ENTRYPOINT ["/manager"]

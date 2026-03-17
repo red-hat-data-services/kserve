@@ -12,7 +12,7 @@ COPY cmd/    cmd/
 COPY pkg/    pkg/
 
 # Build
-ARG GOTAGS=""
+ARG GOTAGS="distro"
 RUN CGO_ENABLED=0 GOOS=linux go build -tags "${GOTAGS}" -a -o manager ./cmd/llmisvc
 
 # Generate third-party licenses

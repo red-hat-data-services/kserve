@@ -2,5 +2,7 @@
 version: v1.25.0
 exclude:
   global:
+    - dev_tools/**
     - docs/**
     - hack/**
+    - tf2openapi/**

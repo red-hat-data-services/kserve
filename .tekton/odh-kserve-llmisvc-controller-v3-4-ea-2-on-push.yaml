@@ -7,16 +7,16 @@ metadata:
     build.appstudio.redhat.com/target_branch: '{{target_branch}}'
     pipelinesascode.tekton.dev/cancel-in-progress: "false"
     pipelinesascode.tekton.dev/max-keep-runs: "3"
-    build.appstudio.openshift.io/build-nudge-files: "build/operator-nudging.yaml"
     pipelinesascode.tekton.dev/on-cel-expression: |
       event == "push"
-      && target_branch == "rhoai-3.4"
-      && ( !".tekton/**".pathChanged() || ".tekton/odh-kserve-agent-v3-4-push.yaml".pathChanged() )
+      && target_branch == "rhoai-3.4-ea.2"
+      && ( !".tekton/**".pathChanged() 
+        || ".tekton/odh-kserve-llmisvc-controller-v3-4-ea-2-on-push.yaml".pathChanged() )
   labels:
-    appstudio.openshift.io/application: rhoai-v3-4
-    appstudio.openshift.io/component: odh-kserve-agent-v3-4
+    appstudio.openshift.io/application: rhoai-v3-4-ea-2
+    appstudio.openshift.io/component: odh-kserve-llmisvc-controller-v3-4-ea-2
     pipelines.appstudio.openshift.io/type: build
-  name: odh-kserve-agent-v3-4-on-push
+  name: odh-kserve-llmisvc-controller-v3-4-ea-2-on-push
   namespace: rhoai-tenant
 spec:
   params:
@@ -28,15 +28,17 @@ spec:
     value:
     - '{{target_branch}}-{{revision}}'
   - name: output-image
-    value: quay.io/rhoai/odh-kserve-agent-rhel9:{{target_branch}}
+    value: quay.io/rhoai/odh-kserve-llmisvc-controller-rhel9:{{target_branch}}
   - name: rhoai-version
-    value: "3.4.0"
+    value: "3.4.0-ea.2"
   - name: dockerfile
-    value: Dockerfiles/agent.Dockerfile.konflux
+    value: Dockerfiles/llmisvc-controller.Dockerfile.konflux
   - name: path-context
     value: .
   - name: hermetic
-    value: false
+    value: true
+  - name: prefetch-input
+    value: '{"type": "gomod", "path": "."}'
   - name: build-source-image
     value: true
   - name: build-image-index
@@ -57,7 +59,7 @@ spec:
     - name: pathInRepo
       value: pipelines/multi-arch-container-build.yaml
   taskRunTemplate:
-    serviceAccountName: build-pipeline-odh-kserve-agent-v3-4
+    serviceAccountName: build-pipeline-odh-kserve-llmisvc-controller-v3-4-ea-2
   workspaces:
   - name: git-auth
     secret:

@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import logging
 import time
 
 import os
@@ -38,10 +39,12 @@ from .test_resources import (
     ROUTER_GATEWAYS,
     ROUTER_ROUTES,
 )
-from .logging import log_execution, logger
+from .logging import log_execution
 from ..common.http_retry import post_with_retry
 
 KSERVE_PLURAL_LLMINFERENCESERVICE = "llminferenceservices"
+
+logger = logging.getLogger(__name__)
 
 
 def assert_200(response: requests.Response) -> None:
@@ -82,6 +85,7 @@ def create_response_assertion(
 @dataclass
 class TestCase:
     """Test case configuration for LLM inference service tests."""
+
     __test__ = False  # So pytest will not try to execute it.
     base_refs: List[str]
     prompt: str
@@ -144,6 +148,7 @@ def chat_completions_payload(test_case: TestCase) -> Dict[str, Any]:
                 pytest.mark.cluster_cpu,
                 pytest.mark.cluster_single_node,
                 pytest.mark.llmd_simulator,
+                pytest.mark.custom_gateway,
             ],
         ),
         pytest.param(
@@ -189,7 +194,11 @@ def chat_completions_payload(test_case: TestCase) -> Dict[str, Any]:
                     )
                 ],
             ),
-            marks=[pytest.mark.cluster_cpu, pytest.mark.cluster_single_node],
+            marks=[
+                pytest.mark.cluster_cpu,
+                pytest.mark.cluster_single_node,
+                pytest.mark.custom_gateway,
+            ],
         ),
         pytest.param(
             TestCase(
@@ -237,7 +246,11 @@ def chat_completions_payload(test_case: TestCase) -> Dict[str, Any]:
                     )
                 ],
             ),
-            marks=[pytest.mark.cluster_cpu, pytest.mark.cluster_single_node],
+            marks=[
+                pytest.mark.cluster_cpu,
+                pytest.mark.cluster_single_node,
+                pytest.mark.custom_gateway,
+            ],
         ),
         pytest.param(
             TestCase(
@@ -353,6 +366,23 @@ def chat_completions_payload(test_case: TestCase) -> Dict[str, Any]:
                 service_name="scheduler-ha-replicas-test",
             ),
             marks=[pytest.mark.cluster_cpu, pytest.mark.cluster_single_node],
+        ),
+        # Precise prefix KV cache routing test
+        pytest.param(
+            TestCase(
+                base_refs=[
+                    "router-managed",
+                    "scheduler-with-precise-prefix-cache-inline-config",
+                    "workload-llmd-simulator-kvcache",
+                ],
+                prompt="KServe is a",
+                service_name="precise-prefix-cache-test",
+            ),
+            marks=[
+                pytest.mark.cluster_cpu,
+                pytest.mark.cluster_single_node,
+                pytest.mark.llmd_simulator,
+            ],
         ),
     ],
     indirect=["test_case"],
@@ -474,9 +504,7 @@ def wait_for_model_response(
                 "max_tokens": test_case.max_tokens,
             }
 
-        logger.info(
-            f"Calling LLM service at {model_url} with payload {test_payload}"
-        )
+        logger.info(f"Calling LLM service at {model_url} with payload {test_payload}")
         try:
             response = post_with_retry(
                 model_url,
@@ -488,7 +516,7 @@ def wait_for_model_response(
             logger.error(f"❌ Failed to call model: {e}")
             raise AssertionError(f"❌ Failed to call model: {e}") from e
 
-        logger.info(f"Model response is {response.status_code}")
+        logger.info(f"Model response is {response.status_code}: {response.text[:500]}")
 
         test_case.response_assertion(response)
         return response.text[: test_case.max_tokens]
@@ -587,9 +615,10 @@ def wait_for(
     while True:
         try:
             return assertion_fn()
-        except AssertionError:
+        except AssertionError as e:
             if time.time() >= deadline:
                 raise
+            logger.info("Waiting: %s", e)
             time.sleep(interval)
 
 

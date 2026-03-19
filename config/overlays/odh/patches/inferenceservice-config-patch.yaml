@@ -20,7 +20,6 @@ data:
         "memoryLimit": "24Gi",
         "cpuRequest": "100m",
         "cpuLimit": "1",
-        "enableDirectPvcVolumeMount": true,
         "cpuModelcar": "10m",
         "memoryModelcar": "15Mi",
         "enableModelcar": true
@@ -29,6 +28,7 @@ data:
     {
         "enableGatewayApi": false,
         "kserveIngressGateway": "openshift-ingress/openshift-ai-inference",
+        "enableLLMInferenceServiceTLS": true,
         "ingressGateway" : "knative-serving/knative-ingress-gateway",
         "knativeLocalGatewayService" : "knative-local-gateway.istio-system.svc.cluster.local",
         "ingressService" : "istio-ingressgateway.istio-system.svc.cluster.local",
@@ -87,6 +87,11 @@ data:
     {
       "enableMetricAggregation": "false",
       "enablePrometheusScraping" : "false"
+    }
+
+  service: |-
+    {
+        "serviceClusterIPNone": false
     }
 
   inferenceService: |-

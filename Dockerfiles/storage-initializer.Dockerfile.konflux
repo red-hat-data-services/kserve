@@ -64,7 +64,7 @@ RUN microdnf install -y  \
     &&  microdnf clean all \
     && alternatives --install /usr/bin/unversioned-python python /usr/bin/python3.11 1
 
-RUN useradd kserve -m -u 1000 -d /home/kserve
+RUN useradd kserve -m -u 1000 -d /home/kserve && chgrp -R 0 /home/kserve && chmod -R g+rwx /home/kserve
 
 COPY --from=builder --chown=kserve:kserve $VIRTUAL_ENV $VIRTUAL_ENV
 COPY --from=builder storage storage
@@ -82,6 +82,8 @@ WORKDIR /work
 
 # Set a writable /mnt folder to avoid permission issue on Huggingface download. See https://huggingface.co/docs/hub/spaces-sdks-docker#permissions
 RUN chown -R kserve:kserve /mnt
+ENV HOME=/home/kserve
+ENV HF_HOME=/home/kserve
 USER 1000
 ENTRYPOINT ["/storage-initializer/scripts/initializer-entrypoint"]
 

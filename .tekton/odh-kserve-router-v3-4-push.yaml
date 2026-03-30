@@ -11,7 +11,7 @@ metadata:
     pipelinesascode.tekton.dev/on-cel-expression: |
       event == "push"
       && target_branch == "rhoai-3.4"
-      && ( !".tekton/**".pathChanged() || ".tekton/odh-kserve-router-v3-4-push.yaml".pathChanged() )
+      && ( files.all.exists(p, !p.matches('^\\.tekton/')) || ".tekton/odh-kserve-router-v3-4-push.yaml".pathChanged() )
   labels:
     appstudio.openshift.io/application: rhoai-v3-4
     appstudio.openshift.io/component: odh-kserve-router-v3-4

@@ -52,8 +52,6 @@ RUN uv pip install --no-cache krbcontext==0.10 hdfs~=2.6.0 requests-kerberos==0.
 # Runtime
 FROM registry.access.redhat.com/ubi9/ubi-minimal:latest AS prod
 
-COPY third_party third_party
-
 # Activate virtual env
 ARG VENV_PATH
 ENV VIRTUAL_ENV=${VENV_PATH}

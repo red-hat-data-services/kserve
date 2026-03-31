@@ -25,7 +25,6 @@ import (
 	"path"
 	"slices"
 	"sort"
-	"strings"
 
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
@@ -57,10 +56,6 @@ const (
 	prefixCacheScorerPlugin        = "prefix-cache-scorer"
 	udsTokenizerBaseModelName      = "base"
 	udsTokenizerSocketFile         = "/tmp/tokenizer/tokenizer-uds.socket" //nolint:gosec // G101: not a credential, UDS socket path
-
-	// schedulerSelfSignedTLSRestartAnnotation triggers a scheduler roll when the
-	// self-signed TLS secret changes (value is a SHA-256 hex digest of tls.crt+tls.key).
-	schedulerSelfSignedTLSRestartAnnotation = "serving.kserve.io/scheduler-self-signed-tls-sha256"
 )
 
 // reconcileScheduler manages the scheduler component and its related resources
@@ -455,33 +450,6 @@ func (r *LLMISVCReconciler) expectedSchedulerDeployment(ctx context.Context, llm
 	}
 
 	r.propagateSchedulerMetadata(llmSvc, d)
-
-	// Set a hash of the current certificate data on the pod template so that
-	// when certificates are renewed the pod template changes and the scheduler
-	// is restarted to pick up the new certificate.
-	// Skip if the main container supports automatic cert reload.
-	mainIdxForCert := -1
-	if llmSvc.Spec.Router != nil && llmSvc.Spec.Router.Scheduler != nil && llmSvc.Spec.Router.Scheduler.Template != nil {
-		mainIdxForCert = slices.IndexFunc(d.Spec.Template.Spec.Containers, func(c corev1.Container) bool {
-			return c.Name == "main"
-		})
-	}
-	certReloadEnabled := func(args []string) bool {
-		return slices.ContainsFunc(args, func(s string) bool {
-			return strings.HasPrefix(s, "--enable-cert-reload") ||
-				strings.HasPrefix(s, "-enable-cert-reload")
-		})
-	}
-	if mainIdxForCert >= 0 &&
-		!certReloadEnabled(d.Spec.Template.Spec.Containers[mainIdxForCert].Command) &&
-		!certReloadEnabled(d.Spec.Template.Spec.Containers[mainIdxForCert].Args) {
-		if h := r.getSelfSignedCertHash(ctx, llmSvc); h != "" {
-			if d.Spec.Template.Annotations == nil {
-				d.Spec.Template.Annotations = map[string]string{}
-			}
-			d.Spec.Template.Annotations[schedulerSelfSignedTLSRestartAnnotation] = h
-		}
-	}
 
 	log.FromContext(ctx).V(2).Info("Expected router scheduler deployment", "deployment", d)
 

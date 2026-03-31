@@ -28,9 +28,9 @@ COPY storage/pyproject.toml storage/uv.lock storage/
 # Install hf_xet from source for s390x and ppc64le (hf-xet not installed on these arches due to platform marker; get version from lockfile)
 RUN if [ "$(uname -m)" = "s390x" ] || [ "$(uname -m)" = "ppc64le" ]; then \
        export PATH=/root/.cargo/bin:$PATH  && \
-       HF_XET_VERSION=$(grep -A1 'name = "hf-xet"' storage/uv.lock | grep '^version' | sed 's/version = "\(.*\)"/\1/') && \
-       git clone https://github.com/huggingface/xet-core.git && \
-       cd xet-core/hf_xet && git checkout v${HF_XET_VERSION} && \
+       export HF_XET_VERSION=$(awk '/^name = "hf-xet"/{getline; print}' storage/uv.lock | awk -F'"' '{print $2}') && \
+       git clone --depth 1 --branch v${HF_XET_VERSION} https://github.com/huggingface/xet-core.git && \
+       cd xet-core/hf_xet && \
        sed -i '/python-source = "python"/d' pyproject.toml && \
        pip install maturin && \
        maturin build --release --out /hf_xet/wheels/ ; \

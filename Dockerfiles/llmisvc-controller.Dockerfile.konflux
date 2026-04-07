@@ -26,6 +26,8 @@ COPY LICENSE LICENSE
 # Copy the controller-manager into a thin image
 FROM registry.access.redhat.com/ubi9/ubi-minimal:latest
 COPY --from=builder /go/src/github.com/kserve/kserve/manager /
+USER 1000:1000
+
 ENTRYPOINT ["/manager"]
 
 LABEL com.redhat.component="odh-kserve-llmisvc-controller" \

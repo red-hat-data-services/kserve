@@ -20,6 +20,7 @@ namespace: opendatahub
 patches:
 - path: patches/remove-namespace.yaml
 - path: patches/remove-cert-manager.yaml
+- path: patches/remove-clusterservingruntime.yaml
 - path: patches/inferenceservice-config-patch.yaml
 - path: patches/set-resources-manager-patch.yaml
 - path: patches/remove-auth-proxy-patch.yaml
@@ -51,6 +52,10 @@ patches:
     kind: Deployment
     name: llmisvc-controller-manager
   path: patches/remove-kserve-controller-runas.yaml
+- target:
+    kind: ClusterStorageContainer
+    name: default
+  path: patches/set-resources-storagecontainer-patch.yaml
 
 replacements:
 - source:
@@ -149,6 +154,18 @@ replacements:
       name: llmisvc-controller-manager
     fieldPaths:
     - spec.template.spec.containers.[name=manager].image
+
+# Replace ClusterStorageContainer image with ODH image
+- source:
+    kind: ConfigMap
+    name: kserve-parameters
+    fieldPath: data.kserve-storage-initializer
+  targets:
+  - select:
+      kind: ClusterStorageContainer
+      name: default
+    fieldPaths:
+    - spec.container.image
 
 - source:
     kind: ConfigMap

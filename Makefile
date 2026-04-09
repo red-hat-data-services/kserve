@@ -64,6 +64,12 @@ setup-envtest: envtest
 		exit 1; \
 		}
 
+# Prints the absolute path to use as KUBEBUILDER_ASSETS when running go test outside of "make test"
+# (downloads etcd/kube-apiserver/kubectl via setup-envtest into $(LOCALBIN) if missing).
+.PHONY: print-kubebuilder-assets
+print-kubebuilder-assets: envtest
+	@$(ENVTEST) use $(ENVTEST_K8S_VERSION) --bin-dir $(LOCALBIN) -p path
+
 # Run go fmt against code
 fmt:
 	go fmt ./pkg/... ./cmd/... && cd qpext && go fmt ./...
@@ -93,6 +99,16 @@ go-lint: golangci-lint
 py-lint: $(RUFF)
 	$(RUFF) check --config ruff.toml 
 
+pin-actions: pinact
+	GITHUB_TOKEN=$$(gh auth token 2>/dev/null) $(PINACT) run .github/workflows/*.yml .github/workflows/*.yaml
+
+# Verify that all GitHub Actions are pinned to a full-length commit SHA (offline check, no API calls).
+verify-pinned-actions:
+	@if grep -rPn 'uses:\s+\S+@(?!([0-9a-f]{40}))' .github/workflows/*.yml .github/workflows/*.yaml 2>/dev/null; then \
+		echo "ERROR: Found GitHub Actions not pinned to a full SHA. Run 'make pin-actions' to fix."; \
+		exit 1; \
+	fi
+
 validate-infra-scripts:
 	@python3 hack/setup/scripts/validate-install-scripts.py
 
@@ -112,7 +128,7 @@ verify-helm-helpers-consistency:
 	@bash hack/setup/scripts/verify-helm-helpers.sh
 
 # Generate manifests e.g. CRD, RBAC etc.
-manifests: controller-gen yq
+manifests: controller-gen kustomize yq
 	@$(CONTROLLER_GEN) $(CRD_OPTIONS) paths=./pkg/apis/serving/... output:crd:dir=config/crd/full	
 	@$(CONTROLLER_GEN) rbac:roleName=kserve-manager-role paths={./pkg/controller/v1alpha1/inferencegraph,./pkg/controller/v1alpha1/trainedmodel,./pkg/controller/v1beta1/...} output:rbac:artifacts:config=config/rbac
 	@$(CONTROLLER_GEN) rbac:roleName=kserve-llmisvc-manager-role paths=./pkg/controller/v1alpha2/llmisvc output:rbac:artifacts:config=config/rbac/llmisvc
@@ -123,7 +139,7 @@ manifests: controller-gen yq
 
 	# DO NOT COPY to helm chart. It needs to be created before the Envoy Gateway or you will need to restart the Envoy Gateway controller.
 	# The llmisvc helm chart needs to be installed after the Envoy Gateway as well, so it needs to be created before the llmisvc helm chart.
-	kubectl kustomize https://github.com/kubernetes-sigs/gateway-api-inference-extension.git/config/crd?ref=$(GIE_VERSION) > config/llmisvc/gateway-inference-extension.yaml
+	$(KUSTOMIZE) build https://github.com/kubernetes-sigs/gateway-api-inference-extension.git/config/crd?ref=$(GIE_VERSION) > config/llmisvc/gateway-inference-extension.yaml
 	cp config/llmisvc/gateway-inference-extension.yaml test/crds/gateway-inference-extension.yaml
 
 	# Move StorageContainer CRD to storagecontainer folder
@@ -202,20 +218,20 @@ manifests: controller-gen yq
 	rm charts/kserve-localmodel-crd/templates/kustomization.yaml
 	
 	# Copy llmisvc crd (with conversion webhook patches applied via kustomize)
-	kubectl kustomize config/crd/full/llmisvc | $(YQ) 'select(.metadata.name == "llminferenceservices.serving.kserve.io")' > charts/kserve-llmisvc-crd/templates/serving.kserve.io_llminferenceservices.yaml
-	kubectl kustomize config/crd/full/llmisvc | $(YQ) 'select(.metadata.name == "llminferenceserviceconfigs.serving.kserve.io")' > charts/kserve-llmisvc-crd/templates/serving.kserve.io_llminferenceserviceconfigs.yaml
+	$(KUSTOMIZE) build config/crd/full/llmisvc | $(YQ) 'select(.metadata.name == "llminferenceservices.serving.kserve.io")' > charts/kserve-llmisvc-crd/templates/serving.kserve.io_llminferenceservices.yaml
+	$(KUSTOMIZE) build config/crd/full/llmisvc | $(YQ) 'select(.metadata.name == "llminferenceserviceconfigs.serving.kserve.io")' > charts/kserve-llmisvc-crd/templates/serving.kserve.io_llminferenceserviceconfigs.yaml
 	
 	# Copy the WVA VariantAutoscaling CRD for envtest
-	kubectl kustomize https://github.com/llm-d/llm-d-workload-variant-autoscaler.git/config/crd?ref=$(WVA_VERSION) > test/crds/wva_variantautoscalings.yaml
+	$(KUSTOMIZE) build https://github.com/llm-d/llm-d-workload-variant-autoscaler.git/config/crd?ref=$(WVA_VERSION) > test/crds/wva_variantautoscalings.yaml
 
 	# Copy the full crd to the test folder
-	kubectl kustomize config/crd/full > test/crds/serving.kserve.io_all_crds.yaml
+	$(KUSTOMIZE) build config/crd/full > test/crds/serving.kserve.io_all_crds.yaml
 	echo "---" >> test/crds/serving.kserve.io_all_crds.yaml
-	kubectl kustomize config/crd/full/clusterstoragecontainer >> test/crds/serving.kserve.io_all_crds.yaml
+	$(KUSTOMIZE) build config/crd/full/clusterstoragecontainer >> test/crds/serving.kserve.io_all_crds.yaml
 	echo "---" >> test/crds/serving.kserve.io_all_crds.yaml
-	kubectl kustomize config/crd/full/llmisvc >> test/crds/serving.kserve.io_all_crds.yaml
+	$(KUSTOMIZE) build config/crd/full/llmisvc >> test/crds/serving.kserve.io_all_crds.yaml
 	echo "---" >> test/crds/serving.kserve.io_all_crds.yaml
-	kubectl kustomize config/crd/full/localmodel >> test/crds/serving.kserve.io_all_crds.yaml
+	$(KUSTOMIZE) build config/crd/full/localmodel >> test/crds/serving.kserve.io_all_crds.yaml
 	
 	# Generate minimal crd
 	./hack/minimal-crdgen.sh
@@ -296,14 +312,22 @@ sync-helm-multi-resource-helpers:
 	done
 
 # This runs all necessary steps to prepare for a commit.
-precommit: ensure-go-version-upgrade sync-deps sync-img-env vet tidy go-lint py-fmt py-lint generate manifests uv-lock generate-quick-install-scripts generate-chart-manifests sync-helm-common-helpers sync-helm-common-resource-helpers sync-helm-multi-resource-helpers
+precommit: ensure-go-version-upgrade sync-deps sync-img-env vet tidy go-lint py-fmt py-lint generate manifests uv-lock generate-quick-install-scripts generate-chart-manifests sync-helm-common-helpers sync-helm-common-resource-helpers sync-helm-multi-resource-helpers verify-pinned-actions
 
 # This is used by CI to ensure that the precommit checks are met.
+# Requires a clean working tree after precommit: run "make precommit", then git add/commit
+# (or stash). Re-running precommit alone does not clear git status.
 check: precommit
-	@if [ ! -z "`git status -s`" ]; then \
-		echo "The following differences will fail CI until committed:"; \
-		git diff --exit-code; \
-		echo "Please ensure that you have run 'make precommit' and committed the changes."; \
+	@if [ -n "`git status -s`" ]; then \
+		echo "ERROR: Git working tree is not clean after precommit (CI expects generated output to match the commit)."; \
+		echo ""; \
+		git status -s; \
+		echo ""; \
+		git diff --stat; \
+		git diff --cached --stat; \
+		echo ""; \
+		echo "Fix: make precommit && git add -A && git commit -m \"your message\" && make check"; \
+		echo "For full patches: git diff   and   git diff --cached"; \
 		exit 1; \
 	fi
 
@@ -320,7 +344,7 @@ clean:
 TEST_PKGS ?= $$(go list ./pkg/...) ./cmd/...
 TEST_TIMEOUT ?= 30m
 test: fmt vet manifests envtest test-qpext
-	KUBEBUILDER_ASSETS="$$($(ENVTEST) use $(ENVTEST_K8S_VERSION) -p path)" go test --timeout 30m $$(go list ./pkg/...) ./cmd/... -coverprofile coverage.out -coverpkg ./pkg/... ./cmd...
+	KUBEBUILDER_ASSETS="$$($(ENVTEST) use $(ENVTEST_K8S_VERSION) --bin-dir $(LOCALBIN) -p path)" go test --timeout 30m $$(go list ./pkg/...) ./cmd/... -coverprofile coverage.out -coverpkg ./pkg/... ./cmd...
 
 test-qpext:
 	cd qpext && go test -v ./... -cover

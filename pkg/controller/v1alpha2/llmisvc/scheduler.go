@@ -18,6 +18,8 @@ package llmisvc
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
 	"maps"
 	"path"
@@ -51,19 +53,25 @@ import (
 const (
 	tokenizerContainerName = "tokenizer"
 
-	udsTokenizerBaseModelName = "base"
-	udsTokenizerSocketFile    = "/tmp/tokenizer/tokenizer-uds.socket" //nolint:gosec // G101: not a credential, UDS socket path
+	precisePrefixCacheScorerPlugin = "precise-prefix-cache-scorer"
+	prefixCacheScorerPlugin        = "prefix-cache-scorer"
+	udsTokenizerBaseModelName      = "base"
+	udsTokenizerSocketFile         = "/tmp/tokenizer/tokenizer-uds.socket" //nolint:gosec // G101: not a credential, UDS socket path
+
+	// schedulerSelfSignedTLSRestartAnnotation triggers a scheduler roll when the
+	// self-signed TLS secret changes (value is a SHA-256 hex digest of tls.crt+tls.key).
+	schedulerSelfSignedTLSRestartAnnotation = "serving.kserve.io/scheduler-self-signed-tls-sha256"
 )
 
 // reconcileScheduler manages the scheduler component and its related resources
 // The scheduler handles load balancing for inference pods
-func (r *LLMISVCReconciler) reconcileScheduler(ctx context.Context, llmSvc *v1alpha2.LLMInferenceService, schedulerConfig *SchedulerConfig) error {
+func (r *LLMISVCReconciler) reconcileScheduler(ctx context.Context, llmSvc *v1alpha2.LLMInferenceService) error {
 	log.FromContext(ctx).Info("Reconciling Scheduler")
 
 	if err := r.reconcileSchedulerServiceAccount(ctx, llmSvc); err != nil {
 		return err
 	}
-	if err := r.reconcileSchedulerDeployment(ctx, llmSvc, schedulerConfig); err != nil {
+	if err := r.reconcileSchedulerDeployment(ctx, llmSvc); err != nil {
 		return err
 	}
 	if err := r.reconcileSchedulerService(ctx, llmSvc); err != nil {
@@ -157,8 +165,8 @@ func (r *LLMISVCReconciler) reconcileSchedulerServiceAccount(ctx context.Context
 	return r.reconcileSchedulerRoleBinding(ctx, llmSvc, serviceAccount)
 }
 
-func (r *LLMISVCReconciler) reconcileSchedulerDeployment(ctx context.Context, llmSvc *v1alpha2.LLMInferenceService, schedulerConfig *SchedulerConfig) error {
-	scheduler, err := r.expectedSchedulerDeployment(ctx, llmSvc, schedulerConfig)
+func (r *LLMISVCReconciler) reconcileSchedulerDeployment(ctx context.Context, llmSvc *v1alpha2.LLMInferenceService) error {
+	scheduler, err := r.expectedSchedulerDeployment(ctx, llmSvc)
 	if err != nil {
 		return fmt.Errorf("failed to build expected scheduler deployment: %w", err)
 	}
@@ -334,7 +342,7 @@ func (r *LLMISVCReconciler) expectedSchedulerInferencePoolV1Alpha2(ctx context.C
 	return ip
 }
 
-func (r *LLMISVCReconciler) expectedSchedulerDeployment(ctx context.Context, llmSvc *v1alpha2.LLMInferenceService, schedulerConfig *SchedulerConfig) (*appsv1.Deployment, error) {
+func (r *LLMISVCReconciler) expectedSchedulerDeployment(ctx context.Context, llmSvc *v1alpha2.LLMInferenceService) (*appsv1.Deployment, error) {
 	labels := SchedulerLabels(llmSvc)
 	d := &appsv1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{
@@ -366,7 +374,6 @@ func (r *LLMISVCReconciler) expectedSchedulerDeployment(ctx context.Context, llm
 		},
 	}
 
-	mainIdx := -1
 	if llmSvc.Spec.Router != nil && llmSvc.Spec.Router.Scheduler != nil && llmSvc.Spec.Router.Scheduler.Template != nil {
 		curr := &appsv1.Deployment{}
 		if err := r.Get(ctx, client.ObjectKeyFromObject(d), curr); err != nil && !apierrors.IsNotFound(err) {
@@ -376,7 +383,7 @@ func (r *LLMISVCReconciler) expectedSchedulerDeployment(ctx context.Context, llm
 		d.Spec.Replicas = llmSvc.Spec.Router.Scheduler.Replicas
 		d.Spec.Template.Spec = *llmSvc.Spec.Router.Scheduler.Template.DeepCopy()
 
-		mainIdx = slices.IndexFunc(d.Spec.Template.Spec.Containers, func(c corev1.Container) bool {
+		mainIdx := slices.IndexFunc(d.Spec.Template.Spec.Containers, func(c corev1.Container) bool {
 			return c.Name == "main"
 		})
 		if mainIdx < 0 {
@@ -438,8 +445,11 @@ func (r *LLMISVCReconciler) expectedSchedulerDeployment(ctx context.Context, llm
 				return d, fmt.Errorf("failed to attach model artifacts to scheduler deployment: %w", err)
 			}
 
-			if err := mutateSchedulerConfig(d, WithUdsTokenizerConfig); err != nil {
-				return d, fmt.Errorf("failed to mutate scheduler config for tokenizer: %w", err)
+			// Mutate scheduler config: inject UDS tokenizer settings, migrate
+			// tokenProcessorConfig from indexerConfig to top-level parameters, and
+			// rename deprecated blockSize to blockSizeTokens (schema changes in v0.6.0).
+			if err := mutateSchedulerConfig(ctx, d, WithUdsTokenizerConfig, WithMigrateTokenProcessorConfig, WithMigrateBlockSizeToBlockSizeTokens); err != nil {
+				return d, fmt.Errorf("failed to mutate scheduler config: %w", err)
 			}
 		}
 	}
@@ -450,20 +460,26 @@ func (r *LLMISVCReconciler) expectedSchedulerDeployment(ctx context.Context, llm
 	// when certificates are renewed the pod template changes and the scheduler
 	// is restarted to pick up the new certificate.
 	// Skip if the main container supports automatic cert reload.
+	mainIdxForCert := -1
+	if llmSvc.Spec.Router != nil && llmSvc.Spec.Router.Scheduler != nil && llmSvc.Spec.Router.Scheduler.Template != nil {
+		mainIdxForCert = slices.IndexFunc(d.Spec.Template.Spec.Containers, func(c corev1.Container) bool {
+			return c.Name == "main"
+		})
+	}
 	certReloadEnabled := func(args []string) bool {
 		return slices.ContainsFunc(args, func(s string) bool {
 			return strings.HasPrefix(s, "--enable-cert-reload") ||
 				strings.HasPrefix(s, "-enable-cert-reload")
 		})
 	}
-	if mainIdx >= 0 &&
-		!certReloadEnabled(d.Spec.Template.Spec.Containers[mainIdx].Command) &&
-		!certReloadEnabled(d.Spec.Template.Spec.Containers[mainIdx].Args) {
+	if mainIdxForCert >= 0 &&
+		!certReloadEnabled(d.Spec.Template.Spec.Containers[mainIdxForCert].Command) &&
+		!certReloadEnabled(d.Spec.Template.Spec.Containers[mainIdxForCert].Args) {
 		if h := r.getSelfSignedCertHash(ctx, llmSvc); h != "" {
 			if d.Spec.Template.Annotations == nil {
 				d.Spec.Template.Annotations = map[string]string{}
 			}
-			d.Spec.Template.Annotations[schedulerConfig.RestartAnnotation] = h
+			d.Spec.Template.Annotations[schedulerSelfSignedTLSRestartAnnotation] = h
 		}
 	}
 
@@ -655,6 +671,9 @@ func (r *LLMISVCReconciler) expectedSchedulerServiceAccount(ctx context.Context,
 			sa.Secrets = mainSA.Secrets
 			sa.ImagePullSecrets = mainSA.ImagePullSecrets
 		}
+	} else {
+		// No explicit main workload SA — fall back to the default SA for registry credentials.
+		r.injectSecretsFromDefaultServiceAccount(ctx, sa)
 	}
 
 	return sa, useExistingServiceAccount, nil
@@ -693,6 +712,7 @@ func (r *LLMISVCReconciler) expectedSchedulerRole(llmSvc *v1alpha2.LLMInferenceS
 		Rules: []rbacv1.PolicyRule{
 			{APIGroups: []string{""}, Resources: []string{"pods"}, Verbs: []string{"get", "list", "watch"}},
 			{APIGroups: []string{"inference.networking.k8s.io", "inference.networking.x-k8s.io"}, Resources: []string{"inferencepools", "inferenceobjectives", "inferencemodels"}, Verbs: []string{"get", "list", "watch"}},
+			{APIGroups: []string{"inference.networking.x-k8s.io"}, Resources: []string{"inferencemodelrewrites", "inferencepoolimports"}, Verbs: []string{"get", "list", "watch"}},
 			{APIGroups: []string{"discovery.k8s.io"}, Resources: []string{"endpointslices"}, Verbs: []string{"get", "list", "watch"}},
 			{APIGroups: []string{"coordination.k8s.io"}, Resources: []string{"leases"}, Verbs: []string{"get", "list", "watch", "create", "update", "patch", "delete"}},
 		},
@@ -762,9 +782,9 @@ func (r *LLMISVCReconciler) propagateSchedulerDeploymentStatus(ctx context.Conte
 	return nil
 }
 
-type mutateSchedulerConfigFunc func(u *unstructured.Unstructured) error
+type mutateSchedulerConfigFunc func(ctx context.Context, u *unstructured.Unstructured) error
 
-func mutateSchedulerConfig(d *appsv1.Deployment, opts ...mutateSchedulerConfigFunc) error {
+func mutateSchedulerConfig(ctx context.Context, d *appsv1.Deployment, opts ...mutateSchedulerConfigFunc) error {
 	schedulerContainer := utils.GetContainerWithName(&d.Spec.Template.Spec, "main")
 	if schedulerContainer == nil {
 		return nil
@@ -779,7 +799,7 @@ func mutateSchedulerConfig(d *appsv1.Deployment, opts ...mutateSchedulerConfigFu
 				return nil //nolint:nilerr // unmarshal error is intentionally discarded for non-YAML config values
 			}
 			for _, opt := range opts {
-				if err := opt(&u); err != nil {
+				if err := opt(ctx, &u); err != nil {
 					return fmt.Errorf("failed to mutate config for scheduler deployment %s/%s: %w", d.GetNamespace(), d.GetName(), err)
 				}
 			}
@@ -793,11 +813,10 @@ func mutateSchedulerConfig(d *appsv1.Deployment, opts ...mutateSchedulerConfigFu
 	return nil
 }
 
-func WithUdsTokenizerConfig(u *unstructured.Unstructured) error {
+func WithUdsTokenizerConfig(_ context.Context, u *unstructured.Unstructured) error {
 	var (
-		precisePrefixCacheScorerPlugin = "precise-prefix-cache-scorer"
-		modelNameField                 = []string{"parameters", "indexerConfig", "tokenizersPoolConfig", "modelName"}
-		udsSocketFileField             = []string{"parameters", "indexerConfig", "tokenizersPoolConfig", "uds", "socketFile"}
+		modelNameField     = []string{"parameters", "indexerConfig", "tokenizersPoolConfig", "modelName"}
+		udsSocketFileField = []string{"parameters", "indexerConfig", "tokenizersPoolConfig", "uds", "socketFile"}
 	)
 
 	val, found, err := unstructured.NestedFieldNoCopy(u.Object, "plugins")
@@ -819,6 +838,101 @@ func WithUdsTokenizerConfig(u *unstructured.Unstructured) error {
 			return err
 		}
 		if err := unstructured.SetNestedField(pluginMap, udsTokenizerSocketFile, udsSocketFileField...); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// WithMigrateTokenProcessorConfig migrates tokenProcessorConfig from inside
+// indexerConfig to the top level of the plugin parameters for the
+// precise-prefix-cache-scorer plugin. This handles the schema change in
+// llm-d-inference-scheduler v0.6.0 where tokenProcessorConfig was promoted
+// from indexerConfig to a top-level plugin parameter.
+func WithMigrateTokenProcessorConfig(ctx context.Context, u *unstructured.Unstructured) error {
+	val, found, err := unstructured.NestedFieldNoCopy(u.Object, "plugins")
+	if err != nil || !found {
+		return err
+	}
+	plugins, ok := val.([]interface{})
+	if !ok {
+		return nil
+	}
+
+	for _, plugin := range plugins {
+		pluginMap, ok := plugin.(map[string]interface{})
+		if !ok || pluginMap["type"] != precisePrefixCacheScorerPlugin {
+			continue
+		}
+
+		// Skip if tokenProcessorConfig already exists at the top level
+		if _, exists, _ := unstructured.NestedFieldNoCopy(pluginMap, "parameters", "tokenProcessorConfig"); exists {
+			log.FromContext(ctx).V(2).Info("tokenProcessorConfig already at top-level parameters, skipping migration")
+			continue
+		}
+
+		// Check if tokenProcessorConfig exists inside indexerConfig (old location)
+		tpc, found, err := unstructured.NestedFieldCopy(pluginMap, "parameters", "indexerConfig", "tokenProcessorConfig")
+		if err != nil {
+			log.FromContext(ctx).Error(err, "Failed to read tokenProcessorConfig from indexerConfig")
+			continue
+		}
+		if !found {
+			continue
+		}
+
+		log.FromContext(ctx).Info("Migrating tokenProcessorConfig from indexerConfig to top-level plugin parameters")
+		// Move to top-level parameters
+		if err := unstructured.SetNestedField(pluginMap, tpc, "parameters", "tokenProcessorConfig"); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// WithMigrateBlockSizeToBlockSizeTokens migrates the deprecated blockSize
+// field to blockSizeTokens in the prefix-cache-scorer plugin parameters.
+// In llm-d-inference-scheduler v0.6.0 the prefix-cache-scorer plugin renamed
+// blockSize (characters) to blockSizeTokens (tokens). If only blockSize is
+// set the plugin refuses to start. This migration copies blockSize to
+// blockSizeTokens when blockSizeTokens is not already present.
+func WithMigrateBlockSizeToBlockSizeTokens(ctx context.Context, u *unstructured.Unstructured) error {
+	val, found, err := unstructured.NestedFieldNoCopy(u.Object, "plugins")
+	if err != nil || !found {
+		return err
+	}
+	plugins, ok := val.([]interface{})
+	if !ok {
+		return nil
+	}
+
+	for _, plugin := range plugins {
+		pluginMap, ok := plugin.(map[string]interface{})
+		if !ok || pluginMap["type"] != prefixCacheScorerPlugin {
+			continue
+		}
+
+		// Skip if blockSizeTokens already exists
+		if _, exists, _ := unstructured.NestedFieldNoCopy(pluginMap, "parameters", "blockSizeTokens"); exists {
+			log.FromContext(ctx).V(2).Info("blockSizeTokens already set, skipping migration from deprecated blockSize")
+			continue
+		}
+
+		// Check if deprecated blockSize exists
+		bs, found, err := unstructured.NestedFieldNoCopy(pluginMap, "parameters", "blockSize")
+		if err != nil {
+			log.FromContext(ctx).Error(err, "Failed to read blockSize from plugin parameters")
+			continue
+		}
+		if !found {
+			continue
+		}
+
+		log.FromContext(ctx).Info("Migrating deprecated blockSize to blockSizeTokens for prefix-cache-scorer plugin", "blockSize", bs)
+		// Copy blockSize value to blockSizeTokens
+		if err := unstructured.SetNestedField(pluginMap, bs, "parameters", "blockSizeTokens"); err != nil {
 			return err
 		}
 	}
@@ -877,4 +991,22 @@ func SchedulerLabels(llmSvc *v1alpha2.LLMInferenceService) map[string]string {
 		constants.KubernetesAppNameLabelKey:   llmSvc.GetName(),
 		constants.KubernetesPartOfLabelKey:    constants.LLMInferenceServicePartOfValue,
 	}
+}
+
+func (r *LLMISVCReconciler) getSelfSignedCertHash(ctx context.Context, llmSvc *v1alpha2.LLMInferenceService) string {
+	secret := &corev1.Secret{}
+	key := client.ObjectKey{
+		Namespace: llmSvc.GetNamespace(),
+		Name:      kmeta.ChildName(llmSvc.GetName(), "-kserve-self-signed-certs"),
+	}
+	if err := r.Get(ctx, key, secret); err != nil {
+		return ""
+	}
+	crt, okCrt := secret.Data["tls.crt"]
+	keyPEM, okKey := secret.Data["tls.key"]
+	if !okCrt || !okKey || len(crt) == 0 || len(keyPEM) == 0 {
+		return ""
+	}
+	sum := sha256.Sum256(append(append([]byte{}, crt...), keyPEM...))
+	return hex.EncodeToString(sum[:])
 }

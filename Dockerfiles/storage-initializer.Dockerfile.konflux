@@ -32,7 +32,7 @@ RUN if [ "$(uname -m)" = "s390x" ] || [ "$(uname -m)" = "ppc64le" ]; then \
        git clone --depth 1 --branch v${HF_XET_VERSION} https://github.com/huggingface/xet-core.git && \
        cd xet-core/hf_xet && \
        sed -i '/python-source = "python"/d' pyproject.toml && \
-       pip install maturin && \
+       pip install 'maturin[patchelf]' && \
        maturin build --release --out /hf_xet/wheels/ ; \
     fi
 

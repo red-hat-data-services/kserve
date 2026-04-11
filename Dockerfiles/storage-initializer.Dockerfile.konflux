@@ -38,6 +38,7 @@ RUN if [ "$(uname -m)" = "s390x" ] || [ "$(uname -m)" = "ppc64le" ]; then \
 
 RUN cd storage && \
     if [ "$(uname -m)" = "s390x" ] || [ "$(uname -m)" = "ppc64le" ]; then \
+       export PATH=/root/.cargo/bin:$PATH && \
        export GRPC_PYTHON_BUILD_SYSTEM_OPENSSL=true && \
        uv pip install /hf_xet/wheels/*.whl ; \
     fi && \

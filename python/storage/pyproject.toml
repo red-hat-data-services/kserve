@@ -31,6 +31,9 @@ huggingface-hub = { version = "^0.30.0", extras = ["hf-transfer"]}
 # CVE-2026-32597 PyJWT accepts unknown `crit` header extensions (RFC 7515 §4.1.11 MUST violation)
 # Pinning because it is a transitive dependency.
 PyJWT = {version = ">=2.12.0"}
+# CVE-2026-30922 pyasn1 Vulnerable to Denial of Service via Unbounded Recursion
+# Pinning because it is a transitive dependency.
+pyasn1 = {version = ">=0.6.3"}
 
 
 #[tool.poetry-version-plugin]

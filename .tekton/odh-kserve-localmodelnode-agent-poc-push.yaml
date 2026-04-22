@@ -31,7 +31,7 @@ spec:
     - linux/s390x
     - linux-m2xlarge/arm64
   - name: dockerfile
-    value: localmodel-agent.Dockerfile
+    value: Dockerfiles/localmodel-agent.Dockerfile.konflux
   - name: hermetic
     value: true
   - name: prefetch-input

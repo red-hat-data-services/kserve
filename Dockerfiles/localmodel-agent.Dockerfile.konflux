@@ -34,9 +34,6 @@ ARG CMD=localmodelnode
 COPY cmd/${CMD}/ cmd/${CMD}/
 COPY pkg/    pkg/
 COPY LICENSE LICENSE
-RUN --mount=type=cache,target=/go/pkg/mod \
-    go-licenses check ./cmd/${CMD} ./pkg/... --disallowed_types="forbidden,unknown" && \
-    go-licenses save --save_path third_party/library ./cmd/${CMD}
 
 # Copy the controller-manager into a thin image
 FROM registry.redhat.io/ubi9/ubi-minimal@sha256:175bafd5bc7893540ed6234bb979acfe3574fd6570e6762bbc527c757f854cea

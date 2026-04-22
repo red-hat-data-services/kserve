@@ -545,6 +545,12 @@ var _ = Describe("v1beta1 inference service controller", func() {
 									Env: []corev1.EnvVar{
 										{Name: constants.InferenceServiceNameEnvVarKey, Value: serviceName},
 									},
+									VolumeMounts: []corev1.VolumeMount{
+										{
+											Name:      "proxy-tls",
+											MountPath: "/etc/tls/private",
+										},
+									},
 									Resources: defaultResource,
 									ReadinessProbe: &corev1.Probe{
 										ProbeHandler: corev1.ProbeHandler{
@@ -564,13 +570,18 @@ var _ = Describe("v1beta1 inference service controller", func() {
 									TerminationMessagePolicy: "File",
 									ImagePullPolicy:          "IfNotPresent",
 								},
+								kubeRbacProxyContainer(nil, fmt.Sprintf("%s-%s", serviceName, constants.OauthProxySARCMName)),
 							},
+							Volumes: proxyVolumes(
+								predictorDeploymentKey.Name+constants.ServingCertSecretSuffix,
+								fmt.Sprintf("%s-%s", serviceName, constants.OauthProxySARCMName),
+							),
 							SchedulerName:                 "default-scheduler",
 							RestartPolicy:                 "Always",
 							TerminationGracePeriodSeconds: ptr.To(GRACE_PERIOD),
 							DNSPolicy:                     "ClusterFirst",
 							SecurityContext:               defaultSecurityContext,
-							AutomountServiceAccountToken:  ptr.To(false),
+							AutomountServiceAccountToken:  ptr.To(true),
 						},
 					},
 					// This is now customized and different from defaults set via `setDefaultDeploymentSpec`.
@@ -974,6 +985,12 @@ var _ = Describe("v1beta1 inference service controller", func() {
 									Env: []corev1.EnvVar{
 										{Name: constants.InferenceServiceNameEnvVarKey, Value: serviceName},
 									},
+									VolumeMounts: []corev1.VolumeMount{
+										{
+											Name:      "proxy-tls",
+											MountPath: "/etc/tls/private",
+										},
+									},
 									Resources: defaultResource,
 									ReadinessProbe: &corev1.Probe{
 										ProbeHandler: corev1.ProbeHandler{
@@ -993,13 +1010,18 @@ var _ = Describe("v1beta1 inference service controller", func() {
 									TerminationMessagePolicy: "File",
 									ImagePullPolicy:          "IfNotPresent",
 								},
+								kubeRbacProxyContainer(nil, fmt.Sprintf("%s-%s", serviceName, constants.OauthProxySARCMName)),
 							},
+							Volumes: proxyVolumes(
+								predictorDeploymentKey.Name+constants.ServingCertSecretSuffix,
+								fmt.Sprintf("%s-%s", serviceName, constants.OauthProxySARCMName),
+							),
 							SchedulerName:                 "default-scheduler",
 							RestartPolicy:                 "Always",
 							TerminationGracePeriodSeconds: ptr.To(GRACE_PERIOD),
 							DNSPolicy:                     "ClusterFirst",
 							SecurityContext:               defaultSecurityContext,
-							AutomountServiceAccountToken:  ptr.To(false),
+							AutomountServiceAccountToken:  ptr.To(true),
 						},
 					},
 					Strategy:                getDefaultRollingStrategy(),
@@ -3530,9 +3552,9 @@ var _ = Describe("v1beta1 inference service controller", func() {
 				return k8sClient.Get(context.TODO(), types.NamespacedName{Name: constants.InferenceServiceConfigMapName, Namespace: isvcNamespace}, cm)
 			}, timeout, interval).Should(Succeed())
 
-			isvcNamePytorch := "isvc-enable-auto-update-multiple-pytorch"
+			isvcNamePytorch := "isvc-multi-pytorch"
 			serviceKeyPytorch := types.NamespacedName{Name: isvcNamePytorch, Namespace: isvcNamespace}
-			isvcNameTensorflow := "isvc-enable-auto-update-multiple-tensorflow"
+			isvcNameTensorflow := "isvc-multi-tensorflow"
 			serviceKeyTensorflow := types.NamespacedName{Name: isvcNameTensorflow, Namespace: isvcNamespace}
 
 			servingRuntimePytorchName := "pytorch-serving-auto-update-true-multiple"
@@ -3730,7 +3752,9 @@ var _ = Describe("v1beta1 inference service controller", func() {
 
 			tensorFlowDeploymentAfterUpdate := &appsv1.Deployment{}
 			tensorflowDeploymentName := constants.PredictorServiceName(serviceKeyTensorflow.Name)
-			Expect(k8sClient.Get(ctx, types.NamespacedName{Name: tensorflowDeploymentName, Namespace: serviceKeyTensorflow.Namespace}, tensorFlowDeploymentAfterUpdate)).Should(Succeed())
+			Eventually(func() error {
+				return k8sClient.Get(ctx, types.NamespacedName{Name: tensorflowDeploymentName, Namespace: serviceKeyTensorflow.Namespace}, tensorFlowDeploymentAfterUpdate)
+			}, timeout, interval).Should(Succeed())
 			Expect(tensorFlowDeploymentAfterUpdate.Spec.Template.ObjectMeta.Labels["key1"]).Should(Equal("val1FromSR"))
 		})
 	})
@@ -4445,6 +4469,12 @@ var _ = Describe("v1beta1 inference service controller", func() {
 									Env: []corev1.EnvVar{
 										{Name: constants.InferenceServiceNameEnvVarKey, Value: serviceName},
 									},
+									VolumeMounts: []corev1.VolumeMount{
+										{
+											Name:      "proxy-tls",
+											MountPath: "/etc/tls/private",
+										},
+									},
 									Resources: defaultResource,
 									ReadinessProbe: &corev1.Probe{
 										ProbeHandler: corev1.ProbeHandler{
@@ -4464,13 +4494,18 @@ var _ = Describe("v1beta1 inference service controller", func() {
 									TerminationMessagePolicy: "File",
 									ImagePullPolicy:          "IfNotPresent",
 								},
+								kubeRbacProxyContainer(nil, fmt.Sprintf("%s-%s", serviceName, constants.OauthProxySARCMName)),
 							},
+							Volumes: proxyVolumes(
+								predictorDeploymentKey.Name+constants.ServingCertSecretSuffix,
+								fmt.Sprintf("%s-%s", serviceName, constants.OauthProxySARCMName),
+							),
 							SchedulerName:                 "default-scheduler",
 							RestartPolicy:                 "Always",
 							TerminationGracePeriodSeconds: ptr.To(GRACE_PERIOD),
 							DNSPolicy:                     "ClusterFirst",
 							SecurityContext:               defaultSecurityContext,
-							AutomountServiceAccountToken:  ptr.To(false),
+							AutomountServiceAccountToken:  ptr.To(true),
 						},
 					},
 					Strategy:                getDefaultRollingStrategy(),
@@ -4532,6 +4567,12 @@ var _ = Describe("v1beta1 inference service controller", func() {
 									Env: []corev1.EnvVar{
 										{Name: constants.InferenceServiceNameEnvVarKey, Value: serviceName},
 									},
+									VolumeMounts: []corev1.VolumeMount{
+										{
+											Name:      "proxy-tls",
+											MountPath: "/etc/tls/private",
+										},
+									},
 									Resources: defaultResource,
 									ReadinessProbe: &corev1.Probe{
 										ProbeHandler: corev1.ProbeHandler{
@@ -4551,13 +4592,18 @@ var _ = Describe("v1beta1 inference service controller", func() {
 									TerminationMessagePolicy: "File",
 									ImagePullPolicy:          "IfNotPresent",
 								},
+								kubeRbacProxyContainer(ptr.To(int64(30)), fmt.Sprintf("%s-%s", serviceName, constants.OauthProxySARCMName)),
 							},
+							Volumes: proxyVolumes(
+								transformerDeploymentKey.Name+constants.ServingCertSecretSuffix,
+								fmt.Sprintf("%s-%s", serviceName, constants.OauthProxySARCMName),
+							),
 							SchedulerName:                 "default-scheduler",
 							RestartPolicy:                 "Always",
 							TerminationGracePeriodSeconds: ptr.To(GRACE_PERIOD),
 							DNSPolicy:                     "ClusterFirst",
 							SecurityContext:               defaultSecurityContext,
-							AutomountServiceAccountToken:  ptr.To(false),
+							AutomountServiceAccountToken:  ptr.To(true),
 						},
 					},
 					Strategy:                getDefaultRollingStrategy(),
@@ -5215,6 +5261,12 @@ var _ = Describe("v1beta1 inference service controller", func() {
 									Env: []corev1.EnvVar{
 										{Name: constants.InferenceServiceNameEnvVarKey, Value: serviceName},
 									},
+									VolumeMounts: []corev1.VolumeMount{
+										{
+											Name:      "proxy-tls",
+											MountPath: "/etc/tls/private",
+										},
+									},
 									Resources: defaultResource,
 									ReadinessProbe: &corev1.Probe{
 										ProbeHandler: corev1.ProbeHandler{
@@ -5234,13 +5286,18 @@ var _ = Describe("v1beta1 inference service controller", func() {
 									TerminationMessagePolicy: "File",
 									ImagePullPolicy:          "IfNotPresent",
 								},
+								kubeRbacProxyContainer(nil, fmt.Sprintf("%s-%s", serviceName, constants.OauthProxySARCMName)),
 							},
+							Volumes: proxyVolumes(
+								predictorDeploymentKey.Name+constants.ServingCertSecretSuffix,
+								fmt.Sprintf("%s-%s", serviceName, constants.OauthProxySARCMName),
+							),
 							SchedulerName:                 "default-scheduler",
 							RestartPolicy:                 "Always",
 							TerminationGracePeriodSeconds: ptr.To(GRACE_PERIOD),
 							DNSPolicy:                     "ClusterFirst",
 							SecurityContext:               defaultSecurityContext,
-							AutomountServiceAccountToken:  ptr.To(false),
+							AutomountServiceAccountToken:  ptr.To(true),
 						},
 					},
 					Strategy:                getDefaultRollingStrategy(),
@@ -6371,6 +6428,12 @@ var _ = Describe("v1beta1 inference service controller", func() {
 									Env: []corev1.EnvVar{
 										{Name: constants.InferenceServiceNameEnvVarKey, Value: serviceName},
 									},
+									VolumeMounts: []corev1.VolumeMount{
+										{
+											Name:      "proxy-tls",
+											MountPath: "/etc/tls/private",
+										},
+									},
 									Resources: defaultResource,
 									ReadinessProbe: &corev1.Probe{
 										ProbeHandler: corev1.ProbeHandler{
@@ -6390,13 +6453,18 @@ var _ = Describe("v1beta1 inference service controller", func() {
 									TerminationMessagePolicy: "File",
 									ImagePullPolicy:          "IfNotPresent",
 								},
+								kubeRbacProxyContainer(nil, fmt.Sprintf("%s-%s", serviceName, constants.OauthProxySARCMName)),
 							},
+							Volumes: proxyVolumes(
+								predictorDeploymentKey.Name+constants.ServingCertSecretSuffix,
+								fmt.Sprintf("%s-%s", serviceName, constants.OauthProxySARCMName),
+							),
 							SchedulerName:                 "default-scheduler",
 							RestartPolicy:                 "Always",
 							TerminationGracePeriodSeconds: ptr.To(GRACE_PERIOD),
 							DNSPolicy:                     "ClusterFirst",
 							SecurityContext:               defaultSecurityContext,
-							AutomountServiceAccountToken:  ptr.To(false),
+							AutomountServiceAccountToken:  ptr.To(true),
 						},
 					},
 					Strategy:                getDefaultRollingStrategy(),
@@ -6458,6 +6526,12 @@ var _ = Describe("v1beta1 inference service controller", func() {
 									Env: []corev1.EnvVar{
 										{Name: constants.InferenceServiceNameEnvVarKey, Value: serviceName},
 									},
+									VolumeMounts: []corev1.VolumeMount{
+										{
+											Name:      "proxy-tls",
+											MountPath: "/etc/tls/private",
+										},
+									},
 									Resources: defaultResource,
 									ReadinessProbe: &corev1.Probe{
 										ProbeHandler: corev1.ProbeHandler{
@@ -6477,13 +6551,18 @@ var _ = Describe("v1beta1 inference service controller", func() {
 									TerminationMessagePolicy: "File",
 									ImagePullPolicy:          "IfNotPresent",
 								},
+								kubeRbacProxyContainer(ptr.To(int64(30)), fmt.Sprintf("%s-%s", serviceName, constants.OauthProxySARCMName)),
 							},
+							Volumes: proxyVolumes(
+								transformerDeploymentKey.Name+constants.ServingCertSecretSuffix,
+								fmt.Sprintf("%s-%s", serviceName, constants.OauthProxySARCMName),
+							),
 							SchedulerName:                 "default-scheduler",
 							RestartPolicy:                 "Always",
 							TerminationGracePeriodSeconds: ptr.To(GRACE_PERIOD),
 							DNSPolicy:                     "ClusterFirst",
 							SecurityContext:               defaultSecurityContext,
-							AutomountServiceAccountToken:  ptr.To(false),
+							AutomountServiceAccountToken:  ptr.To(true),
 						},
 					},
 					Strategy:                getDefaultRollingStrategy(),
@@ -7190,6 +7269,12 @@ var _ = Describe("v1beta1 inference service controller", func() {
 									Env: []corev1.EnvVar{
 										{Name: constants.InferenceServiceNameEnvVarKey, Value: serviceName},
 									},
+									VolumeMounts: []corev1.VolumeMount{
+										{
+											Name:      "proxy-tls",
+											MountPath: "/etc/tls/private",
+										},
+									},
 									Resources: defaultResource,
 									ReadinessProbe: &corev1.Probe{
 										ProbeHandler: corev1.ProbeHandler{
@@ -7209,13 +7294,18 @@ var _ = Describe("v1beta1 inference service controller", func() {
 									TerminationMessagePolicy: "File",
 									ImagePullPolicy:          "IfNotPresent",
 								},
+								kubeRbacProxyContainer(nil, fmt.Sprintf("%s-%s", serviceName, constants.OauthProxySARCMName)),
 							},
+							Volumes: proxyVolumes(
+								predictorDeploymentKey.Name+constants.ServingCertSecretSuffix,
+								fmt.Sprintf("%s-%s", serviceName, constants.OauthProxySARCMName),
+							),
 							SchedulerName:                 "default-scheduler",
 							RestartPolicy:                 "Always",
 							TerminationGracePeriodSeconds: ptr.To(GRACE_PERIOD),
 							DNSPolicy:                     "ClusterFirst",
 							SecurityContext:               defaultSecurityContext,
-							AutomountServiceAccountToken:  ptr.To(false),
+							AutomountServiceAccountToken:  ptr.To(true),
 						},
 					},
 					Strategy:                getDefaultRollingStrategy(),
@@ -8161,7 +8251,7 @@ var _ = Describe("v1beta1 inference service controller", func() {
 			_ = k8sClient.Create(context.TODO(), &servingRuntime)
 			defer k8sClient.Delete(context.TODO(), &servingRuntime)
 
-			serviceName := "raw-foo"
+			serviceName := "raw-foo-no-gw"
 			expectedRequest := reconcile.Request{NamespacedName: types.NamespacedName{Name: serviceName, Namespace: "default"}}
 			serviceKey := expectedRequest.NamespacedName
 
@@ -8310,8 +8400,10 @@ var _ = Describe("v1beta1 inference service controller", func() {
 			}
 			Expect(actualIngress.Spec).To(Equal(expectedIngress.Spec))
 			// verify if InferenceService status is updated
-			expectedIsvcStatus := getExpectedIsvcStatus(serviceKey, "http", "raw-foo-predictor.default.svc.cluster.local",
-				"raw-foo-predictor-default.example.com", "8080")
+			expectedIsvcStatus := getExpectedIsvcStatus(serviceKey, "http",
+				fmt.Sprintf("%s-predictor.%s.svc.cluster.local", serviceName, serviceKey.Namespace),
+				fmt.Sprintf("%s-predictor-%s.%s", serviceName, serviceKey.Namespace, domain),
+				"8080")
 			Eventually(func() string {
 				isvc := &v1beta1.InferenceService{}
 				if err := k8sClient.Get(context.TODO(), serviceKey, isvc); err != nil {
@@ -8578,107 +8670,12 @@ var _ = Describe("v1beta1 inference service controller", func() {
 									TerminationMessagePolicy: "File",
 									ImagePullPolicy:          "IfNotPresent",
 								},
-								{
-									Name:  constants.KubeRbacContainerName,
-									Image: constants.OauthProxyImage,
-									Args: []string{
-										`--secure-listen-address=:8443`,
-										`--proxy-endpoints-port=8643`,
-										`--upstream=http://localhost:8080`,
-										`--auth-header-fields-enabled=true`,
-										`--tls-cert-file=/etc/tls/private/tls.crt`,
-										`--tls-private-key-file=/etc/tls/private/tls.key`,
-										`--config-file=/etc/kube-rbac-proxy/config-file.yaml`,
-										`--v=4`,
-									},
-									Ports: []corev1.ContainerPort{
-										{
-											ContainerPort: constants.OauthProxyPort,
-											Name:          "https",
-											Protocol:      corev1.ProtocolTCP,
-										},
-										{
-											ContainerPort: constants.OauthProxyProbePort,
-											Name:          "proxy",
-											Protocol:      corev1.ProtocolTCP,
-										},
-									},
-									LivenessProbe: &corev1.Probe{
-										ProbeHandler: corev1.ProbeHandler{
-											HTTPGet: &corev1.HTTPGetAction{
-												Path:   "/healthz",
-												Port:   intstr.FromInt32(constants.OauthProxyProbePort),
-												Scheme: corev1.URISchemeHTTPS,
-											},
-										},
-										InitialDelaySeconds: 30,
-										TimeoutSeconds:      1,
-										PeriodSeconds:       5,
-										SuccessThreshold:    1,
-										FailureThreshold:    3,
-									},
-									ReadinessProbe: &corev1.Probe{
-										ProbeHandler: corev1.ProbeHandler{
-											HTTPGet: &corev1.HTTPGetAction{
-												Path:   "/healthz",
-												Port:   intstr.FromInt32(constants.OauthProxyProbePort),
-												Scheme: corev1.URISchemeHTTPS,
-											},
-										},
-										InitialDelaySeconds: 5,
-										TimeoutSeconds:      1,
-										PeriodSeconds:       5,
-										SuccessThreshold:    1,
-										FailureThreshold:    3,
-									},
-									Resources: corev1.ResourceRequirements{
-										Limits: corev1.ResourceList{
-											corev1.ResourceCPU:    resource.MustParse(constants.OauthProxyResourceCPULimit),
-											corev1.ResourceMemory: resource.MustParse(constants.OauthProxyResourceMemoryLimit),
-										},
-										Requests: corev1.ResourceList{
-											corev1.ResourceCPU:    resource.MustParse(constants.OauthProxyResourceCPURequest),
-											corev1.ResourceMemory: resource.MustParse(constants.OauthProxyResourceMemoryRequest),
-										},
-									},
-									VolumeMounts: []corev1.VolumeMount{
-										{
-											Name:      "proxy-tls",
-											MountPath: "/etc/tls/private",
-										},
-										{
-											Name:      fmt.Sprintf("%s-%s", serviceKey.Name, constants.OauthProxySARCMName),
-											MountPath: "/etc/kube-rbac-proxy",
-											ReadOnly:  true,
-										},
-									},
-									TerminationMessagePath:   "/dev/termination-log",
-									TerminationMessagePolicy: "File",
-									ImagePullPolicy:          "IfNotPresent",
-								},
+								kubeRbacProxyContainer(nil, fmt.Sprintf("%s-%s", serviceKey.Name, constants.OauthProxySARCMName)),
 							},
-							Volumes: []corev1.Volume{
-								{
-									Name: "proxy-tls",
-									VolumeSource: corev1.VolumeSource{
-										Secret: &corev1.SecretVolumeSource{
-											SecretName:  predictorDeploymentKey.Name + constants.ServingCertSecretSuffix,
-											DefaultMode: func(i int32) *int32 { return &i }(420),
-										},
-									},
-								},
-								{
-									Name: fmt.Sprintf("%s-%s", serviceKey.Name, constants.OauthProxySARCMName),
-									VolumeSource: corev1.VolumeSource{
-										ConfigMap: &corev1.ConfigMapVolumeSource{
-											LocalObjectReference: corev1.LocalObjectReference{
-												Name: fmt.Sprintf("%s-%s", serviceKey.Name, constants.OauthProxySARCMName),
-											},
-											DefaultMode: func(i int32) *int32 { return &i }(420),
-										},
-									},
-								},
-							},
+							Volumes: proxyVolumes(
+								predictorDeploymentKey.Name+constants.ServingCertSecretSuffix,
+								fmt.Sprintf("%s-%s", serviceKey.Name, constants.OauthProxySARCMName),
+							),
 							SchedulerName:                 "default-scheduler",
 							RestartPolicy:                 "Always",
 							TerminationGracePeriodSeconds: &gracePeriod,
@@ -10431,7 +10428,8 @@ var _ = Describe("v1beta1 inference service controller", func() {
 					"cpuModelcar": "10m",
 					"memoryModelcar": "15Mi"
 				}`,
-				"service": `{"serviceClusterIPNone": true}`,
+				"service":    `{"serviceClusterIPNone": true}`,
+				"oauthProxy": `{"image": "quay.io/opendatahub/odh-kube-auth-proxy@sha256:dcb09fbabd8811f0956ef612a0c9ddd5236804b9bd6548a0647d2b531c9d01b3", "memoryRequest": "64Mi", "memoryLimit": "128Mi", "cpuRequest": "100m", "cpuLimit": "200m"}`,
 			}
 			configMap := createInferenceServiceConfigMap(configs)
 			Expect(k8sClient.Create(ctx, configMap)).NotTo(HaveOccurred())
@@ -10586,6 +10584,7 @@ var _ = Describe("v1beta1 inference service controller", func() {
 				"localGatewayService": "knative-local-gateway.istio-system.svc.cluster.local",
 				"additionalIngressDomains": ["additional.example.com"]
 			}`,
+			"oauthProxy": `{"image": "quay.io/opendatahub/odh-kube-auth-proxy@sha256:dcb09fbabd8811f0956ef612a0c9ddd5236804b9bd6548a0647d2b531c9d01b3", "memoryRequest": "64Mi", "memoryLimit": "128Mi", "cpuRequest": "100m", "cpuLimit": "200m"}`,
 			"storageInitializer": `{
 				"image" : "kserve/storage-initializer:latest",
 				"memoryRequest": "100Mi",

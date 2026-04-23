@@ -48,10 +48,10 @@ USER 1000:1000
 ENTRYPOINT ["/manager"]
 
 LABEL com.redhat.component="odh-kserve-localmodel-controller-rhel9" \
-      name="managed-open-data-hub/odh-kserve-localmodel-controller-rhel9" \
+      name="rhoai/odh-kserve-localmodel-controller-rhel9" \
       description="odh-kserve-localmodel-controller" \
       summary="odh-kserve-localmodel-controller" \
-      maintainer="['managed-open-data-hub@redhat.com']" \
+      maintainer="odh-kserve-localmodel-controller" \
       io.openshift.expose-services="" \
       io.k8s.display-name="odh-kserve-localmodel-controller" \
       io.k8s.description="odh-kserve-localmodel-controller" \

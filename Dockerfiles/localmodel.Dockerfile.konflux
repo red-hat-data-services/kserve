@@ -1,5 +1,5 @@
 # Build the manager binary
-FROM registry.redhat.io/ubi9/go-toolset:1.25 AS deps
+FROM registry.redhat.io/ubi9/go-toolset@sha256:d637b9dfccb16623f19b95c43fe5a65b20b722e62753c4445c5d02f9e40b807d AS deps
 # distro: UBI go-toolset does not add GOPATH/bin to PATH
 ENV PATH="$PATH:/opt/app-root/src/go/bin"
 
@@ -22,20 +22,8 @@ RUN --mount=type=cache,target=/go/pkg/mod \
     --mount=type=cache,target=/root/.cache/go-build \
     CGO_ENABLED=0 GOOS=linux GOFLAGS=-mod=readonly go build -a -o localmodel-manager ./cmd/${CMD}
 
-# ---- License stage (parallel with build on BuildKit) ----
-FROM deps AS license
-
-RUN --mount=type=cache,target=/go/pkg/mod \
-    --mount=type=cache,target=/root/.cache/go-build \
-    go install github.com/google/go-licenses@v1.6.0
-
-ARG CMD=localmodel
-COPY cmd/${CMD}/ cmd/${CMD}/
-COPY pkg/    pkg/
-COPY LICENSE LICENSE
-
 # Copy the controller-manager into a thin image
-FROM registry.redhat.io/ubi9/ubi-minimal:latest
+FROM registry.redhat.io/ubi9/ubi-minimal@sha256:175bafd5bc7893540ed6234bb979acfe3574fd6570e6762bbc527c757f854cea
 
 RUN microdnf install -y --disablerepo=* --enablerepo=ubi-9-baseos-rpms shadow-utils && \
     microdnf clean all && \

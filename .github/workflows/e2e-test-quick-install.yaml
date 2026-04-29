@@ -65,6 +65,7 @@ jobs:
           fi
 
   controller-image-build:
+    if: github.repository == 'kserve/kserve'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout source
@@ -127,6 +128,7 @@ jobs:
           if-no-files-found: error
 
   test-quick-install:
+    if: github.repository == 'kserve/kserve'
     runs-on: ubuntu-latest
     needs: [detect-changes, controller-image-build]
     strategy:

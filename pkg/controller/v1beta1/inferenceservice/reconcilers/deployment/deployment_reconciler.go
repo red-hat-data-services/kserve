@@ -21,12 +21,14 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"strconv"
 	"strings"
 
 	"google.golang.org/protobuf/proto"
 	"k8s.io/apimachinery/pkg/api/resource"
+	"k8s.io/apimachinery/pkg/util/strategicpatch"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/util/retry"
 
@@ -422,6 +424,37 @@ func generateCookieSecret() (string, error) {
 	return base64.StdEncoding.EncodeToString(secret), nil
 }
 
+// syncContainerProbesFromDesired overwrites liveness, readiness, and startup probes on dst's
+// containers with probes from identically named containers in src. The result of applying a
+// strategic merge patch locally can still deep-merge probes incorrectly when persisted via
+// another strategic patch to the API; the reconciler's desired template is authoritative for
+// probes (RHOAIENG-33695).
+func syncContainerProbesFromDesired(dst *corev1.PodTemplateSpec, src *corev1.PodTemplateSpec) {
+	if dst == nil || src == nil {
+		return
+	}
+	srcByName := make(map[string]corev1.Container, len(src.Spec.Containers))
+	for _, c := range src.Spec.Containers {
+		srcByName[c.Name] = c
+	}
+	for i := range dst.Spec.Containers {
+		sc, ok := srcByName[dst.Spec.Containers[i].Name]
+		if !ok {
+			continue
+		}
+		dst.Spec.Containers[i].LivenessProbe = probeDeepCopyOrNil(sc.LivenessProbe)
+		dst.Spec.Containers[i].ReadinessProbe = probeDeepCopyOrNil(sc.ReadinessProbe)
+		dst.Spec.Containers[i].StartupProbe = probeDeepCopyOrNil(sc.StartupProbe)
+	}
+}
+
+func probeDeepCopyOrNil(p *corev1.Probe) *corev1.Probe {
+	if p == nil {
+		return nil
+	}
+	return p.DeepCopy()
+}
+
 // checkDeploymentExist checks if the deployment exists?
 func (r *DeploymentReconciler) checkDeploymentExist(client kclient.Client, deployment *appsv1.Deployment) (constants.CheckResultType, *appsv1.Deployment, error) {
 	forceStopRuntime := utils.GetForceStopRuntime(deployment)
@@ -615,27 +648,134 @@ func (r *DeploymentReconciler) Reconcile() ([]*appsv1.Deployment, error) {
 		case constants.CheckResultCreate:
 			opErr = r.client.Create(context.TODO(), deployment)
 		case constants.CheckResultUpdate:
-			// Use a full spec Update instead of strategic merge patch. Strategic merge can merge
-			// incompatible probe handler fields (e.g. httpGet retained when switching to exec),
-			// which makes the object invalid (more than one handler type).
-			desired := deployment.DeepCopy()
+			// Snapshot desired probes; env handling uses placeholders on a copy only — do not mutate
+			// the reconciler's deployment object across retries.
+			desiredProbeTemplate := deployment.Spec.Template.DeepCopy()
 
 			opErr = retry.RetryOnConflict(retry.DefaultBackoff, func() error {
 				cur := &appsv1.Deployment{}
 				if err := r.client.Get(context.TODO(), types.NamespacedName{
-					Name:      desired.Name,
-					Namespace: desired.Namespace,
+					Name: deployment.Name, Namespace: deployment.Namespace,
 				}, cur); err != nil {
 					return err
 				}
+
+				mod := deployment.DeepCopy()
+				// Check if there are any envs to remove — placeholders on mod only.
+				for i, deploymentC := range mod.Spec.Template.Spec.Containers {
+					envs := []corev1.EnvVar{}
+					for _, origC := range cur.Spec.Template.Spec.Containers {
+						if deploymentC.Name == origC.Name {
+							envsToRemove, envsToKeep := utils.CheckEnvsToRemove(deploymentC.Env, origC.Env)
+							if len(envsToRemove) > 0 {
+								envs = append(envs, envsToKeep...)
+								envs = append(envs, envsToRemove...)
+							} else {
+								envs = deploymentC.Env
+							}
+						}
+					}
+					mod.Spec.Template.Spec.Containers[i].Env = envs
+				}
+
+				curForPatch := cur.DeepCopy()
+				curForPatch.Spec.Replicas = nil
+				curJson, err := json.Marshal(curForPatch)
+				if err != nil {
+					return err
+				}
+				mod.Spec.Replicas = nil
+
+				imagePullSecretsDesired := mod.Spec.Template.Spec.ImagePullSecrets
+				curPullSecrets := cur.Spec.Template.Spec.ImagePullSecrets
+				imagePullSecretsToRemove := []string{}
+				for _, secret := range curPullSecrets {
+					found := false
+					for _, desiredSecret := range imagePullSecretsDesired {
+						if secret.Name == desiredSecret.Name {
+							found = true
+							break
+						}
+					}
+					if !found {
+						imagePullSecretsToRemove = append(imagePullSecretsToRemove, secret.Name)
+					}
+				}
+
+				modJson, err := json.Marshal(mod)
+				if err != nil {
+					return err
+				}
+
+				patchByte, err := strategicpatch.CreateTwoWayMergePatch(curJson, modJson, appsv1.Deployment{})
+				if err != nil {
+					return err
+				}
+
+				patchByte = []byte(strings.ReplaceAll(string(patchByte), "\"value\":\""+utils.PLACEHOLDER_FOR_DELETION+"\"", "\"$patch\":\"delete\""))
+
+				if len(imagePullSecretsToRemove) > 0 {
+					patchJson := map[string]interface{}{}
+					if err = json.Unmarshal(patchByte, &patchJson); err != nil {
+						return err
+					}
+					spec, ok := patchJson["spec"].(map[string]interface{})
+					if !ok {
+						return errors.New("spec not found")
+					}
+					template, ok := spec["template"].(map[string]interface{})
+					if !ok {
+						return errors.New("template not found")
+					}
+					specTemplate, ok := template["spec"].(map[string]interface{})
+					if !ok {
+						return errors.New("template.spec not found")
+					}
+
+					ipsField, exists := specTemplate["imagePullSecrets"]
+					var imagePullSecrets []interface{}
+					if exists && ipsField != nil {
+						var ok bool
+						imagePullSecrets, ok = ipsField.([]interface{})
+						if !ok {
+							return errors.New("imagePullSecrets is not the expected type")
+						}
+					} else {
+						imagePullSecrets = []interface{}{}
+					}
+
+					for _, secret := range imagePullSecretsToRemove {
+						for _, secretMap := range imagePullSecrets {
+							if secretMap.(map[string]interface{})["name"] == secret {
+								secretMap.(map[string]interface{})["$patch"] = "delete"
+							}
+						}
+					}
+					patchJson["spec"].(map[string]interface{})["template"].(map[string]interface{})["spec"].(map[string]interface{})["imagePullSecrets"] = imagePullSecrets
+					patchByte, err = json.Marshal(patchJson)
+					if err != nil {
+						return err
+					}
+				}
+
+				// Apply the same strategic merge locally. Patching the API with a strategic merge on
+				// probes deep-merges handlers (httpGet + exec), which fails validation (RHOAIENG-33695).
+				mergedBytes, err := strategicpatch.StrategicMergePatch(curJson, patchByte, appsv1.Deployment{})
+				if err != nil {
+					return err
+				}
+				var merged appsv1.Deployment
+				if err := json.Unmarshal(mergedBytes, &merged); err != nil {
+					return err
+				}
+
 				updated := cur.DeepCopy()
-				updated.Labels = desired.Labels
-				updated.Annotations = desired.Annotations
-				newSpec := desired.Spec.DeepCopy()
-				// Match prior patch behavior: do not change replica count via this reconcile path
-				// (diff ignores Replicas; HPA or other controllers own the live value).
-				newSpec.Replicas = cur.Spec.Replicas
-				updated.Spec = *newSpec
+				updated.Labels = deployment.Labels
+				updated.Annotations = deployment.Annotations
+				updated.Spec = merged.Spec
+				updated.Spec.Replicas = cur.Spec.Replicas
+				syncContainerProbesFromDesired(&updated.Spec.Template, desiredProbeTemplate)
+
 				return r.client.Update(context.TODO(), updated)
 			})
 

@@ -30,6 +30,7 @@ import (
 	"k8s.io/apimachinery/pkg/api/resource"
 	"k8s.io/apimachinery/pkg/util/strategicpatch"
 	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/util/retry"
 
 	"github.com/google/go-cmp/cmp/cmpopts"
 	appsv1 "k8s.io/api/apps/v1"
@@ -423,6 +424,37 @@ func generateCookieSecret() (string, error) {
 	return base64.StdEncoding.EncodeToString(secret), nil
 }
 
+// syncContainerProbesFromDesired overwrites liveness, readiness, and startup probes on dst's
+// containers with probes from identically named containers in src. The result of applying a
+// strategic merge patch locally can still deep-merge probes incorrectly when persisted via
+// another strategic patch to the API; the reconciler's desired template is authoritative for
+// probes (RHOAIENG-33695).
+func syncContainerProbesFromDesired(dst *corev1.PodTemplateSpec, src *corev1.PodTemplateSpec) {
+	if dst == nil || src == nil {
+		return
+	}
+	srcByName := make(map[string]corev1.Container, len(src.Spec.Containers))
+	for _, c := range src.Spec.Containers {
+		srcByName[c.Name] = c
+	}
+	for i := range dst.Spec.Containers {
+		sc, ok := srcByName[dst.Spec.Containers[i].Name]
+		if !ok {
+			continue
+		}
+		dst.Spec.Containers[i].LivenessProbe = probeDeepCopyOrNil(sc.LivenessProbe)
+		dst.Spec.Containers[i].ReadinessProbe = probeDeepCopyOrNil(sc.ReadinessProbe)
+		dst.Spec.Containers[i].StartupProbe = probeDeepCopyOrNil(sc.StartupProbe)
+	}
+}
+
+func probeDeepCopyOrNil(p *corev1.Probe) *corev1.Probe {
+	if p == nil {
+		return nil
+	}
+	return p.DeepCopy()
+}
+
 // checkDeploymentExist checks if the deployment exists?
 func (r *DeploymentReconciler) checkDeploymentExist(client kclient.Client, deployment *appsv1.Deployment) (constants.CheckResultType, *appsv1.Deployment, error) {
 	forceStopRuntime := utils.GetForceStopRuntime(deployment)
@@ -605,7 +637,6 @@ func addGPUResourceToDeployment(deployment *appsv1.Deployment, targetContainerNa
 func (r *DeploymentReconciler) Reconcile() ([]*appsv1.Deployment, error) {
 	for _, deployment := range r.DeploymentList {
 		// Reconcile Deployment
-		originalDeployment := &appsv1.Deployment{}
 		checkResult, _, err := r.checkDeploymentExist(r.client, deployment)
 		if err != nil {
 			return nil, err
@@ -617,126 +648,136 @@ func (r *DeploymentReconciler) Reconcile() ([]*appsv1.Deployment, error) {
 		case constants.CheckResultCreate:
 			opErr = r.client.Create(context.TODO(), deployment)
 		case constants.CheckResultUpdate:
-			// get the current deployment
-			_ = r.client.Get(context.TODO(), types.NamespacedName{Name: deployment.Name, Namespace: deployment.Namespace}, originalDeployment)
-			// we need to remove the Replicas field from the deployment spec
+			// Snapshot desired probes; env handling uses placeholders on a copy only — do not mutate
+			// the reconciler's deployment object across retries.
+			desiredProbeTemplate := deployment.Spec.Template.DeepCopy()
 
-			// Check if there are any envs to remove
-			// If there, its value will be set to "delete" so we can update the patchBytes with
-			// "patch": "delete"
-			// The strategic merge patch does not remove items from list just by removing it from the patch,
-			// to delete lists items using strategic merge patch, the $patch delete pattern is used.
-			// Example:
-			// - env:
-			//   - "name": "ENV1",
-			//     "$patch": "delete"
-			for i, deploymentC := range deployment.Spec.Template.Spec.Containers {
-				envs := []corev1.EnvVar{}
-				for _, OriginalC := range originalDeployment.Spec.Template.Spec.Containers {
-					if deploymentC.Name == OriginalC.Name {
-						envsToRemove, envsToKeep := utils.CheckEnvsToRemove(deploymentC.Env, OriginalC.Env)
-						if len(envsToRemove) > 0 {
-							envs = append(envs, envsToKeep...)
-							envs = append(envs, envsToRemove...)
-						} else {
-							envs = deploymentC.Env
+			opErr = retry.RetryOnConflict(retry.DefaultBackoff, func() error {
+				cur := &appsv1.Deployment{}
+				if err := r.client.Get(context.TODO(), types.NamespacedName{
+					Name: deployment.Name, Namespace: deployment.Namespace,
+				}, cur); err != nil {
+					return err
+				}
+
+				mod := deployment.DeepCopy()
+				// Check if there are any envs to remove — placeholders on mod only.
+				for i, deploymentC := range mod.Spec.Template.Spec.Containers {
+					envs := []corev1.EnvVar{}
+					for _, origC := range cur.Spec.Template.Spec.Containers {
+						if deploymentC.Name == origC.Name {
+							envsToRemove, envsToKeep := utils.CheckEnvsToRemove(deploymentC.Env, origC.Env)
+							if len(envsToRemove) > 0 {
+								envs = append(envs, envsToKeep...)
+								envs = append(envs, envsToRemove...)
+							} else {
+								envs = deploymentC.Env
+							}
 						}
 					}
+					mod.Spec.Template.Spec.Containers[i].Env = envs
 				}
-				deployment.Spec.Template.Spec.Containers[i].Env = envs
-			}
 
-			originalDeployment.Spec.Replicas = nil
-			curJson, err := json.Marshal(originalDeployment)
-			if err != nil {
-				return nil, err
-			}
-			// To avoid the conflict between HPA and Deployment,
-			// we need to remove the Replicas field from the deployment spec
-			deployment.Spec.Replicas = nil
+				curForPatch := cur.DeepCopy()
+				curForPatch.Spec.Replicas = nil
+				curJson, err := json.Marshal(curForPatch)
+				if err != nil {
+					return err
+				}
+				mod.Spec.Replicas = nil
 
-			imagePullSecretsDesired := deployment.Spec.Template.Spec.ImagePullSecrets
-			originalDeploymentPullSecrets := originalDeployment.Spec.Template.Spec.ImagePullSecrets
-			imagePullSecretsToRemove := []string{}
-			for _, secret := range originalDeploymentPullSecrets {
-				found := false
-				for _, desiredSecret := range imagePullSecretsDesired {
-					if secret.Name == desiredSecret.Name {
-						found = true
-						break
+				imagePullSecretsDesired := mod.Spec.Template.Spec.ImagePullSecrets
+				curPullSecrets := cur.Spec.Template.Spec.ImagePullSecrets
+				imagePullSecretsToRemove := []string{}
+				for _, secret := range curPullSecrets {
+					found := false
+					for _, desiredSecret := range imagePullSecretsDesired {
+						if secret.Name == desiredSecret.Name {
+							found = true
+							break
+						}
+					}
+					if !found {
+						imagePullSecretsToRemove = append(imagePullSecretsToRemove, secret.Name)
 					}
 				}
-				if !found {
-					imagePullSecretsToRemove = append(imagePullSecretsToRemove, secret.Name)
-				}
-			}
 
-			modJson, err := json.Marshal(deployment)
-			if err != nil {
-				return nil, err
-			}
-
-			// Generate the strategic merge patch between the current and modified JSON
-			patchByte, err := strategicpatch.StrategicMergePatch(curJson, modJson, appsv1.Deployment{})
-			if err != nil {
-				return nil, err
-			}
-
-			// Patch the deployment object with the strategic merge patch
-			patchByte = []byte(strings.ReplaceAll(string(patchByte), "\"value\":\""+utils.PLACEHOLDER_FOR_DELETION+"\"", "\"$patch\":\"delete\""))
-
-			// The strategic merge patch does not remove items from list just by removing it from the patch,
-			// to delete lists items using strategic merge patch, the $patch delete pattern is used.
-			// Example:
-			// imagePullSecrets:
-			//   - "name": "pull-secret-1",
-			//     "$patch": "delete"
-			if len(imagePullSecretsToRemove) > 0 {
-				patchJson := map[string]interface{}{}
-				err = json.Unmarshal(patchByte, &patchJson)
+				modJson, err := json.Marshal(mod)
 				if err != nil {
-					return nil, err
-				}
-				spec, ok := patchJson["spec"].(map[string]interface{})
-				if !ok {
-					return nil, errors.New("spec not found")
-				}
-				template, ok := spec["template"].(map[string]interface{})
-				if !ok {
-					return nil, errors.New("template not found")
-				}
-				specTemplate, ok := template["spec"].(map[string]interface{})
-				if !ok {
-					return nil, errors.New("template.spec not found")
+					return err
 				}
 
-				// Ensure imagePullSecrets is a slice, defaulting to an empty slice if nil.
-				ipsField, exists := specTemplate["imagePullSecrets"]
-				var imagePullSecrets []interface{}
-				if exists && ipsField != nil {
-					var ok bool
-					imagePullSecrets, ok = ipsField.([]interface{})
+				patchByte, err := strategicpatch.CreateTwoWayMergePatch(curJson, modJson, appsv1.Deployment{})
+				if err != nil {
+					return err
+				}
+
+				patchByte = []byte(strings.ReplaceAll(string(patchByte), "\"value\":\""+utils.PLACEHOLDER_FOR_DELETION+"\"", "\"$patch\":\"delete\""))
+
+				if len(imagePullSecretsToRemove) > 0 {
+					patchJson := map[string]interface{}{}
+					if err = json.Unmarshal(patchByte, &patchJson); err != nil {
+						return err
+					}
+					spec, ok := patchJson["spec"].(map[string]interface{})
 					if !ok {
-						return nil, errors.New("imagePullSecrets is not the expected type")
+						return errors.New("spec not found")
 					}
-				} else {
-					imagePullSecrets = []interface{}{}
-				}
+					template, ok := spec["template"].(map[string]interface{})
+					if !ok {
+						return errors.New("template not found")
+					}
+					specTemplate, ok := template["spec"].(map[string]interface{})
+					if !ok {
+						return errors.New("template.spec not found")
+					}
 
-				for _, secret := range imagePullSecretsToRemove {
-					for _, secretMap := range imagePullSecrets {
-						if secretMap.(map[string]interface{})["name"] == secret {
-							secretMap.(map[string]interface{})["$patch"] = "delete"
+					ipsField, exists := specTemplate["imagePullSecrets"]
+					var imagePullSecrets []interface{}
+					if exists && ipsField != nil {
+						var ok bool
+						imagePullSecrets, ok = ipsField.([]interface{})
+						if !ok {
+							return errors.New("imagePullSecrets is not the expected type")
+						}
+					} else {
+						imagePullSecrets = []interface{}{}
+					}
+
+					for _, secret := range imagePullSecretsToRemove {
+						for _, secretMap := range imagePullSecrets {
+							if secretMap.(map[string]interface{})["name"] == secret {
+								secretMap.(map[string]interface{})["$patch"] = "delete"
+							}
 						}
 					}
+					patchJson["spec"].(map[string]interface{})["template"].(map[string]interface{})["spec"].(map[string]interface{})["imagePullSecrets"] = imagePullSecrets
+					patchByte, err = json.Marshal(patchJson)
+					if err != nil {
+						return err
+					}
 				}
-				patchJson["spec"].(map[string]interface{})["template"].(map[string]interface{})["spec"].(map[string]interface{})["imagePullSecrets"] = imagePullSecrets
-				patchByte, err = json.Marshal(patchJson)
+
+				// Apply the same strategic merge locally. Patching the API with a strategic merge on
+				// probes deep-merges handlers (httpGet + exec), which fails validation (RHOAIENG-33695).
+				mergedBytes, err := strategicpatch.StrategicMergePatch(curJson, patchByte, appsv1.Deployment{})
 				if err != nil {
-					return nil, err
+					return err
 				}
-			}
-			opErr = r.client.Patch(context.TODO(), deployment, kclient.RawPatch(types.StrategicMergePatchType, patchByte))
+				var merged appsv1.Deployment
+				if err := json.Unmarshal(mergedBytes, &merged); err != nil {
+					return err
+				}
+
+				updated := cur.DeepCopy()
+				updated.Labels = deployment.Labels
+				updated.Annotations = deployment.Annotations
+				updated.Spec = merged.Spec
+				updated.Spec.Replicas = cur.Spec.Replicas
+				syncContainerProbesFromDesired(&updated.Spec.Template, desiredProbeTemplate)
+
+				return r.client.Update(context.TODO(), updated)
+			})
 
 		case constants.CheckResultDelete:
 			log.Info("Deleting deployment", "namespace", deployment.Namespace, "name", deployment.Name)

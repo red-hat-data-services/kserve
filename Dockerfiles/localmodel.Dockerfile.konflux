@@ -25,7 +25,7 @@ RUN --mount=type=cache,target=/go/pkg/mod \
 # Copy the controller-manager into a thin image
 FROM registry.redhat.io/ubi9/ubi-minimal@sha256:175bafd5bc7893540ed6234bb979acfe3574fd6570e6762bbc527c757f854cea
 
-RUN microdnf install -y --disablerepo=* --enablerepo=ubi-9-baseos-rpms shadow-utils && \
+RUN microdnf install -y shadow-utils && \
     microdnf clean all && \
     useradd kserve -m -u 1000
 RUN microdnf remove -y shadow-utils

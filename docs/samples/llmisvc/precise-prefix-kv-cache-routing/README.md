@@ -23,7 +23,7 @@ This example demonstrates precise prefix cache routing with cache block tracking
 - Model: Qwen2.5-7B-Instruct
 - Replicas: 2
 - GPU per replica: 1
-- Prefix caching algorithm: SHA256 CBOR 64-bit
+- Prefix caching algorithm: SHA256 CBOR
 - Block size: 64 tokens
 - KV cache tracking: Enabled via ZMQ
 
@@ -65,7 +65,7 @@ Key vLLM settings for cache routing:
 
 ```yaml
 VLLM_ADDITIONAL_ARGS:
-  - --prefix-caching-hash-algo sha256_cbor_64bit
+  - --prefix-caching-hash-algo sha256_cbor
   - --block-size 64
   - --kv_transfer_config '{"kv_connector":"NixlConnector","kv_role":"kv_both"}'
   - --kv-events-config '{"enable_kv_cache_events":true,"publisher":"zmq","endpoint":"tcp://...:5557","topic":"kv@${POD_IP}@..."}'

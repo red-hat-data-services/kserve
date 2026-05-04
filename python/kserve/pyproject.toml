@@ -64,7 +64,7 @@ aiohttp = ">=3.13.3"
 # CVE-2026-32597 PyJWT accepts unknown `crit` header extensions (RFC 7515 §4.1.11 MUST violation)
 # Pinning because it is a transitive dependency.
 PyJWT = ">=2.12.0"
-# CVE-2026-30922 pyasn1 Vulnerable to Denial of Service via Unbounded Recursion
+# CVE-2026-30922 / CVE-2026-23490 pyasn1 Vulnerable to Denial of Service
 # Pinning because it is a transitive dependency.
 pyasn1 = ">=0.6.3"
 

@@ -37,7 +37,8 @@ RUN if [ "$(uname -m)" = "s390x" ] || [ "$(uname -m)" = "ppc64le" ]; then \
        cd xet-core/hf_xet && git checkout v${HF_XET_VERSION} && \
        sed -i '/python-source = "python"/d' pyproject.toml && \
        pip install maturin && \
-       maturin build --release --out /hf_xet/wheels/ ; \
+       maturin build --release --out /hf_xet/wheels/ && \
+       pip uninstall -y maturin ; \
     fi
 
 RUN cd kserve && \

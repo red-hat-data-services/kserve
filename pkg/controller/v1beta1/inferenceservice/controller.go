@@ -34,6 +34,7 @@ import (
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/record"
+	"k8s.io/client-go/util/retry"
 	operatorv1beta1 "knative.dev/operator/pkg/apis/operator/v1beta1"
 	"knative.dev/pkg/apis"
 	knservingv1 "knative.dev/serving/pkg/apis/serving/v1"
@@ -284,24 +285,29 @@ func (r *InferenceServiceReconciler) updateStatus(desiredService *v1beta1api.Inf
 	// set the DeploymentMode used for the InferenceService in the status
 	desiredService.Status.DeploymentMode = string(deploymentMode)
 
-	existingService := &v1beta1api.InferenceService{}
 	namespacedName := types.NamespacedName{Name: desiredService.Name, Namespace: desiredService.Namespace}
-	if err := r.Get(context.TODO(), namespacedName, existingService); err != nil {
-		return err
-	}
-	wasReady := inferenceServiceReadiness(existingService.Status)
-	if inferenceServiceStatusEqual(existingService.Status, desiredService.Status, deploymentMode) {
-		// If we didn't change anything then don't call updateStatus.
-		// This is important because the copy we loaded from the informer's
-		// cache may be stale and we don't want to overwrite a prior update
-		// to status with this stale state.
-	} else if err := r.Status().Update(context.TODO(), desiredService); err != nil {
-		r.Log.Error(err, "Failed to update InferenceService status", "InferenceService", desiredService.Name)
-		r.Recorder.Eventf(desiredService, v1.EventTypeWarning, "UpdateFailed",
-			"Failed to update status for InferenceService %q: %v", desiredService.Name, err)
-		return errors.Wrapf(err, "fails to update InferenceService status")
-	} else {
-		// If there was a difference and there was no error.
+	return retry.RetryOnConflict(retry.DefaultBackoff, func() error {
+		existingService := &v1beta1api.InferenceService{}
+		if err := r.Get(context.TODO(), namespacedName, existingService); err != nil {
+			return err
+		}
+		wasReady := inferenceServiceReadiness(existingService.Status)
+		if inferenceServiceStatusEqual(existingService.Status, desiredService.Status, deploymentMode) {
+			// If we didn't change anything then don't call updateStatus.
+			// This is important because the copy we loaded from the informer's
+			// cache may be stale and we don't want to overwrite a prior update
+			// to status with this stale state.
+			return nil
+		}
+		// Apply status onto the freshly loaded object so metadata.resourceVersion matches the
+		// apiserver (the reconciler's desiredService still carries the RV from Reconcile's Get).
+		existingService.Status = *desiredService.Status.DeepCopy()
+		if err := r.Status().Update(context.TODO(), existingService); err != nil {
+			r.Log.Error(err, "Failed to update InferenceService status", "InferenceService", desiredService.Name)
+			r.Recorder.Eventf(desiredService, v1.EventTypeWarning, "UpdateFailed",
+				"Failed to update status for InferenceService %q: %v", desiredService.Name, err)
+			return errors.Wrapf(err, "fails to update InferenceService status")
+		}
 		isReady := inferenceServiceReadiness(desiredService.Status)
 		isReadyFalse := inferenceServiceReadinessFalse(desiredService.Status)
 		if wasReady && isReadyFalse { // Moved to NotReady State
@@ -311,8 +317,8 @@ func (r *InferenceServiceReconciler) updateStatus(desiredService *v1beta1api.Inf
 			r.Recorder.Eventf(desiredService, v1.EventTypeNormal, string(InferenceServiceReadyState),
 				fmt.Sprintf("InferenceService [%v] is Ready", desiredService.GetName()))
 		}
-	}
-	return nil
+		return nil
+	})
 }
 
 func inferenceServiceReadiness(status v1beta1api.InferenceServiceStatus) bool {

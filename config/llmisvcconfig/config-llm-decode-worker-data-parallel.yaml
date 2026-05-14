@@ -15,7 +15,7 @@ spec:
         securityContext:
           allowPrivilegeEscalation: false
           readOnlyRootFilesystem: true
-          runAsNonRoot: false
+          runAsNonRoot: true
           capabilities:
             drop:
               - ALL
@@ -45,7 +45,7 @@ spec:
           - "/app/pd-sidecar"
           - "--port=8000"
           - "--vllm-port=8001"
-          - "--connector=nixlv2"
+          - "--kv-connector=nixlv2"
           - "--enable-ssrf-protection=true"
           - "--pool-group=inference.networking.x-k8s.io"
           - '{{ if .GlobalConfig.EnableTLS }}--secure-proxy=true{{else}}--secure-proxy=false{{- end }}'
@@ -249,8 +249,8 @@ spec:
             value: /models
         securityContext:
           allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: false
-          runAsNonRoot: false
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
           capabilities:
             add:
               - "IPC_LOCK"
@@ -288,6 +288,8 @@ spec:
         volumeMounts:
           - mountPath: /home
             name: home
+          - mountPath: /tmp
+            name: tmp-dir
           - mountPath: /dev/shm
             name: dshm
           - mountPath: /models
@@ -299,6 +301,8 @@ spec:
     volumes:
       - emptyDir: { }
         name: home
+      - emptyDir: { }
+        name: tmp-dir
       - emptyDir:
           medium: Memory
           sizeLimit: 8Gi
@@ -497,8 +501,8 @@ spec:
             value: "1"
         securityContext:
           allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: false
-          runAsNonRoot: false
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
           capabilities:
             add:
               - "IPC_LOCK"
@@ -513,6 +517,8 @@ spec:
         volumeMounts:
           - mountPath: /home
             name: home
+          - mountPath: /tmp
+            name: tmp-dir
           - mountPath: /dev/shm
             name: dshm
           - mountPath: /models
@@ -524,6 +530,8 @@ spec:
     volumes:
       - emptyDir: { }
         name: home
+      - emptyDir: { }
+        name: tmp-dir
       - emptyDir:
           medium: Memory
           sizeLimit: 8Gi

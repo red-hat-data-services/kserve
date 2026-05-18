@@ -34,6 +34,7 @@ RUN if [ "$(uname -m)" = "s390x" ] || [ "$(uname -m)" = "ppc64le" ]; then \
        sed -i '/python-source = "python"/d' pyproject.toml && \
        pip install 'maturin[patchelf]' && \
        maturin build --release --out /hf_xet/wheels/ ; \
+       pip uninstall -y maturin ; \
     fi
 
 RUN cd storage && \

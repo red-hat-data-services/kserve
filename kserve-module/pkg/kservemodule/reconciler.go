@@ -61,7 +61,7 @@ type KserveModuleReconciler struct {
 	clusterType           *cluster.ClusterType
 }
 
-func (r *KserveModuleReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
+func (r *KserveModuleReconciler) Reconcile(ctx context.Context, req ctrl.Request) (result ctrl.Result, retErr error) {
 	log := ctrl.LoggerFrom(ctx)
 
 	kserve := &platformv1alpha1.Kserve{}
@@ -71,7 +71,15 @@ func (r *KserveModuleReconciler) Reconcile(ctx context.Context, req ctrl.Request
 
 	log.Info("reconciling Kserve CR", "name", kserve.Name)
 
+	condMgr := newConditionManager(kserve)
+	defer func() {
+		if err := r.updateStatus(ctx, kserve, condMgr); err != nil && retErr == nil {
+			retErr = err
+		}
+	}()
+
 	componentErrors := r.reconcile(ctx, kserve)
+	applyProvisioningCondition(condMgr, componentErrors)
 	if len(componentErrors) > 0 {
 		names := make([]string, 0, len(componentErrors))
 		for name := range componentErrors {
@@ -87,9 +95,10 @@ func (r *KserveModuleReconciler) Reconcile(ctx context.Context, req ctrl.Request
 		return ctrl.Result{}, fmt.Errorf("reconciliation failed: %s", strings.Join(msgs, "; "))
 	}
 
-	ns := r.getApplicationsNamespace()
-	if err := checkDeploymentReadiness(ctx, r.Client, ns, r.isKubernetes(ctx)); err != nil {
-		log.Info("deployment not ready, requeueing", "reason", err.Error())
+	r.updateComponentReadiness(ctx, condMgr)
+
+	if !condMgr.IsHappy() {
+		log.Info("not all components ready, requeueing")
 		return ctrl.Result{RequeueAfter: 15 * time.Second}, nil
 	}
 
@@ -129,7 +138,7 @@ func (r *KserveModuleReconciler) reconcile(ctx context.Context, kserve *platform
 		Owner:     kserve,
 		Resources: allResources,
 	}); err != nil {
-		return map[string]error{"deploy": fmt.Errorf("SSA apply: %w", err)}
+		return map[string]error{"deploy": fmt.Errorf("applying resources: %w", err)}
 	}
 
 	log.Info("deployed all resources", "count", len(allResources))

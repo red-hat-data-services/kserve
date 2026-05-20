@@ -1,0 +1,109 @@
+package kservemodule
+
+import (
+	"context"
+	"slices"
+	"strings"
+
+	ctrl "sigs.k8s.io/controller-runtime"
+
+	"github.com/opendatahub-io/odh-platform-utilities/api/common"
+	"github.com/opendatahub-io/odh-platform-utilities/pkg/controller/conditions"
+
+	platformv1alpha1 "github.com/opendatahub-io/kserve-module/pkg/apis/v1alpha1"
+)
+
+const (
+	conditionKServeReady            = "KServeReady"
+	conditionModelControllerReady   = "ModelControllerReady"
+)
+
+func newConditionManager(kserve *platformv1alpha1.Kserve) *conditions.Manager {
+	return conditions.NewManager(kserve,
+		string(common.ConditionTypeReady),
+		string(common.ConditionTypeProvisioningSucceeded),
+		conditionKServeReady,
+		conditionModelControllerReady,
+	)
+}
+
+func applyProvisioningCondition(condMgr *conditions.Manager, componentErrors map[string]error) {
+	if len(componentErrors) == 0 {
+		condMgr.MarkTrue(string(common.ConditionTypeProvisioningSucceeded),
+			conditions.WithReason("AllResourcesApplied"))
+		return
+	}
+
+	names := make([]string, 0, len(componentErrors))
+	for name := range componentErrors {
+		names = append(names, name)
+	}
+	slices.Sort(names)
+
+	msgs := make([]string, 0, len(names))
+	for _, name := range names {
+		msgs = append(msgs, name+": "+componentErrors[name].Error())
+	}
+	condMgr.MarkFalse(string(common.ConditionTypeProvisioningSucceeded),
+		conditions.WithReason("DeployFailed"),
+		conditions.WithMessage("%s", strings.Join(msgs, "; ")))
+}
+
+func (r *KserveModuleReconciler) updateComponentReadiness(ctx context.Context, condMgr *conditions.Manager) {
+	ns := r.getApplicationsNamespace()
+	isXKS := r.isKubernetes(ctx)
+
+	if err := checkKServeReadiness(ctx, r.Client, ns, isXKS); err != nil {
+		condMgr.MarkFalse(conditionKServeReady,
+			conditions.WithReason("DeploymentNotReady"),
+			conditions.WithMessage("%s", err.Error()))
+	} else {
+		condMgr.MarkTrue(conditionKServeReady,
+			conditions.WithReason("AllDeploymentsAvailable"))
+	}
+
+	if err := checkModelControllerReadiness(ctx, r.Client, ns, isXKS); err != nil {
+		condMgr.MarkFalse(conditionModelControllerReady,
+			conditions.WithReason("DeploymentNotReady"),
+			conditions.WithMessage("%s", err.Error()))
+	} else {
+		condMgr.MarkTrue(conditionModelControllerReady,
+			conditions.WithReason("AllDeploymentsAvailable"))
+	}
+}
+
+func (r *KserveModuleReconciler) updateStatus(ctx context.Context, kserve *platformv1alpha1.Kserve, condMgr *conditions.Manager) error {
+	log := ctrl.LoggerFrom(ctx)
+
+	r.setReleaseStatus(kserve)
+
+	condMgr.Sort()
+	kserve.Status.ObservedGeneration = kserve.Generation
+
+	if condMgr.IsHappy() {
+		kserve.Status.Phase = common.PhaseReady
+	} else {
+		kserve.Status.Phase = common.PhaseNotReady
+	}
+
+	if err := r.Status().Update(ctx, kserve); err != nil {
+		log.Error(err, "failed to update status")
+		return err
+	}
+	return nil
+}
+
+func (r *KserveModuleReconciler) setReleaseStatus(kserve *platformv1alpha1.Kserve) {
+	if len(kserve.Status.Releases) > 0 {
+		return
+	}
+
+	releases, err := loadComponentReleases(r.ManifestsTemplatePath,
+		[]string{kserveComponentName, odhModelControllerComponentName})
+	if err != nil {
+		ctrl.Log.Error(err, "failed to load component releases")
+		return
+	}
+
+	kserve.SetReleaseStatus(common.ComponentReleaseStatus{Releases: releases})
+}

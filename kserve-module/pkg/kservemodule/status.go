@@ -2,6 +2,7 @@ package kservemodule
 
 import (
 	"context"
+	"maps"
 	"slices"
 	"strings"
 
@@ -14,8 +15,9 @@ import (
 )
 
 const (
-	ConditionKServeReady          = "KServeReady"
-	ConditionModelControllerReady = "ModelControllerReady"
+	ConditionKServeReady           = "KServeReady"
+	ConditionModelControllerReady  = "ModelControllerReady"
+	ConditionDependenciesAvailable = "DependenciesAvailable"
 )
 
 func newConditionManager(kserve *platformv1alpha1.Kserve) *conditions.Manager {
@@ -24,7 +26,46 @@ func newConditionManager(kserve *platformv1alpha1.Kserve) *conditions.Manager {
 		string(common.ConditionTypeProvisioningSucceeded),
 		ConditionKServeReady,
 		ConditionModelControllerReady,
+		ConditionDependenciesAvailable,
 	)
+}
+
+func applyDependencyConditions(condMgr *conditions.Manager, result dependencyResult) {
+	if len(result.criticalErrors) > 0 {
+		condMgr.MarkFalse(ConditionDependenciesAvailable,
+			conditions.WithReason("DependencyDegraded"),
+			conditions.WithMessage("%s", strings.Join(result.criticalErrors, "; ")))
+		condMgr.MarkTrue(string(common.ConditionTypeDegraded),
+			conditions.WithSeverity(common.ConditionSeverityError),
+			conditions.WithReason("MissingCriticalDependency"),
+			conditions.WithMessage("%s", strings.Join(result.criticalErrors, "; ")))
+	} else if len(result.degradedReasons) > 0 {
+		condMgr.MarkTrue(ConditionDependenciesAvailable,
+			conditions.WithReason("AllCriticalDependenciesMet"))
+		condMgr.MarkTrue(string(common.ConditionTypeDegraded),
+			conditions.WithSeverity(common.ConditionSeverityInfo),
+			conditions.WithReason("MissingOptionalDependency"),
+			conditions.WithMessage("%s", strings.Join(result.degradedReasons, "; ")))
+	} else {
+		condMgr.MarkTrue(ConditionDependenciesAvailable,
+			conditions.WithReason("AllDependenciesMet"))
+		condMgr.MarkFalse(string(common.ConditionTypeDegraded),
+			conditions.WithSeverity(common.ConditionSeverityInfo),
+			conditions.WithReason("NoDegradation"))
+	}
+
+	for group, reasons := range result.groupReasons {
+		if len(reasons) > 0 {
+			condMgr.MarkTrue(group,
+				conditions.WithSeverity(common.ConditionSeverityInfo),
+				conditions.WithReason("MissingDependency"),
+				conditions.WithMessage("%s", strings.Join(reasons, "; ")))
+		} else {
+			condMgr.MarkFalse(group,
+				conditions.WithSeverity(common.ConditionSeverityInfo),
+				conditions.WithReason("AllDependenciesSatisfied"))
+		}
+	}
 }
 
 func applyProvisioningCondition(condMgr *conditions.Manager, componentErrors map[string]error) {
@@ -34,14 +75,8 @@ func applyProvisioningCondition(condMgr *conditions.Manager, componentErrors map
 		return
 	}
 
-	names := make([]string, 0, len(componentErrors))
-	for name := range componentErrors {
-		names = append(names, name)
-	}
-	slices.Sort(names)
-
-	msgs := make([]string, 0, len(names))
-	for _, name := range names {
+	msgs := make([]string, 0, len(componentErrors))
+	for _, name := range slices.Sorted(maps.Keys(componentErrors)) {
 		msgs = append(msgs, name+": "+componentErrors[name].Error())
 	}
 	condMgr.MarkFalse(string(common.ConditionTypeProvisioningSucceeded),

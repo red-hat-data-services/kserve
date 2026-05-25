@@ -6,6 +6,7 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"maps"
 	"slices"
 	"strings"
 	"time"
@@ -48,6 +49,8 @@ import (
 // +kubebuilder:rbac:groups=security.openshift.io,resources=securitycontextconstraints,verbs=create;delete;get;list;patch;update;watch
 // +kubebuilder:rbac:groups=template.openshift.io,resources=templates,verbs=create;delete;get;list;patch;update;watch
 // +kubebuilder:rbac:groups=monitoring.coreos.com,resources=servicemonitors,verbs=create;delete;get;list;patch;update;watch
+// +kubebuilder:rbac:groups=operators.coreos.com,resources=subscriptions,verbs=get;list;watch
+// +kubebuilder:rbac:groups=operator.openshift.io,resources=leaderworkersets,verbs=get;list;watch
 
 type ResourceDeployer interface {
 	Deploy(ctx context.Context, input deploy.DeployInput) error
@@ -82,17 +85,20 @@ func (r *KserveModuleReconciler) Reconcile(ctx context.Context, req ctrl.Request
 		}
 	}()
 
+	depResult := r.checkDependencies(ctx)
+	applyDependencyConditions(condMgr, depResult)
+	if len(depResult.criticalErrors) > 0 {
+		applyProvisioningCondition(condMgr, map[string]error{
+			"dependencies": fmt.Errorf("critical dependencies unavailable"),
+		})
+		return ctrl.Result{RequeueAfter: 30 * time.Second}, nil
+	}
+
 	componentErrors := r.reconcile(ctx, kserve)
 	applyProvisioningCondition(condMgr, componentErrors)
 	if len(componentErrors) > 0 {
-		names := make([]string, 0, len(componentErrors))
-		for name := range componentErrors {
-			names = append(names, name)
-		}
-		slices.Sort(names)
-
 		var msgs []string
-		for _, name := range names {
+		for _, name := range slices.Sorted(maps.Keys(componentErrors)) {
 			log.Error(componentErrors[name], "component reconciliation failed", "component", name)
 			msgs = append(msgs, name+": "+componentErrors[name].Error())
 		}
@@ -239,10 +245,8 @@ func (r *KserveModuleReconciler) getApplicationsNamespace() string {
 	return "opendatahub"
 }
 
-// TODO: clarify with platform team how the release version is delivered to module operators.
-// odh-operator uses cluster.GetRelease().Version (from CSV), but module operators don't have
-// direct CSV access. Current implementation reads annotation; need to confirm this is the
-// agreed contract or if a different mechanism (e.g. ConfigMap, CR spec field) will be used.
+// TODO: for now, we can use the annotation but the version will be set by data of configmap
+// We need to confirm with platform team what configmap name is used for the version.
 func (r *KserveModuleReconciler) getVersionPrefix(kserve *platformv1alpha1.Kserve) string {
 	if ann := kserve.GetAnnotations(); ann != nil {
 		if v := ann["platform.opendatahub.io/version"]; v != "" {

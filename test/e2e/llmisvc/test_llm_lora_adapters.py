@@ -121,6 +121,11 @@ def run_lora_test(test_case: LoRATestCase):
 
         # Create the service with unique base refs
         llm_service = build_llm_service_from_refs(service_name, unique_base_refs)
+        if not llm_service.metadata.annotations:
+            llm_service.metadata.annotations = {}
+        llm_service.metadata.annotations["security.opendatahub.io/enable-auth"] = (
+            "false"
+        )
         logger.info("Creating LLMInferenceService: %s", service_name)
         create_llmisvc(kserve_client, llm_service)
 

@@ -40,13 +40,18 @@ export GITHUB_SHA="${TAG:-latest}"
 echo "Starting E2E functional tests ..."
 MARKER="${1:-}"
 PARALLELISM="${2:-1}"
-NETWORK_LAYER="${3:-'istio'}"
+NETWORK_LAYER="${3:-istio}"
+
+: "${SKIP_DELETION_ON_FAILURE:=true}"
+export SKIP_DELETION_ON_FAILURE
 
 echo "Parallelism requested for pytest is ${PARALLELISM}"
 
+MAXFAIL="${PYTEST_MAXFAIL:-5}"
+
 source python/kserve/.venv/bin/activate
 
-PYTEST_COMMON_ARGS=(--ignore=qpext --log-cli-level=INFO -n "$PARALLELISM" --dist worksteal --network-layer "$NETWORK_LAYER" --maxfail=10 -vv --tb=long -s)
+PYTEST_COMMON_ARGS=(--ignore=qpext --log-cli-level=INFO -n "$PARALLELISM" --dist worksteal --network-layer "$NETWORK_LAYER" --maxfail="$MAXFAIL" -vv --tb=long -s)
 
 MARKER_ARGS=()
 if [[ -n "$MARKER" ]]; then

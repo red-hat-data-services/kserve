@@ -59,4 +59,5 @@ spec:
       - name: model-cache
         emptyDir: {}
       restartPolicy: Never
+  activeDeadlineSeconds: 900
   backoffLimit: 3

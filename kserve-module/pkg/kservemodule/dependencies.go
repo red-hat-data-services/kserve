@@ -212,7 +212,7 @@ func (r *KserveModuleReconciler) checkCRD(ctx context.Context, dep dependencyChe
 		return nil
 	}
 	if err := cluster.CustomResourceDefinitionExists(ctx, r.Client, dep.groupKind); err != nil {
-		return []string{fmt.Sprintf("%s CRD not found (%s)", dep.name, dep.groupKind)}
+		return []string{fmt.Sprintf("%s CRD check failed (%s): %v", dep.name, dep.groupKind, err)}
 	}
 	return nil
 }
@@ -318,6 +318,7 @@ func collectDegradedConditions(cr *unstructured.Unstructured, dep dependencyChec
 	return degraded
 }
 
+// lwsConditionFilter returns true when the given condition indicates an unhealthy state.
 func lwsConditionFilter(condType, condStatus string) bool {
 	switch condType {
 	case "Degraded", "TargetConfigControllerDegraded":

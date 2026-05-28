@@ -86,7 +86,6 @@ configMapGenerator:
 - envs:
   - params.env
   name: odh-xks-kserve-parameters
-
 generatorOptions:
   disableNameSuffixHash: true
 

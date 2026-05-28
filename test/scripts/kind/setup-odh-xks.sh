@@ -44,6 +44,8 @@ KSERVE_NAMESPACE="${KSERVE_NAMESPACE:-opendatahub}"
 KO_DOCKER_REPO="${KO_DOCKER_REPO:-local}"
 LLMISVC_CONTROLLER_IMG="${LLMISVC_CONTROLLER_IMG:-llmisvc-controller:dev}"
 KSERVE_CONTROLLER_IMAGE="${KO_DOCKER_REPO}/${LLMISVC_CONTROLLER_IMG}"
+STORAGE_INIT_IMG="${STORAGE_INIT_IMG:-storage-initializer:dev}"
+STORAGE_INIT_IMAGE="${KO_DOCKER_REPO}/${STORAGE_INIT_IMG}"
 
 # Determine script and project directories
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -318,6 +320,24 @@ build_and_load_controller() {
   kind load docker-image "${KSERVE_CONTROLLER_IMAGE}" --name "${KIND_CLUSTER_NAME}"
 
   log_success "Controller image built and loaded into KinD"
+}
+
+# -----------------------------------------------------------------------------
+# build_and_load_storage_initializer
+# Build storage-initializer image from source and load into KinD
+# -----------------------------------------------------------------------------
+build_and_load_storage_initializer() {
+  log_info "Building storage-initializer image '${STORAGE_INIT_IMAGE}'..."
+
+  log_wait "Running make docker-build-storageInitializer..."
+  make -C "${PROJECT_ROOT}" docker-build-storageInitializer \
+    KO_DOCKER_REPO="${KO_DOCKER_REPO}" \
+    STORAGE_INIT_IMG="${STORAGE_INIT_IMG}"
+
+  log_wait "Loading image into KinD cluster..."
+  kind load docker-image "${STORAGE_INIT_IMAGE}" --name "${KIND_CLUSTER_NAME}"
+
+  log_success "Storage-initializer image built and loaded into KinD"
 }
 
 # -----------------------------------------------------------------------------
@@ -599,8 +619,24 @@ main() {
   # 8. Build and load controller image
   build_and_load_controller
 
+  # 8b. Build and load storage-initializer image
+  build_and_load_storage_initializer
+
   # 9. Deploy odh-xks overlay (requires cert-manager PKI)
   deploy_odh_xks
+
+  # 9b. Override storage-initializer image to use locally-built image
+  log_info "Patching inferenceservice-config to use locally-built storage-initializer '${STORAGE_INIT_IMAGE}'..."
+  kubectl get configmap inferenceservice-config -n "${KSERVE_NAMESPACE}" -o json \
+    | python3 -c "
+import json, sys
+cm = json.load(sys.stdin)
+si = json.loads(cm['data']['storageInitializer'])
+si['image'] = '${STORAGE_INIT_IMAGE}'
+cm['data']['storageInitializer'] = json.dumps(si)
+json.dump(cm, sys.stdout)
+" | kubectl apply -f -
+  log_success "Storage-initializer image overridden to '${STORAGE_INIT_IMAGE}'"
 
   # 10. Deploy SeaweedFS and pre-cache opt-125m model
   setup_seaweedfs_models

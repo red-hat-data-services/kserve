@@ -14,6 +14,8 @@
 
 import hashlib
 import os
+import re
+
 import pytest
 from ..common.gw_api import (
     create_or_update_gateway,
@@ -81,6 +83,7 @@ LLMINFERENCESERVICE_CONFIGS = {
                     "env": [
                         {"name": "VLLM_LOGGING_LEVEL", "value": "DEBUG"},
                         {"name": "VLLM_CPU_KVCACHE_SPACE", "value": "1"},
+                        {"name": "VLLM_USE_V1", "value": "0"},
                         *UPSTREAM_K8S_VLLM_ENV_OVERRIDES,
                     ],
                     "resources": {
@@ -101,6 +104,7 @@ LLMINFERENCESERVICE_CONFIGS = {
                     "env": [
                         {"name": "VLLM_LOGGING_LEVEL", "value": "DEBUG"},
                         {"name": "VLLM_CPU_KVCACHE_SPACE", "value": "1"},
+                        {"name": "VLLM_USE_V1", "value": "0"},
                         *UPSTREAM_K8S_VLLM_ENV_OVERRIDES,
                     ],
                     "resources": {
@@ -134,6 +138,7 @@ LLMINFERENCESERVICE_CONFIGS = {
                         "env": [
                             {"name": "VLLM_LOGGING_LEVEL", "value": "DEBUG"},
                             {"name": "VLLM_CPU_KVCACHE_SPACE", "value": "1"},
+                            {"name": "VLLM_USE_V1", "value": "0"},
                             *UPSTREAM_K8S_VLLM_ENV_OVERRIDES,
                         ],
                         "resources": {
@@ -163,10 +168,51 @@ LLMINFERENCESERVICE_CONFIGS = {
     "model-fb-opt-125m": {
         "model": {"uri": OPT_125M_MODEL_URI, "name": "facebook/opt-125m"},
     },
+    "model-qwen2.5-0.5b": {
+        "model": {
+            "uri": "hf://Qwen/Qwen2.5-0.5B-Instruct",
+            "name": "Qwen/Qwen2.5-0.5B-Instruct",
+        },
+    },
     "model-deepseek-v2-lite": {
         "model": {
             "uri": "hf://deepseek-ai/DeepSeek-V2-Lite-Chat",
             "name": "deepseek-ai/DeepSeek-V2-Lite-Chat",
+        },
+    },
+    "model-fb-opt-125m-with-lora-hf": {
+        "model": {
+            "uri": "hf://facebook/opt-125m",
+            "name": "facebook/opt-125m",
+            "lora": {
+                "adapters": [
+                    {
+                        "name": "lora-adapter-1",
+                        "uri": "hf://edbeeching/opt-125m-lora",
+                    }
+                ]
+            },
+        },
+    },
+    "model-fb-opt-125m-with-multiple-lora": {
+        "model": {
+            "uri": "hf://facebook/opt-125m",
+            "name": "facebook/opt-125m",
+            "lora": {
+                "adapters": [
+                    {
+                        "name": "lora-adapter-1",
+                        "uri": "hf://edbeeching/opt-125m-lora",
+                    },
+                    {
+                        "name": "lora-adapter-2",
+                        "uri": "hf://edbeeching/opt-125m-lora",
+                    },
+                ],
+                "maxRank": 64,
+                "maxAdapters": 2,
+                "maxCpuAdapters": 4,
+            },
         },
     },
     "workload-dp-ep-gpu": {
@@ -373,6 +419,7 @@ LLMINFERENCESERVICE_CONFIGS = {
                     ],
                     "env": [
                         {"name": "VLLM_CPU_KVCACHE_SPACE", "value": "1"},
+                        {"name": "VLLM_USE_V1", "value": "0"},
                         *UPSTREAM_K8S_VLLM_ENV_OVERRIDES,
                     ],
                     "resources": {
@@ -402,6 +449,7 @@ LLMINFERENCESERVICE_CONFIGS = {
                     ],
                     "env": [
                         {"name": "VLLM_CPU_KVCACHE_SPACE", "value": "1"},
+                        {"name": "VLLM_USE_V1", "value": "0"},
                         *UPSTREAM_K8S_VLLM_ENV_OVERRIDES,
                     ],
                     "resources": {
@@ -730,6 +778,9 @@ LLMINFERENCESERVICE_CONFIGS = {
                                         "zmqEndpoint": "tcp://*:5557",
                                     },
                                     "indexerConfig": {
+                                        "tokenizersPoolConfig": {
+                                            "modelName": "facebook/opt-125m",
+                                        },
                                         "kvBlockIndexConfig": {
                                             "enableMetrics": True,
                                             "metricsLoggingInterval": 60000000000,
@@ -779,6 +830,88 @@ LLMINFERENCESERVICE_CONFIGS = {
         "router": {
             "scheduler": {
                 "replicas": 2,
+            },
+        },
+    },
+    "scheduler-with-custom-template": {
+        "router": {
+            "scheduler": {
+                "template": {
+                    "containers": [
+                        {
+                            "name": "main",
+                            "env": [
+                                {
+                                    "name": "TOKENIZER_CACHE_DIR",
+                                    "value": "/tmp/tokenizer-cache",
+                                },
+                                {
+                                    "name": "HF_HOME",
+                                    "value": "/tmp/tokenizer-cache",
+                                },
+                                {
+                                    "name": "TRANSFORMERS_CACHE",
+                                    "value": "/tmp/tokenizer-cache",
+                                },
+                                {"name": "XDG_CACHE_HOME", "value": "/tmp"},
+                            ],
+                            "args": [
+                                "--cert-path",
+                                "/var/run/kserve/tls",
+                                "--pool-group",
+                                "inference.networking.x-k8s.io",
+                                "--pool-name",
+                                "{{ ChildName .ObjectMeta.Name `-inference-pool` }}",
+                                "--pool-namespace",
+                                "{{ .ObjectMeta.Namespace }}",
+                                "--zap-encoder",
+                                "json",
+                                "--grpc-port",
+                                "9002",
+                                "--grpc-health-port",
+                                "9003",
+                                "--secure-serving",
+                                "--model-server-metrics-scheme",
+                                "https",
+                                "--kv-cache-usage-percentage-metric",
+                                "vllm:kv_cache_usage_perc",
+                                "--config-text",
+                                (
+                                    "apiVersion: inference.networking.x-k8s.io/v1alpha1\n"
+                                    "kind: EndpointPickerConfig\n"
+                                    "plugins:\n"
+                                    "- type: single-profile-handler\n"
+                                    "- type: queue-scorer\n"
+                                    "- type: active-request-scorer\n"
+                                    "- type: prefix-cache-scorer\n"
+                                    "schedulingProfiles:\n"
+                                    "- name: default\n"
+                                    "  plugins:\n"
+                                    "  - pluginRef: queue-scorer\n"
+                                    "    weight: 2\n"
+                                    "  - pluginRef: active-request-scorer\n"
+                                    "    weight: 2\n"
+                                    "  - pluginRef: prefix-cache-scorer\n"
+                                    "    weight: 3\n"
+                                ),
+                            ],
+                            "volumeMounts": [
+                                {
+                                    "name": "tokenizer-cache",
+                                    "mountPath": "/tmp/tokenizer-cache",
+                                },
+                                {
+                                    "name": "cachi2-cache",
+                                    "mountPath": "/cachi2",
+                                },
+                            ],
+                        }
+                    ],
+                    "volumes": [
+                        {"name": "tokenizer-cache", "emptyDir": {}},
+                        {"name": "cachi2-cache", "emptyDir": {}},
+                    ],
+                },
             },
         },
     },
@@ -964,6 +1097,13 @@ LLMINFERENCESERVICE_CONFIGS = {
             }
         },
     },
+    "prometheus-scrape": {
+        "annotations": {
+            "prometheus.io/scrape": "true",
+            "prometheus.io/port": "8000",
+            "prometheus.io/path": "/metrics",
+        },
+    },
     "scaling-hpa": {
         "scaling": {
             "minReplicas": 1,
@@ -1143,7 +1283,8 @@ def test_case(request):
             )
         if not tc.service_name:
             tc.service_name = generate_service_name(request.node.name, tc.base_refs)
-        tc.model_name = _get_model_name_from_configs(tc.base_refs)
+        if tc.model_name == "default/model":
+            tc.model_name = _get_model_name_from_configs(tc.base_refs)
 
         # Create unique configs for this test
         unique_base_refs = []
@@ -1202,16 +1343,20 @@ def _get_model_name_from_configs(config_names):
     return "default/model"
 
 
+_NON_DNS_CHARS = re.compile(r"[^a-z0-9]+")
+
+
+def _sanitize_for_dns(s: str) -> str:
+    """Replace non-DNS characters with hyphens, mirrors sanitizeForDNS in test_namespace.go."""
+    return _NON_DNS_CHARS.sub("-", s.lower()).strip("-")
+
+
 def generate_k8s_safe_suffix(
     base_name: str, extra_parts: Optional[List[str]] = None
 ) -> str:
     """Generate a Kubernetes-safe name suffix with hash."""
-    if extra_parts:
-        full_name = f"{base_name}-{'-'.join(sorted(extra_parts))}"
-    else:
-        full_name = base_name
-
-    full_name = full_name.lower().replace("_", "-")
+    raw = f"{base_name}-{'-'.join(sorted(extra_parts))}" if extra_parts else base_name
+    full_name = _sanitize_for_dns(raw)
 
     name_hash = hashlib.sha256(full_name.encode()).hexdigest()[:8]
 

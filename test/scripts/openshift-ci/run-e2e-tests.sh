@@ -30,7 +30,7 @@ export KUBE_CLI=${KUBE_CLI_COMMAND:-oc}
 
 MY_PATH=$(dirname "$0")
 PROJECT_ROOT=$MY_PATH/../../../
-export CI_USE_ISVC_HOST="1"
+NETWORK_LAYER="${NETWORK_LAYER:-openshift-route}"
 
 export KSERVE_NAMESPACE="${KSERVE_NAMESPACE:-kserve}"
 export RUNNING_LOCAL="${RUNNING_LOCAL:-false}"
@@ -67,5 +67,5 @@ echo "REQUESTS_CA_BUNDLE=$(cat ${REQUESTS_CA_BUNDLE})"
 
 echo "Run E2E tests: $1"
 pushd $PROJECT_ROOT >/dev/null
-./test/scripts/gh-actions/run-e2e-tests.sh "$1" $PARALLELISM | tee 2>&1 "./test/scripts/openshift-ci/run-e2e-tests-${1// /-}.log"
+./test/scripts/gh-actions/run-e2e-tests.sh "$1" $PARALLELISM "$NETWORK_LAYER" | tee 2>&1 "./test/scripts/openshift-ci/run-e2e-tests-${1// /-}.log"
 popd

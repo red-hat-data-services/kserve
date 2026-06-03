@@ -16,6 +16,7 @@ RUN --mount=type=cache,target=/go/pkg/mod \
 FROM deps AS builder
 
 ARG CMD=localmodel
+ARG GOTAGS="distro"
 COPY cmd/${CMD}/ cmd/${CMD}/
 COPY pkg/    pkg/
 RUN --mount=type=cache,target=/go/pkg/mod \

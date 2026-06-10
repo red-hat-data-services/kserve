@@ -97,7 +97,11 @@ func (r *LLMISVCReconciler) reconcileRouterPlatformNetworking(ctx context.Contex
 	}
 
 	if llmSvc.Spec.Router.Route != nil && !llmSvc.Spec.Router.Route.HTTP.HasRefs() {
-		routes = append(routes, r.expectedHTTPRoute(ctx, llmSvc))
+		cfg, err := r.loadConfig(ctx)
+		if err != nil {
+			return fmt.Errorf("failed to load config: %w", err)
+		}
+		routes = append(routes, r.expectedHTTPRoute(ctx, llmSvc, cfg))
 	}
 
 	isIstio, err := r.hasIstioGateway(ctx, routes)

@@ -17,6 +17,7 @@ limitations under the License.
 package llmisvc_test
 
 import (
+	"context"
 	"testing"
 
 	. "github.com/onsi/gomega"
@@ -29,6 +30,8 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/client/fake"
 	gwapiv1 "sigs.k8s.io/gateway-api/apis/v1"
+
+	"github.com/kserve/kserve/pkg/apis/serving/v1alpha2"
 
 	. "github.com/kserve/kserve/pkg/controller/v1alpha2/llmisvc/fixture"
 
@@ -66,6 +69,7 @@ func TestDiscoverURLs(t *testing.T) {
 		gateways           []*gwapiv1.Gateway
 		services           []*corev1.Service
 		preferredUrlScheme string
+		modelRoutingHeader string
 		assert             func(g Gomega, urls []string, err error)
 	}{
 		// ===== Basic address resolution =====
@@ -280,6 +284,116 @@ func TestDiscoverURLs(t *testing.T) {
 			),
 			gateways: []*gwapiv1.Gateway{HTTPGateway("empty-rules-gateway", "test-ns", "203.0.113.1")},
 			assert:   expectURLs("http://203.0.113.1/"),
+		},
+
+		// ===== Model-based routing path extraction =====
+		{
+			name: "model-based routing - discovers both path-based and header-based URLs",
+			route: HTTPRoute("mbr-route",
+				InNamespace[*gwapiv1.HTTPRoute]("test-ns"),
+				WithParentRef(GatewayRef("mbr-gateway", RefInNamespace("test-ns"))),
+				WithHTTPRule(
+					Matches(PathPrefixMatch("/ns/name/v1/completions")),
+					WithBackendRefs(BackendRefInferencePool("pool")),
+				),
+				WithHTTPRule(
+					Matches(ExactPathWithHeaderMatch("/v1/completions", "X-Gateway-Model-Name", "publishers/ns/models/m")),
+					WithBackendRefs(BackendRefInferencePool("pool")),
+				),
+				WithHTTPRule(
+					Matches(PathPrefixMatch("/ns/name")),
+					WithBackendRefs(BackendRefService("svc")),
+				),
+				WithHTTPRule(
+					Matches(HeaderOnlyMatch("X-Gateway-Model-Name", "publishers/ns/models/m")),
+					WithBackendRefs(BackendRefService("svc")),
+				),
+			),
+			gateways: []*gwapiv1.Gateway{
+				Gateway("mbr-gateway",
+					InNamespace[*gwapiv1.Gateway]("test-ns"),
+					WithListener(gwapiv1.HTTPProtocolType),
+					WithAddresses("203.0.113.1"),
+				),
+			},
+			modelRoutingHeader: "X-Gateway-Model-Name",
+			assert:             expectURLs("http://203.0.113.1/", "http://203.0.113.1/ns/name"),
+		},
+		{
+			name: "model-based routing - ignores user-provided header matches",
+			route: HTTPRoute("user-header-route",
+				InNamespace[*gwapiv1.HTTPRoute]("test-ns"),
+				WithParentRef(GatewayRef("user-header-gateway", RefInNamespace("test-ns"))),
+				WithHTTPRule(
+					Matches(PathPrefixMatch("/ns/name")),
+					WithBackendRefs(BackendRefService("svc")),
+				),
+				WithHTTPRule(
+					Matches(ExactPathWithHeaderMatch("/custom", "X-Custom-Header", "val")),
+					WithBackendRefs(BackendRefService("svc")),
+				),
+			),
+			gateways: []*gwapiv1.Gateway{
+				Gateway("user-header-gateway",
+					InNamespace[*gwapiv1.Gateway]("test-ns"),
+					WithListener(gwapiv1.HTTPProtocolType),
+					WithAddresses("203.0.113.1"),
+				),
+			},
+			modelRoutingHeader: "X-Gateway-Model-Name",
+			assert:             expectURLs("http://203.0.113.1/ns/name"),
+		},
+		{
+			name: "model-based routing - empty header config includes all paths",
+			route: HTTPRoute("no-header-config-route",
+				InNamespace[*gwapiv1.HTTPRoute]("test-ns"),
+				WithParentRef(GatewayRef("no-header-config-gw", RefInNamespace("test-ns"))),
+				WithHTTPRule(
+					Matches(PathPrefixMatch("/ns/name")),
+					WithBackendRefs(BackendRefService("svc")),
+				),
+				WithHTTPRule(
+					Matches(HeaderOnlyMatch("X-Gateway-Model-Name", "publishers/ns/models/m")),
+					WithBackendRefs(BackendRefService("svc")),
+				),
+			),
+			gateways: []*gwapiv1.Gateway{
+				Gateway("no-header-config-gw",
+					InNamespace[*gwapiv1.Gateway]("test-ns"),
+					WithListener(gwapiv1.HTTPProtocolType),
+					WithAddresses("203.0.113.1"),
+				),
+			},
+			modelRoutingHeader: "",
+			assert:             expectURLs("http://203.0.113.1/ns/name"),
+		},
+		{
+			name: "model-based routing - backward compat: path-only rules unchanged",
+			route: HTTPRoute("compat-route",
+				InNamespace[*gwapiv1.HTTPRoute]("test-ns"),
+				WithParentRef(GatewayRef("compat-gateway", RefInNamespace("test-ns"))),
+				WithHTTPRule(
+					Matches(PathPrefixMatch("/ns/name/v1/completions")),
+					WithBackendRefs(BackendRefInferencePool("pool")),
+				),
+				WithHTTPRule(
+					Matches(PathPrefixMatch("/ns/name/v1/chat/completions")),
+					WithBackendRefs(BackendRefInferencePool("pool")),
+				),
+				WithHTTPRule(
+					Matches(PathPrefixMatch("/ns/name")),
+					WithBackendRefs(BackendRefService("svc")),
+				),
+			),
+			gateways: []*gwapiv1.Gateway{
+				Gateway("compat-gateway",
+					InNamespace[*gwapiv1.Gateway]("test-ns"),
+					WithListener(gwapiv1.HTTPProtocolType),
+					WithAddresses("203.0.113.1"),
+				),
+			},
+			modelRoutingHeader: "X-Gateway-Model-Name",
+			assert:             expectURLs("http://203.0.113.1/ns/name"),
 		},
 
 		// ===== Scheme from listener =====
@@ -1298,6 +1412,47 @@ func TestDiscoverURLs(t *testing.T) {
 			assert: expectURLs("http://gateway-service.gateway-ns.svc.cluster.local:8080/"),
 		},
 		{
+			name: "model-based routing with backing service - internal URLs for both paths",
+			route: HTTPRoute("mbr-internal-route",
+				InNamespace[*gwapiv1.HTTPRoute]("test-ns"),
+				WithParentRef(GatewayRef("mbr-internal-gw", RefInNamespace("gateway-ns"))),
+				WithHTTPRule(
+					Matches(PathPrefixMatch("/ns/name")),
+					WithBackendRefs(BackendRefService("svc")),
+				),
+				WithHTTPRule(
+					Matches(HeaderOnlyMatch("X-Gateway-Model-Name", "publishers/ns/models/m")),
+					WithBackendRefs(BackendRefService("svc")),
+				),
+			),
+			gateways: []*gwapiv1.Gateway{
+				Gateway("mbr-internal-gw",
+					InNamespace[*gwapiv1.Gateway]("gateway-ns"),
+					WithListeners(gwapiv1.Listener{
+						Name:     "http",
+						Protocol: gwapiv1.HTTPProtocolType,
+						Port:     8080,
+					}),
+				),
+			},
+			services: []*corev1.Service{
+				{
+					ObjectMeta: metav1.ObjectMeta{
+						Name:      "gateway-service",
+						Namespace: "gateway-ns",
+						Labels: map[string]string{
+							"gateway.networking.k8s.io/gateway-name": "mbr-internal-gw",
+						},
+					},
+				},
+			},
+			modelRoutingHeader: "X-Gateway-Model-Name",
+			assert: expectURLs(
+				"http://gateway-service.gateway-ns.svc.cluster.local:8080/",
+				"http://gateway-service.gateway-ns.svc.cluster.local:8080/ns/name",
+			),
+		},
+		{
 			name: "multiple gateways with backing services - each gets internal URL",
 			route: HTTPRoute("test-route",
 				InNamespace[*gwapiv1.HTTPRoute]("test-ns"),
@@ -1394,7 +1549,7 @@ func TestDiscoverURLs(t *testing.T) {
 				return
 			}
 
-			urls, err := llmisvc.DiscoverURLs(ctx, fakeClient, gateways, tt.route, tt.preferredUrlScheme)
+			urls, err := llmisvc.DiscoverURLs(ctx, fakeClient, gateways, tt.route, llmisvc.Config{UrlScheme: tt.preferredUrlScheme, ModelBasedRoutingHeaderName: tt.modelRoutingHeader})
 
 			var actualURLs []string
 			for _, url := range urls {
@@ -1459,7 +1614,7 @@ func TestDiscoverURLs(t *testing.T) {
 
 		gateways, gwErr := llmisvc.DiscoverGateways(ctx, fakeClient, route)
 		g.Expect(gwErr).ToNot(HaveOccurred())
-		discovered, err := llmisvc.DiscoverURLs(ctx, fakeClient, gateways, route, "")
+		discovered, err := llmisvc.DiscoverURLs(ctx, fakeClient, gateways, route, llmisvc.Config{})
 		g.Expect(err).ToNot(HaveOccurred())
 		g.Expect(discovered).ToNot(BeEmpty())
 
@@ -1755,33 +1910,48 @@ func TestFilterURLs(t *testing.T) {
 		}{
 			{
 				name:     "external hostname",
-				url:      "https://api.example.com/",
+				url:      "https://api.example.com/ns/name",
 				expected: "gateway-external",
 			},
 			{
 				name:     "external IP",
-				url:      "http://203.0.113.1/",
+				url:      "http://203.0.113.1/ns/name",
 				expected: "gateway-external",
 			},
 			{
 				name:     "private IP",
-				url:      "http://192.168.1.100/",
+				url:      "http://192.168.1.100/ns/name",
 				expected: "internal",
 			},
 			{
 				name:     "localhost",
-				url:      "http://localhost/",
+				url:      "http://localhost/ns/name",
 				expected: "internal",
 			},
 			{
 				name:     "cluster-local service",
-				url:      "http://my-service.default.svc.cluster.local/",
+				url:      "http://my-service.default.svc.cluster.local/ns/name",
 				expected: "gateway-internal",
 			},
 			{
 				name:     "cluster-local with port",
-				url:      "http://gateway.ns.svc.cluster.local:8080/",
+				url:      "http://gateway.ns.svc.cluster.local:8080/ns/name",
 				expected: "gateway-internal",
+			},
+			{
+				name:     "external hostname model routing",
+				url:      "https://api.example.com/",
+				expected: "gateway-external-model-routing",
+			},
+			{
+				name:     "cluster-local model routing",
+				url:      "http://my-service.default.svc.cluster.local/",
+				expected: "gateway-internal-model-routing",
+			},
+			{
+				name:     "internal model routing",
+				url:      "http://localhost/",
+				expected: "internal-model-routing",
 			},
 		}
 
@@ -1791,8 +1961,120 @@ func TestFilterURLs(t *testing.T) {
 				parsedURL, err := apis.ParseURL(tt.url)
 				g.Expect(err).ToNot(HaveOccurred())
 
-				result := llmisvc.AddressTypeName(parsedURL)
-				g.Expect(result).To(Equal(tt.expected))
+				llmSvc := &v1alpha2.LLMInferenceService{
+					Spec: v1alpha2.LLMInferenceServiceSpec{
+						Model: v1alpha2.LLMModelSpec{Name: ptr.To("name")},
+					},
+				}
+				sa := llmisvc.SourcedAddress(context.Background(), llmisvc.DiscoveredURL{URL: parsedURL}, llmSvc)
+				g.Expect(sa.Name).ToNot(BeNil())
+				g.Expect(*sa.Name).To(Equal(tt.expected))
+			})
+		}
+	})
+
+	t.Run("SourcedAddress Models", func(t *testing.T) {
+		tests := []struct {
+			name           string
+			url            string
+			namespace      string
+			modelName      string
+			loraAdapters   []string
+			emptyLoRA      bool
+			expectedModels []v1alpha2.ModelSourcedAddressStatus
+		}{
+			{
+				name:      "path-based URL with base model only",
+				url:       "http://203.0.113.1/ns/name",
+				namespace: "test-ns",
+				modelName: "facebook/opt-125m",
+				expectedModels: []v1alpha2.ModelSourcedAddressStatus{
+					{Name: "publishers/test-ns/models/facebook/opt-125m"},
+					{Name: "facebook/opt-125m"},
+				},
+			},
+			{
+				name:      "model-routing URL with base model only",
+				url:       "http://203.0.113.1/",
+				namespace: "test-ns",
+				modelName: "facebook/opt-125m",
+				expectedModels: []v1alpha2.ModelSourcedAddressStatus{
+					{Name: "publishers/test-ns/models/facebook/opt-125m"},
+				},
+			},
+			{
+				name:         "path-based URL with LoRA adapters",
+				url:          "http://203.0.113.1/ns/name",
+				namespace:    "test-ns",
+				modelName:    "facebook/opt-125m",
+				loraAdapters: []string{"adapter-a", "adapter-b"},
+				expectedModels: []v1alpha2.ModelSourcedAddressStatus{
+					{Name: "publishers/test-ns/models/facebook/opt-125m"},
+					{Name: "facebook/opt-125m"},
+					{Name: "publishers/test-ns/models/adapter-a"},
+					{Name: "adapter-a"},
+					{Name: "publishers/test-ns/models/adapter-b"},
+					{Name: "adapter-b"},
+				},
+			},
+			{
+				name:         "model-routing URL with LoRA adapters",
+				url:          "http://203.0.113.1/",
+				namespace:    "test-ns",
+				modelName:    "facebook/opt-125m",
+				loraAdapters: []string{"adapter-a", "adapter-b"},
+				expectedModels: []v1alpha2.ModelSourcedAddressStatus{
+					{Name: "publishers/test-ns/models/facebook/opt-125m"},
+					{Name: "publishers/test-ns/models/adapter-a"},
+					{Name: "publishers/test-ns/models/adapter-b"},
+				},
+			},
+			{
+				name:      "model-routing URL with empty LoRA adapters list",
+				url:       "http://203.0.113.1/",
+				namespace: "test-ns",
+				modelName: "facebook/opt-125m",
+				emptyLoRA: true,
+				expectedModels: []v1alpha2.ModelSourcedAddressStatus{
+					{Name: "publishers/test-ns/models/facebook/opt-125m"},
+				},
+			},
+			{
+				name:      "cluster-local model-routing URL",
+				url:       "http://my-service.default.svc.cluster.local/",
+				namespace: "my-ns",
+				modelName: "my-model",
+				expectedModels: []v1alpha2.ModelSourcedAddressStatus{
+					{Name: "publishers/my-ns/models/my-model"},
+				},
+			},
+		}
+
+		for _, tt := range tests {
+			t.Run(tt.name, func(t *testing.T) {
+				g := NewGomegaWithT(t)
+				parsedURL, err := apis.ParseURL(tt.url)
+				g.Expect(err).ToNot(HaveOccurred())
+
+				llmSvc := &v1alpha2.LLMInferenceService{
+					ObjectMeta: metav1.ObjectMeta{Namespace: tt.namespace},
+					Spec: v1alpha2.LLMInferenceServiceSpec{
+						Model: v1alpha2.LLMModelSpec{Name: ptr.To(tt.modelName)},
+					},
+				}
+				if tt.emptyLoRA {
+					llmSvc.Spec.Model.LoRA = &v1alpha2.LoRASpec{}
+				} else if len(tt.loraAdapters) > 0 {
+					llmSvc.Spec.Model.LoRA = &v1alpha2.LoRASpec{}
+					for _, name := range tt.loraAdapters {
+						llmSvc.Spec.Model.LoRA.Adapters = append(llmSvc.Spec.Model.LoRA.Adapters, v1alpha2.LLMModelSpec{
+							Name: ptr.To(name),
+						})
+					}
+				}
+
+				sa := llmisvc.SourcedAddress(context.Background(), llmisvc.DiscoveredURL{URL: parsedURL}, llmSvc)
+				g.Expect(sa.Models).To(Equal(tt.expectedModels))
 			})
 		}
 	})

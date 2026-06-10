@@ -28,7 +28,7 @@ import (
 	"github.com/kserve/kserve/pkg/utils"
 )
 
-func extendControllerSetup(mgr manager.Manager, b *builder.Builder) error {
+func extendControllerSetup(_ *LLMISVCReconciler, mgr manager.Manager, b *builder.Builder) error {
 	if err := istioapi.AddToScheme(mgr.GetScheme()); err != nil {
 		return fmt.Errorf("failed to add Istio v1 APIs to scheme: %w", err)
 	}

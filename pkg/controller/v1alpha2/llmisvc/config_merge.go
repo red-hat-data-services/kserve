@@ -421,6 +421,95 @@ func isUsingTokenizerSidecar(spec v1alpha2.LLMInferenceServiceSpec) bool {
 	return utils.GetContainerWithName(spec.Router.Scheduler.Template, tokenizerContainerName) != nil
 }
 
+func (r *LLMISVCReconciler) isModelBasedRoutingEnabled(
+	ctx context.Context,
+	llmSvc *v1alpha2.LLMInferenceService,
+	cfg *Config,
+) bool {
+	if cfg.ModelBasedRoutingHeaderName == "" {
+		return false
+	}
+
+	// Ensure the workload has been deployed with the alternative served model name for model-based routing.
+	// Older presets associated with the previous version will have this unset.
+	if v, ok := llmSvc.Spec.Annotations[AnnotationModelBasedRoutingEnabled]; !ok || v != "true" {
+		return false
+	}
+
+	switch cfg.ModelBasedRoutingMode {
+	case ModelBasedRoutingDisabled:
+		return false
+	case ModelBasedRoutingForced:
+		return true
+	default:
+		gateways, err := r.CollectReferencedGateways(ctx, llmSvc)
+		if err != nil {
+			log.FromContext(ctx).Error(err, "failed to collect reference gateways to establish model-based routing enabled, defaulting to ModelBasedRoutingMode", "ModelBasedRoutingMode", cfg.ModelBasedRoutingMode)
+			return cfg.ModelBasedRoutingMode != ModelBasedRoutingDisabled
+		}
+		for _, gw := range gateways {
+			if gw.Annotations[AnnotationModelBasedRoutingEnabled] == "false" {
+				return false
+			}
+		}
+		return true
+	}
+}
+
+func stripModelBasedRoutingRules(rules []gwapiv1.HTTPRouteRule, headerName string) []gwapiv1.HTTPRouteRule {
+	if headerName == "" {
+		return rules
+	}
+	var filtered []gwapiv1.HTTPRouteRule
+	for i := range rules {
+		var kept []gwapiv1.HTTPRouteMatch
+		for _, match := range rules[i].Matches {
+			if !isModelBasedRoutingMatch(match, headerName) {
+				kept = append(kept, match)
+			}
+		}
+		if len(kept) > 0 {
+			rules[i].Matches = kept
+			filtered = append(filtered, rules[i])
+		}
+	}
+	return filtered
+}
+
+// expandLoRAAdapterMatches duplicates model-routing header matches for each LoRA
+// adapter so that adapter requests are routed through the same backend as the base
+// model. Matches within a Gateway API rule are OR'd, so a rule ends up matching
+// "base model OR adapter-1 OR adapter-2 …" — all targeting the same InferencePool.
+//
+// Only matches whose header name equals headerName are duplicated; path-only rules
+// and rules with unrelated headers are left untouched.
+func expandLoRAAdapterMatches(rules []gwapiv1.HTTPRouteRule, namespace string, adapters []v1alpha2.LLMModelSpec, headerName string) {
+	if headerName == "" || len(adapters) == 0 {
+		return
+	}
+	for i := range rules {
+		var adapterMatches []gwapiv1.HTTPRouteMatch
+		for _, match := range rules[i].Matches {
+			if !isModelBasedRoutingMatch(match, headerName) {
+				continue
+			}
+			for _, adapter := range adapters {
+				if adapter.Name == nil {
+					continue
+				}
+				am := *match.DeepCopy()
+				for h := range am.Headers {
+					if string(am.Headers[h].Name) == headerName {
+						am.Headers[h].Value = fmt.Sprintf("publishers/%s/models/%s", namespace, *adapter.Name)
+					}
+				}
+				adapterMatches = append(adapterMatches, am)
+			}
+		}
+		rules[i].Matches = append(rules[i].Matches, adapterMatches...)
+	}
+}
+
 // ToParentRefs converts a slice of UntypedObjectReference (gateway refs) to a slice
 // of gwapiv1.ParentReference suitable for setting on an HTTPRoute's CommonRouteSpec.
 // When a ref includes SectionName, the generated ParentReference targets that
@@ -453,6 +542,11 @@ type templateGlobalConfig struct {
 	IngressGatewayName      string
 	IngressGatewayNamespace string
 	EnableTLS               bool
+
+	// ModelBasedRoutingHeaderName is the HTTP header used to select a model in
+	// shared-gateway deployments (e.g. "X-Gateway-Model-Name"). Exposed here so
+	// that HTTPRoute templates can reference it via {{ .GlobalConfig.ModelBasedRoutingHeaderName }}.
+	ModelBasedRoutingHeaderName string
 }
 
 // ReplaceVariables processes the configuration as a Go template to substitute
@@ -466,10 +560,11 @@ func ReplaceVariables(llmSvc *v1alpha2.LLMInferenceService, llmSvcCfg *v1alpha2.
 	var gc templateGlobalConfig
 	if reconcilerConfig != nil {
 		gc = templateGlobalConfig{
-			SystemNamespace:         reconcilerConfig.SystemNamespace,
-			IngressGatewayName:      reconcilerConfig.IngressGatewayName,
-			IngressGatewayNamespace: reconcilerConfig.IngressGatewayNamespace,
-			EnableTLS:               reconcilerConfig.EnableTLS,
+			SystemNamespace:             reconcilerConfig.SystemNamespace,
+			IngressGatewayName:          reconcilerConfig.IngressGatewayName,
+			IngressGatewayNamespace:     reconcilerConfig.IngressGatewayNamespace,
+			EnableTLS:                   reconcilerConfig.EnableTLS,
+			ModelBasedRoutingHeaderName: reconcilerConfig.ModelBasedRoutingHeaderName,
 		}
 	}
 	config := struct {
@@ -482,6 +577,29 @@ func ReplaceVariables(llmSvc *v1alpha2.LLMInferenceService, llmSvcCfg *v1alpha2.
 	t, err := template.New("config").
 		Funcs(map[string]any{
 			"ChildName": kmeta.ChildName,
+			// shutdownTimeout computes the vLLM --shutdown-timeout value from a *corev1.PodSpec
+			// (or nil): max(0, tgps - preStop - min(5, tgps)), defaulting tgps to 60 when unset.
+			// The 5-second buffer reserves time for signal propagation and final process cleanup
+			// before Kubernetes sends SIGKILL.
+			"shutdownTimeout": func(spec any, preStop int64) int64 {
+				const defaultTGPS = int64(60)
+				var tgpsVal int64
+				if spec != nil {
+					if ps, ok := spec.(*corev1.PodSpec); ok && ps != nil && ps.TerminationGracePeriodSeconds != nil {
+						tgpsVal = *ps.TerminationGracePeriodSeconds
+					} else {
+						tgpsVal = defaultTGPS
+					}
+				} else {
+					tgpsVal = defaultTGPS
+				}
+				buf := min(int64(5), tgpsVal)
+				result := tgpsVal - preStop - buf
+				if result < 0 {
+					return 0
+				}
+				return result
+			},
 		}).
 		Option("missingkey=error").
 		Parse(string(templateBytes))
@@ -609,6 +727,25 @@ func isDefaultBackendRef(llmSvc *v1alpha2.LLMInferenceService, ref gwapiv1.Backe
 	// Check Kind and Name only - Group can be either v1 or v1alpha2
 	return ptr.Deref[gwapiv1.Kind](ref.Kind, "") == "InferencePool" &&
 		string(ref.Name) == defaultInfPoolName
+}
+
+type ModelBasedRoutingMode string
+
+const (
+	ModelBasedRoutingEnabled  ModelBasedRoutingMode = "enabled"
+	ModelBasedRoutingForced   ModelBasedRoutingMode = "forced"
+	ModelBasedRoutingDisabled ModelBasedRoutingMode = "disabled"
+)
+
+func parseModelBasedRoutingMode(s string) ModelBasedRoutingMode {
+	switch strings.ToLower(s) {
+	case "forced":
+		return ModelBasedRoutingForced
+	case "disabled":
+		return ModelBasedRoutingDisabled
+	default:
+		return ModelBasedRoutingEnabled
+	}
 }
 
 const (

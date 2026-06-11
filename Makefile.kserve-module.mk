@@ -5,7 +5,8 @@ E2E_IMG ?=
 .PHONY: docker-build-kserve-module docker-push-kserve-module deploy-kserve-module \
 	kustomize-build-kserve-module generate-kserve-module manifests-kserve-module \
 	test-kserve-module setup-envtest-kserve-module precommit-km \
-	e2e-setup-kserve-module e2e-cleanup-kserve-module
+	e2e-setup-kserve-module e2e-cleanup-kserve-module e2e-kserve-module check-km
+
 
 docker-build-kserve-module:
 	${ENGINE} buildx build ${ARCH} --load \
@@ -49,5 +50,20 @@ e2e-setup-kserve-module:
 e2e-cleanup-kserve-module:
 	bash kserve-module/tests/scripts/setup-cluster.sh --platform $(PLATFORM) --cleanup
 
+e2e-kserve-module:
+	cd kserve-module/tests/e2e && python -m pytest -v
+
 precommit-km: fmt go-lint generate-kserve-module manifests-kserve-module test-kserve-module
 	cd kserve-module && go mod tidy && go vet ./... && go build ./...
+
+check-km: precommit-km
+	@if [ -n "`git status -s kserve-module/`" ]; then \
+		echo "ERROR: Git working tree is not clean after precommit-km (CI expects generated output to match the commit)."; \
+		echo ""; \
+		git status -s kserve-module/; \
+		echo ""; \
+		git diff --stat kserve-module/; \
+		echo ""; \
+		echo "Fix: make precommit-km && git add kserve-module/ && git commit --amend"; \
+		exit 1; \
+	fi

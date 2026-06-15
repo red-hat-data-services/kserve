@@ -4,6 +4,8 @@ metadata:
   name: kserve-config-llm-decode-template
   namespace: kserve
 spec:
+  annotations:
+    serving.kserve.io/model-based-routing-enabled: "true"
   template:
     containers:
     - command:
@@ -134,10 +136,27 @@ spec:
           fi
         fi
 
-        eval "vllm serve /mnt/models \
-          --served-model-name "{{ .Spec.Model.Name }}" \
+        # --disable-access-log-for-endpoints landed in vLLM 0.16.0 (vllm-project/vllm#30011).
+        # Older versions still need the blanket --disable-uvicorn-access-log.
+        ACCESS_LOG_ARGS="--disable-uvicorn-access-log"
+        VLLM_VERSION=$(vllm --version 2>/dev/null | tail -1 | awk '{print $NF}')
+        echo "[access-log-detect] vllm version='${VLLM_VERSION}'"
+        if [[ "$VLLM_VERSION" =~ ^[0-9]+\.[0-9]+ ]] && [ "$(printf '%s\n%s\n' "0.16.0" "${VLLM_VERSION}" | sort -V | head -1)" = "0.16.0" ]; then
+          ACCESS_LOG_ARGS="--disable-access-log-for-endpoints /health,/metrics,/ping"
+        fi
+        echo "[access-log-detect] selected ACCESS_LOG_ARGS='${ACCESS_LOG_ARGS}'"
+
+        # --shutdown-timeout landed in vLLM 0.18.0 (vllm-project/vllm#36666).
+        SHUTDOWN_TIMEOUT_ARGS=""
+        if [[ "$VLLM_VERSION" =~ ^[0-9]+\.[0-9]+ ]] && [ "$(printf '%s\n%s\n' "0.18.0" "${VLLM_VERSION}" | sort -V | head -1)" = "0.18.0" ]; then
+          SHUTDOWN_TIMEOUT_ARGS="--shutdown-timeout {{ shutdownTimeout .Spec.Template 15 }}"
+        fi
+
+        eval "exec vllm serve /mnt/models \
+          --served-model-name "{{ .Spec.Model.Name }}" "publishers/{{ .ObjectMeta.Namespace }}/models/{{ .Spec.Model.Name }}" \
           --port 8001 \
-          --disable-uvicorn-access-log \
+          ${ACCESS_LOG_ARGS} \
+          ${SHUTDOWN_TIMEOUT_ARGS} \
           {{ if .GlobalConfig.EnableTLS }}--enable-ssl-refresh{{- end }} \
           {{ if .GlobalConfig.EnableTLS }}--ssl-certfile /var/run/kserve/tls/tls.crt{{- end }} \
           {{ if .GlobalConfig.EnableTLS }}--ssl-keyfile /var/run/kserve/tls/tls.key{{- end }} \
@@ -153,6 +172,12 @@ spec:
         value: /models
       image: ghcr.io/llm-d/llm-d-cuda:v0.6.0
       imagePullPolicy: IfNotPresent
+      lifecycle:
+        preStop:
+          exec:
+            command:
+            - /bin/sleep
+            - "15"
       livenessProbe:
         failureThreshold: 3
         httpGet:
@@ -178,8 +203,8 @@ spec:
         capabilities:
           drop:
           - ALL
-        readOnlyRootFilesystem: false
-        runAsNonRoot: false
+        readOnlyRootFilesystem: true
+        runAsNonRoot: true
         seccompProfile:
           type: RuntimeDefault
       startupProbe:
@@ -194,6 +219,8 @@ spec:
       volumeMounts:
       - mountPath: /home
         name: home
+      - mountPath: /tmp
+        name: tmp-dir
       - mountPath: /dev/shm
         name: dshm
       - mountPath: /models
@@ -206,7 +233,7 @@ spec:
       - /app/pd-sidecar
       - --port=8000
       - --vllm-port=8001
-      - --connector=nixlv2
+      - --kv-connector=nixlv2
       - --enable-ssrf-protection=true
       - --pool-group=inference.networking.x-k8s.io
       - '{{ if .GlobalConfig.EnableTLS }}--secure-proxy=true{{else}}--secure-proxy=false{{-
@@ -252,18 +279,20 @@ spec:
         capabilities:
           drop:
           - ALL
-        readOnlyRootFilesystem: false
-        runAsNonRoot: false
+        readOnlyRootFilesystem: true
+        runAsNonRoot: true
       terminationMessagePath: /dev/termination-log
       terminationMessagePolicy: FallbackToLogsOnError
       volumeMounts:
       - mountPath: /var/run/kserve/tls
         name: tls-certs
         readOnly: true
-    terminationGracePeriodSeconds: 30
+    terminationGracePeriodSeconds: 60
     volumes:
     - emptyDir: {}
       name: home
+    - emptyDir: {}
+      name: tmp-dir
     - emptyDir:
         medium: Memory
         sizeLimit: 1Gi
@@ -280,6 +309,8 @@ metadata:
   name: kserve-config-llm-decode-worker-data-parallel
   namespace: kserve
 spec:
+  annotations:
+    serving.kserve.io/model-based-routing-enabled: "true"
   template:
     containers:
     - command:
@@ -431,9 +462,26 @@ spec:
         fi
 
         START_RANK=0
-        eval "vllm serve \
+
+        # --disable-access-log-for-endpoints landed in vLLM 0.16.0 (vllm-project/vllm#30011).
+        # Older versions still need the blanket --disable-uvicorn-access-log.
+        ACCESS_LOG_ARGS="--disable-uvicorn-access-log"
+        VLLM_VERSION=$(vllm --version 2>/dev/null | tail -1 | awk '{print $NF}')
+        echo "[access-log-detect] vllm version='${VLLM_VERSION}'"
+        if [[ "$VLLM_VERSION" =~ ^[0-9]+\.[0-9]+ ]] && [ "$(printf '%s\n%s\n' "0.16.0" "${VLLM_VERSION}" | sort -V | head -1)" = "0.16.0" ]; then
+          ACCESS_LOG_ARGS="--disable-access-log-for-endpoints /health,/metrics,/ping"
+        fi
+        echo "[access-log-detect] selected ACCESS_LOG_ARGS='${ACCESS_LOG_ARGS}'"
+
+        # --shutdown-timeout landed in vLLM 0.18.0 (vllm-project/vllm#36666).
+        SHUTDOWN_TIMEOUT_ARGS=""
+        if [[ "$VLLM_VERSION" =~ ^[0-9]+\.[0-9]+ ]] && [ "$(printf '%s\n%s\n' "0.18.0" "${VLLM_VERSION}" | sort -V | head -1)" = "0.18.0" ]; then
+          SHUTDOWN_TIMEOUT_ARGS="--shutdown-timeout {{ shutdownTimeout .Spec.Template 15 }}"
+        fi
+
+        eval "exec vllm serve \
           /mnt/models \
-          --served-model-name "{{ .Spec.Model.Name }}" \
+          --served-model-name "{{ .Spec.Model.Name }}" "publishers/{{ .ObjectMeta.Namespace }}/models/{{ .Spec.Model.Name }}" \
           --port 8001 \
           --api-server-count ${VLLM_API_SERVER_COUNT:-8} \
           {{- if .Spec.Parallelism.Expert -}}--enable-expert-parallel{{- end }} \
@@ -443,7 +491,8 @@ spec:
           --data-parallel-address ${DP_ADDRESS} \
           --data-parallel-rpc-port {{ if .Spec.Parallelism.DataRPCPort }}{{ .Spec.Parallelism.DataRPCPort }}{{ else }}5555{{- end }} \
           --data-parallel-start-rank $START_RANK \
-          --disable-uvicorn-access-log \
+          ${ACCESS_LOG_ARGS} \
+          ${SHUTDOWN_TIMEOUT_ARGS} \
           {{ if .GlobalConfig.EnableTLS }}--enable-ssl-refresh{{- end }} \
           {{ if .GlobalConfig.EnableTLS }}--ssl-certfile /var/run/kserve/tls/tls.crt{{- end }} \
           {{ if .GlobalConfig.EnableTLS }}--ssl-keyfile /var/run/kserve/tls/tls.key{{- end }} \
@@ -459,6 +508,12 @@ spec:
         value: /models
       image: ghcr.io/llm-d/llm-d-cuda:v0.6.0
       imagePullPolicy: IfNotPresent
+      lifecycle:
+        preStop:
+          exec:
+            command:
+            - /bin/sleep
+            - "15"
       livenessProbe:
         failureThreshold: 3
         httpGet:
@@ -488,8 +543,8 @@ spec:
           - NET_RAW
           drop:
           - ALL
-        readOnlyRootFilesystem: false
-        runAsNonRoot: false
+        readOnlyRootFilesystem: true
+        runAsNonRoot: true
         seccompProfile:
           type: RuntimeDefault
       startupProbe:
@@ -504,6 +559,8 @@ spec:
       volumeMounts:
       - mountPath: /home
         name: home
+      - mountPath: /tmp
+        name: tmp-dir
       - mountPath: /dev/shm
         name: dshm
       - mountPath: /models
@@ -516,7 +573,7 @@ spec:
       - /app/pd-sidecar
       - --port=8000
       - --vllm-port=8001
-      - --connector=nixlv2
+      - --kv-connector=nixlv2
       - --enable-ssrf-protection=true
       - --pool-group=inference.networking.x-k8s.io
       - '{{ if .GlobalConfig.EnableTLS }}--secure-proxy=true{{else}}--secure-proxy=false{{-
@@ -562,7 +619,7 @@ spec:
           drop:
           - ALL
         readOnlyRootFilesystem: true
-        runAsNonRoot: false
+        runAsNonRoot: true
         seccompProfile:
           type: RuntimeDefault
       terminationMessagePath: /dev/termination-log
@@ -571,10 +628,12 @@ spec:
       - mountPath: /var/run/kserve/tls
         name: tls-certs
         readOnly: true
-    terminationGracePeriodSeconds: 30
+    terminationGracePeriodSeconds: 60
     volumes:
     - emptyDir: {}
       name: home
+    - emptyDir: {}
+      name: tmp-dir
     - emptyDir:
         medium: Memory
         sizeLimit: 8Gi
@@ -735,9 +794,26 @@ spec:
         fi
 
         START_RANK=$(( ${LWS_WORKER_INDEX:-0} * {{ or .Spec.Parallelism.DataLocal 1 }} ))
-        eval "vllm serve \
+
+        # --disable-access-log-for-endpoints landed in vLLM 0.16.0 (vllm-project/vllm#30011).
+        # Older versions still need the blanket --disable-uvicorn-access-log.
+        ACCESS_LOG_ARGS="--disable-uvicorn-access-log"
+        VLLM_VERSION=$(vllm --version 2>/dev/null | tail -1 | awk '{print $NF}')
+        echo "[access-log-detect] vllm version='${VLLM_VERSION}'"
+        if [[ "$VLLM_VERSION" =~ ^[0-9]+\.[0-9]+ ]] && [ "$(printf '%s\n%s\n' "0.16.0" "${VLLM_VERSION}" | sort -V | head -1)" = "0.16.0" ]; then
+          ACCESS_LOG_ARGS="--disable-access-log-for-endpoints /health,/metrics,/ping"
+        fi
+        echo "[access-log-detect] selected ACCESS_LOG_ARGS='${ACCESS_LOG_ARGS}'"
+
+        # --shutdown-timeout landed in vLLM 0.18.0 (vllm-project/vllm#36666).
+        SHUTDOWN_TIMEOUT_ARGS=""
+        if [[ "$VLLM_VERSION" =~ ^[0-9]+\.[0-9]+ ]] && [ "$(printf '%s\n%s\n' "0.18.0" "${VLLM_VERSION}" | sort -V | head -1)" = "0.18.0" ]; then
+          SHUTDOWN_TIMEOUT_ARGS="--shutdown-timeout {{ shutdownTimeout .Spec.Worker 15 }}"
+        fi
+
+        eval "exec vllm serve \
           /mnt/models \
-          --served-model-name "{{ .Spec.Model.Name }}" \
+          --served-model-name "{{ .Spec.Model.Name }}" "publishers/{{ .ObjectMeta.Namespace }}/models/{{ .Spec.Model.Name }}" \
           --port 8001 \
           {{- if .Spec.Parallelism.Expert }}--enable-expert-parallel{{- end }} \
           {{- if .Spec.Parallelism.Tensor }}--tensor-parallel-size {{ .Spec.Parallelism.Tensor }}{{- end }} \
@@ -747,7 +823,8 @@ spec:
           --data-parallel-rpc-port {{ if .Spec.Parallelism.DataRPCPort }}{{ .Spec.Parallelism.DataRPCPort }}{{ else }}5555{{- end }} \
           --data-parallel-start-rank $START_RANK \
           --headless \
-          --disable-uvicorn-access-log \
+          ${ACCESS_LOG_ARGS} \
+          ${SHUTDOWN_TIMEOUT_ARGS} \
           {{ if .GlobalConfig.EnableTLS }}--enable-ssl-refresh{{- end }} \
           {{ if .GlobalConfig.EnableTLS }}--ssl-certfile /var/run/kserve/tls/tls.crt{{- end }} \
           {{ if .GlobalConfig.EnableTLS }}--ssl-keyfile /var/run/kserve/tls/tls.key{{- end }} \
@@ -765,6 +842,12 @@ spec:
         value: "1"
       image: ghcr.io/llm-d/llm-d-cuda:v0.6.0
       imagePullPolicy: IfNotPresent
+      lifecycle:
+        preStop:
+          exec:
+            command:
+            - /bin/sleep
+            - "15"
       name: main
       ports:
       - containerPort: 8001
@@ -778,8 +861,8 @@ spec:
           - NET_RAW
           drop:
           - ALL
-        readOnlyRootFilesystem: false
-        runAsNonRoot: false
+        readOnlyRootFilesystem: true
+        runAsNonRoot: true
         seccompProfile:
           type: RuntimeDefault
       terminationMessagePath: /dev/termination-log
@@ -787,6 +870,8 @@ spec:
       volumeMounts:
       - mountPath: /home
         name: home
+      - mountPath: /tmp
+        name: tmp-dir
       - mountPath: /dev/shm
         name: dshm
       - mountPath: /models
@@ -794,10 +879,12 @@ spec:
       - mountPath: /var/run/kserve/tls
         name: tls-certs
         readOnly: true
-    terminationGracePeriodSeconds: 30
+    terminationGracePeriodSeconds: 60
     volumes:
     - emptyDir: {}
       name: home
+    - emptyDir: {}
+      name: tmp-dir
     - emptyDir:
         medium: Memory
         sizeLimit: 8Gi
@@ -815,6 +902,8 @@ metadata:
   namespace: kserve
 spec:
   prefill:
+    annotations:
+      serving.kserve.io/model-based-routing-enabled: "true"
     template:
       containers:
       - command:
@@ -945,10 +1034,27 @@ spec:
             fi
           fi
 
-          eval "vllm serve /mnt/models \
+          # --disable-access-log-for-endpoints landed in vLLM 0.16.0 (vllm-project/vllm#30011).
+          # Older versions still need the blanket --disable-uvicorn-access-log.
+          ACCESS_LOG_ARGS="--disable-uvicorn-access-log"
+          VLLM_VERSION=$(vllm --version 2>/dev/null | tail -1 | awk '{print $NF}')
+          echo "[access-log-detect] vllm version='${VLLM_VERSION}'"
+          if [[ "$VLLM_VERSION" =~ ^[0-9]+\.[0-9]+ ]] && [ "$(printf '%s\n%s\n' "0.16.0" "${VLLM_VERSION}" | sort -V | head -1)" = "0.16.0" ]; then
+            ACCESS_LOG_ARGS="--disable-access-log-for-endpoints /health,/metrics,/ping"
+          fi
+          echo "[access-log-detect] selected ACCESS_LOG_ARGS='${ACCESS_LOG_ARGS}'"
+
+          # --shutdown-timeout landed in vLLM 0.18.0 (vllm-project/vllm#36666).
+          SHUTDOWN_TIMEOUT_ARGS=""
+          if [[ "$VLLM_VERSION" =~ ^[0-9]+\.[0-9]+ ]] && [ "$(printf '%s\n%s\n' "0.18.0" "${VLLM_VERSION}" | sort -V | head -1)" = "0.18.0" ]; then
+            SHUTDOWN_TIMEOUT_ARGS="--shutdown-timeout {{ if .Spec.Prefill }}{{ shutdownTimeout .Spec.Prefill.Template 15 }}{{ else }}{{ shutdownTimeout nil 15 }}{{ end }}"
+          fi
+
+          eval "exec vllm serve /mnt/models \
             --served-model-name "{{ .Spec.Model.Name }}" \
             --port 8000 \
-            --disable-uvicorn-access-log \
+            ${ACCESS_LOG_ARGS} \
+            ${SHUTDOWN_TIMEOUT_ARGS} \
             {{ if .GlobalConfig.EnableTLS }}--enable-ssl-refresh{{- end }} \
             {{ if .GlobalConfig.EnableTLS }}--ssl-certfile /var/run/kserve/tls/tls.crt{{- end }} \
             {{ if .GlobalConfig.EnableTLS }}--ssl-keyfile /var/run/kserve/tls/tls.key{{- end }} \
@@ -964,6 +1070,12 @@ spec:
           value: /models
         image: ghcr.io/llm-d/llm-d-cuda:v0.6.0
         imagePullPolicy: IfNotPresent
+        lifecycle:
+          preStop:
+            exec:
+              command:
+              - /bin/sleep
+              - "15"
         livenessProbe:
           failureThreshold: 3
           httpGet:
@@ -989,8 +1101,8 @@ spec:
           capabilities:
             drop:
             - ALL
-          readOnlyRootFilesystem: false
-          runAsNonRoot: false
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
           seccompProfile:
             type: RuntimeDefault
         startupProbe:
@@ -1005,6 +1117,8 @@ spec:
         volumeMounts:
         - mountPath: /home
           name: home
+        - mountPath: /tmp
+          name: tmp-dir
         - mountPath: /dev/shm
           name: dshm
         - mountPath: /models
@@ -1012,10 +1126,12 @@ spec:
         - mountPath: /var/run/kserve/tls
           name: tls-certs
           readOnly: true
-      terminationGracePeriodSeconds: 30
+      terminationGracePeriodSeconds: 60
       volumes:
       - emptyDir: {}
         name: home
+      - emptyDir: {}
+        name: tmp-dir
       - emptyDir:
           medium: Memory
           sizeLimit: 1Gi
@@ -1033,6 +1149,8 @@ metadata:
   namespace: kserve
 spec:
   prefill:
+    annotations:
+      serving.kserve.io/model-based-routing-enabled: "true"
     template:
       containers:
       - command:
@@ -1184,9 +1302,26 @@ spec:
           fi
 
           START_RANK=0
-          eval "vllm serve \
+
+          # --disable-access-log-for-endpoints landed in vLLM 0.16.0 (vllm-project/vllm#30011).
+          # Older versions still need the blanket --disable-uvicorn-access-log.
+          ACCESS_LOG_ARGS="--disable-uvicorn-access-log"
+          VLLM_VERSION=$(vllm --version 2>/dev/null | tail -1 | awk '{print $NF}')
+          echo "[access-log-detect] vllm version='${VLLM_VERSION}'"
+          if [[ "$VLLM_VERSION" =~ ^[0-9]+\.[0-9]+ ]] && [ "$(printf '%s\n%s\n' "0.16.0" "${VLLM_VERSION}" | sort -V | head -1)" = "0.16.0" ]; then
+            ACCESS_LOG_ARGS="--disable-access-log-for-endpoints /health,/metrics,/ping"
+          fi
+          echo "[access-log-detect] selected ACCESS_LOG_ARGS='${ACCESS_LOG_ARGS}'"
+
+          # --shutdown-timeout landed in vLLM 0.18.0 (vllm-project/vllm#36666).
+          SHUTDOWN_TIMEOUT_ARGS=""
+          if [[ "$VLLM_VERSION" =~ ^[0-9]+\.[0-9]+ ]] && [ "$(printf '%s\n%s\n' "0.18.0" "${VLLM_VERSION}" | sort -V | head -1)" = "0.18.0" ]; then
+            SHUTDOWN_TIMEOUT_ARGS="--shutdown-timeout {{ if .Spec.Prefill }}{{ shutdownTimeout .Spec.Prefill.Template 15 }}{{ else }}{{ shutdownTimeout nil 15 }}{{ end }}"
+          fi
+
+          eval "exec vllm serve \
             /mnt/models \
-            --served-model-name "{{ .Spec.Model.Name }}" \
+            --served-model-name "{{ .Spec.Model.Name }}" "publishers/{{ .ObjectMeta.Namespace }}/models/{{ .Spec.Model.Name }}" \
             --port 8000 \
             --api-server-count ${VLLM_API_SERVER_COUNT:-8} \
             {{- if .Spec.Prefill.Parallelism.Expert -}}--enable-expert-parallel{{- end }} \
@@ -1196,7 +1331,8 @@ spec:
             --data-parallel-address ${DP_ADDRESS} \
             --data-parallel-rpc-port {{ if .Spec.Prefill.Parallelism.DataRPCPort }}{{ .Spec.Prefill.Parallelism.DataRPCPort }}{{ else }}5555{{- end }} \
             --data-parallel-start-rank $START_RANK \
-            --disable-uvicorn-access-log \
+            ${ACCESS_LOG_ARGS} \
+            ${SHUTDOWN_TIMEOUT_ARGS} \
             {{ if .GlobalConfig.EnableTLS }}--enable-ssl-refresh{{- end }} \
             {{ if .GlobalConfig.EnableTLS }}--ssl-certfile /var/run/kserve/tls/tls.crt{{- end }} \
             {{ if .GlobalConfig.EnableTLS }}--ssl-keyfile /var/run/kserve/tls/tls.key{{- end }} \
@@ -1212,6 +1348,12 @@ spec:
           value: /models
         image: ghcr.io/llm-d/llm-d-cuda:v0.6.0
         imagePullPolicy: IfNotPresent
+        lifecycle:
+          preStop:
+            exec:
+              command:
+              - /bin/sleep
+              - "15"
         livenessProbe:
           failureThreshold: 3
           httpGet:
@@ -1241,8 +1383,8 @@ spec:
             - NET_RAW
             drop:
             - ALL
-          readOnlyRootFilesystem: false
-          runAsNonRoot: false
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
           seccompProfile:
             type: RuntimeDefault
         startupProbe:
@@ -1257,6 +1399,8 @@ spec:
         volumeMounts:
         - mountPath: /home
           name: home
+        - mountPath: /tmp
+          name: tmp-dir
         - mountPath: /dev/shm
           name: dshm
         - mountPath: /models
@@ -1264,10 +1408,12 @@ spec:
         - mountPath: /var/run/kserve/tls
           name: tls-certs
           readOnly: true
-      terminationGracePeriodSeconds: 30
+      terminationGracePeriodSeconds: 60
       volumes:
       - emptyDir: {}
         name: home
+      - emptyDir: {}
+        name: tmp-dir
       - emptyDir:
           medium: Memory
           sizeLimit: 8Gi
@@ -1428,9 +1574,26 @@ spec:
           fi
 
           START_RANK=$(( ${LWS_WORKER_INDEX:-0} * {{ or .Spec.Prefill.Parallelism.DataLocal 1 }} ))
-          eval "vllm serve \
+
+          # --disable-access-log-for-endpoints landed in vLLM 0.16.0 (vllm-project/vllm#30011).
+          # Older versions still need the blanket --disable-uvicorn-access-log.
+          ACCESS_LOG_ARGS="--disable-uvicorn-access-log"
+          VLLM_VERSION=$(vllm --version 2>/dev/null | tail -1 | awk '{print $NF}')
+          echo "[access-log-detect] vllm version='${VLLM_VERSION}'"
+          if [[ "$VLLM_VERSION" =~ ^[0-9]+\.[0-9]+ ]] && [ "$(printf '%s\n%s\n' "0.16.0" "${VLLM_VERSION}" | sort -V | head -1)" = "0.16.0" ]; then
+            ACCESS_LOG_ARGS="--disable-access-log-for-endpoints /health,/metrics,/ping"
+          fi
+          echo "[access-log-detect] selected ACCESS_LOG_ARGS='${ACCESS_LOG_ARGS}'"
+
+          # --shutdown-timeout landed in vLLM 0.18.0 (vllm-project/vllm#36666).
+          SHUTDOWN_TIMEOUT_ARGS=""
+          if [[ "$VLLM_VERSION" =~ ^[0-9]+\.[0-9]+ ]] && [ "$(printf '%s\n%s\n' "0.18.0" "${VLLM_VERSION}" | sort -V | head -1)" = "0.18.0" ]; then
+            SHUTDOWN_TIMEOUT_ARGS="--shutdown-timeout {{ if .Spec.Prefill }}{{ shutdownTimeout .Spec.Prefill.Worker 15 }}{{ else }}{{ shutdownTimeout nil 15 }}{{ end }}"
+          fi
+
+          eval "exec vllm serve \
             /mnt/models \
-            --served-model-name "{{ .Spec.Model.Name }}" \
+            --served-model-name "{{ .Spec.Model.Name }}" "publishers/{{ .ObjectMeta.Namespace }}/models/{{ .Spec.Model.Name }}" \
             --port 8000 \
             {{- if .Spec.Prefill.Parallelism.Expert }}--enable-expert-parallel{{- end }} \
             {{- if .Spec.Prefill.Parallelism.Tensor }}--tensor-parallel-size {{ .Spec.Prefill.Parallelism.Tensor }}{{- end }} \
@@ -1440,7 +1603,8 @@ spec:
             --data-parallel-rpc-port {{ if .Spec.Prefill.Parallelism.DataRPCPort }}{{ .Spec.Prefill.Parallelism.DataRPCPort }}{{ else }}5555{{- end }} \
             --data-parallel-start-rank $START_RANK \
             --headless \
-            --disable-uvicorn-access-log \
+            ${ACCESS_LOG_ARGS} \
+            ${SHUTDOWN_TIMEOUT_ARGS} \
             {{ if .GlobalConfig.EnableTLS }}--enable-ssl-refresh{{- end }} \
             {{ if .GlobalConfig.EnableTLS }}--ssl-certfile /var/run/kserve/tls/tls.crt{{- end }} \
             {{ if .GlobalConfig.EnableTLS }}--ssl-keyfile /var/run/kserve/tls/tls.key{{- end }} \
@@ -1456,6 +1620,12 @@ spec:
           value: /models
         image: ghcr.io/llm-d/llm-d-cuda:v0.6.0
         imagePullPolicy: IfNotPresent
+        lifecycle:
+          preStop:
+            exec:
+              command:
+              - /bin/sleep
+              - "15"
         name: main
         ports:
         - containerPort: 8000
@@ -1469,8 +1639,8 @@ spec:
             - NET_RAW
             drop:
             - ALL
-          readOnlyRootFilesystem: false
-          runAsNonRoot: false
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
           seccompProfile:
             type: RuntimeDefault
         terminationMessagePath: /dev/termination-log
@@ -1478,6 +1648,8 @@ spec:
         volumeMounts:
         - mountPath: /home
           name: home
+        - mountPath: /tmp
+          name: tmp-dir
         - mountPath: /dev/shm
           name: dshm
         - mountPath: /models
@@ -1485,10 +1657,12 @@ spec:
         - mountPath: /var/run/kserve/tls
           name: tls-certs
           readOnly: true
-      terminationGracePeriodSeconds: 30
+      terminationGracePeriodSeconds: 60
       volumes:
       - emptyDir: {}
         name: home
+      - emptyDir: {}
+        name: tmp-dir
       - emptyDir:
           medium: Memory
           sizeLimit: 8Gi
@@ -1531,6 +1705,34 @@ spec:
             - path:
                 type: PathPrefix
                 value: /{{ .ObjectMeta.Namespace }}/{{ .ObjectMeta.Name }}/v1/completions
+            name: v1-completions-path
+            timeouts:
+              backendRequest: 0s
+              request: 0s
+          - backendRefs:
+            - group: inference.networking.k8s.io
+              kind: InferencePool
+              name: '{{ ChildName .ObjectMeta.Name `-inference-pool` }}'
+              port: 8000
+              weight: 1
+            matches:
+            - headers:
+              - name: '{{ .GlobalConfig.ModelBasedRoutingHeaderName }}'
+                type: Exact
+                value: publishers/{{ .ObjectMeta.Namespace }}/models/{{ .Spec.Model.Name
+                  }}
+              path:
+                type: Exact
+                value: /v1/completions
+            - headers:
+              - name: '{{ .GlobalConfig.ModelBasedRoutingHeaderName }}'
+                type: Exact
+                value: publishers/{{ .ObjectMeta.Namespace }}/models/{{ .Spec.Model.Name
+                  }}
+              path:
+                type: Exact
+                value: /v1/completions/
+            name: v1-completions-model-routing
             timeouts:
               backendRequest: 0s
               request: 0s
@@ -1550,6 +1752,34 @@ spec:
             - path:
                 type: PathPrefix
                 value: /{{ .ObjectMeta.Namespace }}/{{ .ObjectMeta.Name }}/v1/chat/completions
+            name: v1-chat-completions-path
+            timeouts:
+              backendRequest: 0s
+              request: 0s
+          - backendRefs:
+            - group: inference.networking.k8s.io
+              kind: InferencePool
+              name: '{{ ChildName .ObjectMeta.Name `-inference-pool` }}'
+              port: 8000
+              weight: 1
+            matches:
+            - headers:
+              - name: '{{ .GlobalConfig.ModelBasedRoutingHeaderName }}'
+                type: Exact
+                value: publishers/{{ .ObjectMeta.Namespace }}/models/{{ .Spec.Model.Name
+                  }}
+              path:
+                type: Exact
+                value: /v1/chat/completions
+            - headers:
+              - name: '{{ .GlobalConfig.ModelBasedRoutingHeaderName }}'
+                type: Exact
+                value: publishers/{{ .ObjectMeta.Namespace }}/models/{{ .Spec.Model.Name
+                  }}
+              path:
+                type: Exact
+                value: /v1/chat/completions/
+            name: v1-chat-completions-model-routing
             timeouts:
               backendRequest: 0s
               request: 0s
@@ -1569,6 +1799,34 @@ spec:
             - path:
                 type: PathPrefix
                 value: /{{ .ObjectMeta.Namespace }}/{{ .ObjectMeta.Name }}/v1/responses
+            name: v1-responses-path
+            timeouts:
+              backendRequest: 0s
+              request: 0s
+          - backendRefs:
+            - group: inference.networking.k8s.io
+              kind: InferencePool
+              name: '{{ ChildName .ObjectMeta.Name `-inference-pool` }}'
+              port: 8000
+              weight: 1
+            matches:
+            - headers:
+              - name: '{{ .GlobalConfig.ModelBasedRoutingHeaderName }}'
+                type: Exact
+                value: publishers/{{ .ObjectMeta.Namespace }}/models/{{ .Spec.Model.Name
+                  }}
+              path:
+                type: Exact
+                value: /v1/responses
+            - headers:
+              - name: '{{ .GlobalConfig.ModelBasedRoutingHeaderName }}'
+                type: Exact
+                value: publishers/{{ .ObjectMeta.Namespace }}/models/{{ .Spec.Model.Name
+                  }}
+              path:
+                type: Exact
+                value: /v1/responses/
+            name: v1-responses-model-routing
             timeouts:
               backendRequest: 0s
               request: 0s
@@ -1587,6 +1845,22 @@ spec:
             - path:
                 type: PathPrefix
                 value: /{{ .ObjectMeta.Namespace }}/{{ .ObjectMeta.Name }}
+            name: v1-catch-all-path
+            timeouts:
+              backendRequest: 0s
+              request: 0s
+          - backendRefs:
+            - kind: Service
+              name: '{{ ChildName .ObjectMeta.Name `-kserve-workload-svc` }}'
+              port: 8000
+              weight: 1
+            matches:
+            - headers:
+              - name: '{{ .GlobalConfig.ModelBasedRoutingHeaderName }}'
+                type: Exact
+                value: publishers/{{ .ObjectMeta.Namespace }}/models/{{ .Spec.Model.Name
+                  }}
+            name: v1-catch-all-model-routing
             timeouts:
               backendRequest: 0s
               request: 0s
@@ -1599,6 +1873,8 @@ metadata:
 spec:
   router:
     scheduler:
+      annotations:
+        app.kubernetes.io/version: 0.7.0
       pool:
         spec:
           endpointPickerRef:
@@ -1768,6 +2044,8 @@ metadata:
   name: kserve-config-llm-template
   namespace: kserve
 spec:
+  annotations:
+    serving.kserve.io/model-based-routing-enabled: "true"
   template:
     containers:
     - command:
@@ -1898,10 +2176,27 @@ spec:
           fi
         fi
 
-        eval "vllm serve /mnt/models \
-          --served-model-name "{{ .Spec.Model.Name }}" \
+        # --disable-access-log-for-endpoints landed in vLLM 0.16.0 (vllm-project/vllm#30011).
+        # Older versions still need the blanket --disable-uvicorn-access-log.
+        ACCESS_LOG_ARGS="--disable-uvicorn-access-log"
+        VLLM_VERSION=$(vllm --version 2>/dev/null | tail -1 | awk '{print $NF}')
+        echo "[access-log-detect] vllm version='${VLLM_VERSION}'"
+        if [[ "$VLLM_VERSION" =~ ^[0-9]+\.[0-9]+ ]] && [ "$(printf '%s\n%s\n' "0.16.0" "${VLLM_VERSION}" | sort -V | head -1)" = "0.16.0" ]; then
+          ACCESS_LOG_ARGS="--disable-access-log-for-endpoints /health,/metrics,/ping"
+        fi
+        echo "[access-log-detect] selected ACCESS_LOG_ARGS='${ACCESS_LOG_ARGS}'"
+
+        # --shutdown-timeout landed in vLLM 0.18.0 (vllm-project/vllm#36666).
+        SHUTDOWN_TIMEOUT_ARGS=""
+        if [[ "$VLLM_VERSION" =~ ^[0-9]+\.[0-9]+ ]] && [ "$(printf '%s\n%s\n' "0.18.0" "${VLLM_VERSION}" | sort -V | head -1)" = "0.18.0" ]; then
+          SHUTDOWN_TIMEOUT_ARGS="--shutdown-timeout {{ shutdownTimeout .Spec.Template 15 }}"
+        fi
+
+        eval "exec vllm serve /mnt/models \
+          --served-model-name "{{ .Spec.Model.Name }}" "publishers/{{ .ObjectMeta.Namespace }}/models/{{ .Spec.Model.Name }}" \
           --port 8000 \
-          --disable-uvicorn-access-log \
+          ${ACCESS_LOG_ARGS} \
+          ${SHUTDOWN_TIMEOUT_ARGS} \
           {{ if .GlobalConfig.EnableTLS }}--enable-ssl-refresh{{- end }} \
           {{ if .GlobalConfig.EnableTLS }}--ssl-certfile /var/run/kserve/tls/tls.crt{{- end }} \
           {{ if .GlobalConfig.EnableTLS }}--ssl-keyfile /var/run/kserve/tls/tls.key{{- end }} \
@@ -1917,6 +2212,12 @@ spec:
         value: /models
       image: ghcr.io/llm-d/llm-d-cuda:v0.6.0
       imagePullPolicy: IfNotPresent
+      lifecycle:
+        preStop:
+          exec:
+            command:
+            - /bin/sleep
+            - "15"
       livenessProbe:
         failureThreshold: 3
         httpGet:
@@ -1942,8 +2243,8 @@ spec:
         capabilities:
           drop:
           - ALL
-        readOnlyRootFilesystem: false
-        runAsNonRoot: false
+        readOnlyRootFilesystem: true
+        runAsNonRoot: true
         seccompProfile:
           type: RuntimeDefault
       startupProbe:
@@ -1958,6 +2259,8 @@ spec:
       volumeMounts:
       - mountPath: /home
         name: home
+      - mountPath: /tmp
+        name: tmp-dir
       - mountPath: /dev/shm
         name: dshm
       - mountPath: /models
@@ -1965,7 +2268,7 @@ spec:
       - mountPath: /var/run/kserve/tls
         name: tls-certs
         readOnly: true
-    terminationGracePeriodSeconds: 30
+    terminationGracePeriodSeconds: 60
     volumes:
     - emptyDir: {}
       name: home
@@ -1975,6 +2278,8 @@ spec:
       name: dshm
     - emptyDir: {}
       name: model-cache
+    - emptyDir: {}
+      name: tmp-dir
     - name: tls-certs
       secret:
         secretName: '{{ ChildName .ObjectMeta.Name `-kserve-self-signed-certs` }}'
@@ -1985,6 +2290,8 @@ metadata:
   name: kserve-config-llm-worker-data-parallel
   namespace: kserve
 spec:
+  annotations:
+    serving.kserve.io/model-based-routing-enabled: "true"
   template:
     containers:
     - command:
@@ -2136,9 +2443,26 @@ spec:
         fi
 
         START_RANK=0
-        eval "vllm serve \
+
+        # --disable-access-log-for-endpoints landed in vLLM 0.16.0 (vllm-project/vllm#30011).
+        # Older versions still need the blanket --disable-uvicorn-access-log.
+        ACCESS_LOG_ARGS="--disable-uvicorn-access-log"
+        VLLM_VERSION=$(vllm --version 2>/dev/null | tail -1 | awk '{print $NF}')
+        echo "[access-log-detect] vllm version='${VLLM_VERSION}'"
+        if [[ "$VLLM_VERSION" =~ ^[0-9]+\.[0-9]+ ]] && [ "$(printf '%s\n%s\n' "0.16.0" "${VLLM_VERSION}" | sort -V | head -1)" = "0.16.0" ]; then
+          ACCESS_LOG_ARGS="--disable-access-log-for-endpoints /health,/metrics,/ping"
+        fi
+        echo "[access-log-detect] selected ACCESS_LOG_ARGS='${ACCESS_LOG_ARGS}'"
+
+        # --shutdown-timeout landed in vLLM 0.18.0 (vllm-project/vllm#36666).
+        SHUTDOWN_TIMEOUT_ARGS=""
+        if [[ "$VLLM_VERSION" =~ ^[0-9]+\.[0-9]+ ]] && [ "$(printf '%s\n%s\n' "0.18.0" "${VLLM_VERSION}" | sort -V | head -1)" = "0.18.0" ]; then
+          SHUTDOWN_TIMEOUT_ARGS="--shutdown-timeout {{ shutdownTimeout .Spec.Template 15 }}"
+        fi
+
+        eval "exec vllm serve \
           /mnt/models \
-          --served-model-name "{{ .Spec.Model.Name }}" \
+          --served-model-name "{{ .Spec.Model.Name }}" "publishers/{{ .ObjectMeta.Namespace }}/models/{{ .Spec.Model.Name }}" \
           --port 8000 \
           --api-server-count ${VLLM_API_SERVER_COUNT:-8} \
           {{- if .Spec.Parallelism.Expert -}}--enable-expert-parallel{{- end }} \
@@ -2148,7 +2472,8 @@ spec:
           --data-parallel-address ${DP_ADDRESS} \
           --data-parallel-rpc-port {{ if .Spec.Parallelism.DataRPCPort }}{{ .Spec.Parallelism.DataRPCPort }}{{ else }}5555{{- end }} \
           --data-parallel-start-rank $START_RANK \
-          --disable-uvicorn-access-log \
+          ${ACCESS_LOG_ARGS} \
+          ${SHUTDOWN_TIMEOUT_ARGS} \
           {{ if .GlobalConfig.EnableTLS }}--enable-ssl-refresh{{- end }} \
           {{ if .GlobalConfig.EnableTLS }}--ssl-certfile /var/run/kserve/tls/tls.crt{{- end }} \
           {{ if .GlobalConfig.EnableTLS }}--ssl-keyfile /var/run/kserve/tls/tls.key{{- end }} \
@@ -2164,6 +2489,12 @@ spec:
         value: /models
       image: ghcr.io/llm-d/llm-d-cuda:v0.6.0
       imagePullPolicy: IfNotPresent
+      lifecycle:
+        preStop:
+          exec:
+            command:
+            - /bin/sleep
+            - "15"
       livenessProbe:
         failureThreshold: 3
         httpGet:
@@ -2193,8 +2524,8 @@ spec:
           - NET_RAW
           drop:
           - ALL
-        readOnlyRootFilesystem: false
-        runAsNonRoot: false
+        readOnlyRootFilesystem: true
+        runAsNonRoot: true
         seccompProfile:
           type: RuntimeDefault
       startupProbe:
@@ -2209,6 +2540,8 @@ spec:
       volumeMounts:
       - mountPath: /home
         name: home
+      - mountPath: /tmp
+        name: tmp-dir
       - mountPath: /dev/shm
         name: dshm
       - mountPath: /models
@@ -2216,10 +2549,12 @@ spec:
       - mountPath: /var/run/kserve/tls
         name: tls-certs
         readOnly: true
-    terminationGracePeriodSeconds: 30
+    terminationGracePeriodSeconds: 60
     volumes:
     - emptyDir: {}
       name: home
+    - emptyDir: {}
+      name: tmp-dir
     - emptyDir:
         medium: Memory
         sizeLimit: 8Gi
@@ -2380,9 +2715,26 @@ spec:
         fi
 
         START_RANK=$(( ${LWS_WORKER_INDEX:-0} * {{ or .Spec.Parallelism.DataLocal 1 }} ))
-        eval "vllm serve \
+
+        # --disable-access-log-for-endpoints landed in vLLM 0.16.0 (vllm-project/vllm#30011).
+        # Older versions still need the blanket --disable-uvicorn-access-log.
+        ACCESS_LOG_ARGS="--disable-uvicorn-access-log"
+        VLLM_VERSION=$(vllm --version 2>/dev/null | tail -1 | awk '{print $NF}')
+        echo "[access-log-detect] vllm version='${VLLM_VERSION}'"
+        if [[ "$VLLM_VERSION" =~ ^[0-9]+\.[0-9]+ ]] && [ "$(printf '%s\n%s\n' "0.16.0" "${VLLM_VERSION}" | sort -V | head -1)" = "0.16.0" ]; then
+          ACCESS_LOG_ARGS="--disable-access-log-for-endpoints /health,/metrics,/ping"
+        fi
+        echo "[access-log-detect] selected ACCESS_LOG_ARGS='${ACCESS_LOG_ARGS}'"
+
+        # --shutdown-timeout landed in vLLM 0.18.0 (vllm-project/vllm#36666).
+        SHUTDOWN_TIMEOUT_ARGS=""
+        if [[ "$VLLM_VERSION" =~ ^[0-9]+\.[0-9]+ ]] && [ "$(printf '%s\n%s\n' "0.18.0" "${VLLM_VERSION}" | sort -V | head -1)" = "0.18.0" ]; then
+          SHUTDOWN_TIMEOUT_ARGS="--shutdown-timeout {{ shutdownTimeout .Spec.Worker 15 }}"
+        fi
+
+        eval "exec vllm serve \
           /mnt/models \
-          --served-model-name "{{ .Spec.Model.Name }}" \
+          --served-model-name "{{ .Spec.Model.Name }}" "publishers/{{ .ObjectMeta.Namespace }}/models/{{ .Spec.Model.Name }}" \
           --port 8000 \
           {{- if .Spec.Parallelism.Expert }}--enable-expert-parallel{{- end }} \
           {{- if .Spec.Parallelism.Tensor }}--tensor-parallel-size {{ .Spec.Parallelism.Tensor }}{{- end }} \
@@ -2392,7 +2744,8 @@ spec:
           --data-parallel-rpc-port {{ if .Spec.Parallelism.DataRPCPort }}{{ .Spec.Parallelism.DataRPCPort }}{{ else }}5555{{- end }} \
           --data-parallel-start-rank $START_RANK \
           --headless \
-          --disable-uvicorn-access-log \
+          ${ACCESS_LOG_ARGS} \
+          ${SHUTDOWN_TIMEOUT_ARGS} \
           {{ if .GlobalConfig.EnableTLS }}--enable-ssl-refresh{{- end }} \
           {{ if .GlobalConfig.EnableTLS }}--ssl-certfile /var/run/kserve/tls/tls.crt{{- end }} \
           {{ if .GlobalConfig.EnableTLS }}--ssl-keyfile /var/run/kserve/tls/tls.key{{- end }} \
@@ -2408,6 +2761,12 @@ spec:
         value: /models
       image: ghcr.io/llm-d/llm-d-cuda:v0.6.0
       imagePullPolicy: IfNotPresent
+      lifecycle:
+        preStop:
+          exec:
+            command:
+            - /bin/sleep
+            - "15"
       name: main
       ports:
       - containerPort: 8000
@@ -2421,8 +2780,8 @@ spec:
           - NET_RAW
           drop:
           - ALL
-        readOnlyRootFilesystem: false
-        runAsNonRoot: false
+        readOnlyRootFilesystem: true
+        runAsNonRoot: true
         seccompProfile:
           type: RuntimeDefault
       terminationMessagePath: /dev/termination-log
@@ -2430,6 +2789,8 @@ spec:
       volumeMounts:
       - mountPath: /home
         name: home
+      - mountPath: /tmp
+        name: tmp-dir
       - mountPath: /dev/shm
         name: dshm
       - mountPath: /models
@@ -2437,10 +2798,12 @@ spec:
       - mountPath: /var/run/kserve/tls
         name: tls-certs
         readOnly: true
-    terminationGracePeriodSeconds: 30
+    terminationGracePeriodSeconds: 60
     volumes:
     - emptyDir: {}
       name: home
+    - emptyDir: {}
+      name: tmp-dir
     - emptyDir:
         medium: Memory
         sizeLimit: 8Gi

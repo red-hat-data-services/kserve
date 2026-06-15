@@ -65,6 +65,7 @@ rules:
   - serving.kserve.io
   resources:
   - inferenceservices
+  - llminferenceservices
   - localmodelnodegroups
   verbs:
   - get
@@ -171,6 +172,12 @@ rules:
   - patch
   - update
   - watch
+- apiGroups:
+  - serving.kserve.io
+  resources:
+  - localmodelnodes/finalizers
+  verbs:
+  - update
 - apiGroups:
   - serving.kserve.io
   resources:

@@ -36,6 +36,7 @@ from .fixtures import (
     inject_k8s_proxy,
     KSERVE_TEST_NAMESPACE,
     KSERVE_PLURAL_LLMINFERENCESERVICECONFIG,
+    OPT_125M_MODEL_URI,
 )
 from .logging import logger
 
@@ -131,13 +132,13 @@ class TestStorageVersionMigration:
                 "namespace": self.namespace,
             },
             "spec": {
-                "model": {"uri": "hf://facebook/opt-125m", "name": "facebook/opt-125m"},
+                "model": {"uri": OPT_125M_MODEL_URI, "name": "facebook/opt-125m"},
                 "router": {"route": {}},
                 "template": {
                     "containers": [
                         {
                             "name": "main",
-                            "image": "public.ecr.aws/q9t5s3a7/vllm-cpu-release-repo:v0.17.1",
+                            "image": "public.ecr.aws/q9t5s3a7/vllm-cpu-release-repo:v0.19.0",
                             "resources": {
                                 "limits": {"cpu": "1", "memory": "2Gi"},
                                 "requests": {"cpu": "100m", "memory": "512Mi"},

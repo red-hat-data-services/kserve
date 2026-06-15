@@ -23,6 +23,8 @@ type componentConfig struct {
 	postRender    func(ctx context.Context, r *KserveModuleReconciler,
 		kserve *platformv1alpha1.Kserve,
 		resources []unstructured.Unstructured) ([]unstructured.Unstructured, error)
+	enabled      func(kserve *platformv1alpha1.Kserve) bool
+	extraCleanup func(ctx context.Context, r *KserveModuleReconciler) error
 }
 
 var components = []componentConfig{
@@ -38,6 +40,13 @@ var components = []componentConfig{
 		sourcePath:  modelControllerSourcePath,
 		imageMap:    modelControllerImageParamMap,
 		extraParams: modelControllerExtraParams,
+	},
+	{
+		name:       wvaComponentName,
+		sourcePath: wvaManifestSourcePathOCP,
+		imageMap:   wvaImageParamMap,
+		enabled:    isWVAEnabled,
+		postRender: wvaPostRender,
 	},
 }
 
@@ -58,6 +67,27 @@ func kservePostRender(ctx context.Context, r *KserveModuleReconciler,
 	}
 
 	return resources, nil
+}
+
+func wvaPostRender(ctx context.Context, r *KserveModuleReconciler,
+	kserve *platformv1alpha1.Kserve,
+	resources []unstructured.Unstructured) ([]unstructured.Unstructured, error) {
+	return filterOutNamespaces(resources), nil
+}
+
+func filterOutNamespaces(resources []unstructured.Unstructured) []unstructured.Unstructured {
+	filtered := make([]unstructured.Unstructured, 0, len(resources))
+	for i := range resources {
+		if resources[i].GetKind() == "Namespace" {
+			continue
+		}
+		filtered = append(filtered, resources[i])
+	}
+	return filtered
+}
+
+func isWVAEnabled(kserve *platformv1alpha1.Kserve) bool {
+	return kserve.Spec.WVA.ManagementState == common.Managed
 }
 
 func modelControllerExtraParams(kserve *platformv1alpha1.Kserve) map[string]string {

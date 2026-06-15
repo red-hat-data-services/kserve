@@ -15,7 +15,7 @@ metadata:
     appstudio.openshift.io/application: opendatahub-builds
     appstudio.openshift.io/component: kserve-router-ci
     pipelines.appstudio.openshift.io/type: build
-  name: kserve-router-on-pull-request
+  name: kserve-router-on-pull
   namespace: open-data-hub-tenant
 spec:
   params:
@@ -45,6 +45,15 @@ spec:
       value: main
     - name: pathInRepo
       value: pipeline/multi-arch-container-build.yaml
+  taskRunSpecs:
+    - pipelineTaskName: sast-shell-check
+      computeResources:
+        requests:
+          cpu: '2'
+          memory: 16Gi
+        limits:
+          cpu: '2'
+          memory: 16Gi
   taskRunTemplate:
     serviceAccountName: build-pipeline-kserve-router
   workspaces:

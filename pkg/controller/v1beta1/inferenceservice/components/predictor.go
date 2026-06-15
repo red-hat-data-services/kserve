@@ -28,6 +28,7 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/utils/ptr"
 	"knative.dev/pkg/apis"
@@ -152,13 +153,21 @@ func (p *Predictor) Reconcile(ctx context.Context, isvc *v1beta1.InferenceServic
 		}
 	}
 
-	// Add InferenceService name as environment variable to all containers
-	// In collocation mode, there may be multiple containers (predictor + transformer)
+	// Add InferenceService name as environment variable to all containers.
+	// In collocation mode, there may be multiple containers (predictor + transformer).
 	// https://kserve.github.io/website/docs/model-serving/predictive-inference/transformers/collocation
-	for i := range podSpec.Containers {
-		containerName := podSpec.Containers[i].Name
-		if err := isvcutils.AddEnvVarToPodSpec(&podSpec, containerName, constants.InferenceServiceNameEnvVarKey, isvc.Name); err != nil {
-			return ctrl.Result{}, errors.Wrapf(err, "failed to add INFERENCE_SERVICE_NAME environment variable to container %s", containerName)
+	inject, err := shouldInjectInferenceServiceName(ctx, p.client,
+		types.NamespacedName{Name: constants.PredictorServiceName(isvc.Name), Namespace: isvc.Namespace},
+		constants.InferenceServiceContainerName, p.Log)
+	if err != nil {
+		return ctrl.Result{}, errors.Wrapf(err, "failed to check existing predictor deployment for %s", isvc.Name)
+	}
+	if inject {
+		for i := range podSpec.Containers {
+			containerName := podSpec.Containers[i].Name
+			if err := isvcutils.AddEnvVarToPodSpec(&podSpec, containerName, constants.InferenceServiceNameEnvVarKey, isvc.Name); err != nil {
+				return ctrl.Result{}, errors.Wrapf(err, "failed to add INFERENCE_SERVICE_NAME environment variable to container %s", containerName)
+			}
 		}
 	}
 
@@ -774,6 +783,11 @@ func (p *Predictor) reconcileRawDeployment(ctx context.Context, isvc *v1beta1.In
 
 	if cond, condType := r.Workload.GetAuthProxyCondition(); cond != nil {
 		isvc.Status.SetCondition(condType, cond)
+	} else {
+		existing := isvc.Status.GetCondition(v1beta1.LatestDeploymentReady)
+		if existing != nil && existing.Reason == "AuthProxyPreserved" {
+			isvc.Status.ClearCondition(v1beta1.LatestDeploymentReady)
+		}
 	}
 
 	if !utils.GetForceStopRuntime(isvc) {

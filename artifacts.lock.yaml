@@ -1,0 +1,7 @@
+---
+metadata:
+  version: "1.0"
+artifacts:
+  - download_url: "https://github.com/huggingface/xet-core/archive/refs/tags/v1.5.1.tar.gz"
+    checksum: "sha256:04bca7662eb6008f3078fdbc63639510012dd82c9dd41e6df8ef350e35c5bd54"
+    filename: "xet-core-1.5.1.tar.gz"

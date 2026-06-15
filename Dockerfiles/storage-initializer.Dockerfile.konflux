@@ -7,15 +7,10 @@ RUN microdnf install -y \
     python3.11 \
        python3.11-pip python3.11-devel gcc libffi-devel openssl-devel krb5-workstation krb5-libs krb5-devel && \
     if [ "$(uname -m)" = "s390x" ] || [ "$(uname -m)" = "ppc64le" ]; then \
-       echo "Installing packages" && \
-       microdnf install -y gcc-c++ cmake perl git && \
-       curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y ; \
+       microdnf install -y gcc-c++ cmake perl git rust cargo ; \
     fi \
     && microdnf clean all \
     && alternatives --install /usr/bin/unversioned-python python /usr/bin/python3.11 1
-
-# Install uv
-RUN /usr/bin/pip3.11 install --no-cache-dir uv
 
 # Activate virtual env
 ARG VENV_PATH
@@ -23,31 +18,35 @@ ENV VIRTUAL_ENV=${VENV_PATH}
 RUN /usr/bin/python3.11 -m venv $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
-COPY storage/pyproject.toml storage/uv.lock storage/
+COPY storage/pyproject.toml storage/requirements.txt storage/requirements-build.txt storage/
 
-# Install hf_xet from source for s390x and ppc64le
+# Build hf_xet from prefetched source for s390x and ppc64le
 RUN if [ "$(uname -m)" = "s390x" ] || [ "$(uname -m)" = "ppc64le" ]; then \
-       export PATH=/root/.cargo/bin:$PATH  && \
-       export HF_XET_VERSION=$(awk '/^name = "hf-xet"/{getline; print}' storage/uv.lock | awk -F'"' '{print $2}') && \
-       git clone --depth 1 --branch v${HF_XET_VERSION} https://github.com/huggingface/xet-core.git && \
-       cd xet-core/hf_xet && \
+       pip3.11 install --no-cache-dir \
+           --no-index --find-links /cachi2/output/deps/pip \
+           -r storage/requirements-build.txt && \
+       mkdir -p /hf_xet/wheels && \
+       tar -xf /cachi2/output/deps/generic/xet-core-1.5.1.tar.gz -C /tmp && \
+       cd /tmp/xet-core-*/hf_xet && \
        sed -i '/python-source = "python"/d' pyproject.toml && \
-       pip install 'maturin[patchelf]' && \
        maturin build --release --out /hf_xet/wheels/ ; \
     fi
 
-RUN cd storage && \
-    if [ "$(uname -m)" = "s390x" ] || [ "$(uname -m)" = "ppc64le" ]; then \
-       export PATH=/root/.cargo/bin:$PATH && \
+# Install prefetched Python dependencies
+RUN if [ "$(uname -m)" = "s390x" ] || [ "$(uname -m)" = "ppc64le" ]; then \
        export GRPC_PYTHON_BUILD_SYSTEM_OPENSSL=true && \
-       uv pip install /hf_xet/wheels/*.whl ; \
+       pip3.11 install --no-cache-dir \
+           --no-index --find-links /cachi2/output/deps/pip \
+           /hf_xet/wheels/*.whl ; \
     fi && \
-    uv sync --active --no-cache
+    pip3.11 install --no-cache-dir \
+        --no-index --find-links /cachi2/output/deps/pip \
+        -r storage/requirements.txt
 
 COPY storage storage
-RUN cd storage && uv pip install . --no-cache
-
-RUN uv pip install --no-cache krbcontext==0.10 hdfs~=2.6.0 requests-kerberos==0.14.0
+RUN pip3.11 install --no-cache-dir \
+    --no-index --find-links /cachi2/output/deps/pip \
+    --no-deps storage/
 
 ########################################################################
 # Runtime
@@ -71,7 +70,7 @@ COPY ./storage-initializer /storage-initializer
 
 # Remove kserve manifest and not needed files from final image, this can lead to false positives in regards to
 # CVEs since there are optional libraries which are not installed by storage-initializer
-RUN rm -rf /storage/{*.toml,Makefile,*.lock,requirements.txt,setup.cfg,docs,git-push.sh,test,test-requirements.txt,tox.ini}
+RUN rm -rf /storage/{*.toml,Makefile,*.lock,requirements.txt,requirements-build.txt,setup.cfg,docs,git-push.sh,test,test-requirements.txt,tox.ini}
 # clean hidden files/directories
 RUN cd /storage && rm -rf .??*
 

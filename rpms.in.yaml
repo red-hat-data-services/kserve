@@ -33,7 +33,8 @@ packages:
   - rust
   - cargo
   - perl
+  - git
 context:
   containerfile:
-    file: Dockerfiles/controller.Dockerfile.konflux
+    file: Dockerfiles/storage-initializer.Dockerfile.konflux
     imagePattern: ubi9/ubi-minimal

@@ -50,7 +50,7 @@ spec:
       [
         {"type": "rpm", "path": "."},
         {"type": "pip", "path": "python/storage", "allow_binary": true,
-         "requirements_build_files": ["requirements-build.txt"]},
+         "requirements_build_files": ["requirements-build.txt", "requirements-build-deps.txt"]},
         {"type": "generic", "path": "."}
       ]
   - name: build-image-index

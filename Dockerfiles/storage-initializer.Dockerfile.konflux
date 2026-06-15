@@ -7,7 +7,7 @@ RUN microdnf install -y \
     python3.11 \
        python3.11-pip python3.11-devel gcc libffi-devel openssl-devel krb5-workstation krb5-libs krb5-devel && \
     if [ "$(uname -m)" = "s390x" ] || [ "$(uname -m)" = "ppc64le" ]; then \
-       microdnf install -y gcc-c++ cmake perl git rust cargo ; \
+       microdnf install -y gcc-c++ cmake perl git rust cargo tar ; \
     fi \
     && microdnf clean all \
     && alternatives --install /usr/bin/unversioned-python python /usr/bin/python3.11 1
@@ -18,7 +18,12 @@ ENV VIRTUAL_ENV=${VENV_PATH}
 RUN /usr/bin/python3.11 -m venv $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
-COPY storage/pyproject.toml storage/requirements.txt storage/requirements-build.txt storage/
+COPY storage/pyproject.toml storage/requirements.txt storage/requirements-build.txt storage/requirements-build-deps.txt storage/
+
+# Install pip build deps for sdists (gssapi, etc.) on all arches
+RUN pip3.11 install --no-cache-dir \
+    --no-index --find-links /cachi2/output/deps/pip \
+    -r storage/requirements-build-deps.txt
 
 # Build hf_xet from prefetched source for s390x and ppc64le
 RUN if [ "$(uname -m)" = "s390x" ] || [ "$(uname -m)" = "ppc64le" ]; then \
@@ -70,7 +75,7 @@ COPY ./storage-initializer /storage-initializer
 
 # Remove kserve manifest and not needed files from final image, this can lead to false positives in regards to
 # CVEs since there are optional libraries which are not installed by storage-initializer
-RUN rm -rf /storage/{*.toml,Makefile,*.lock,requirements.txt,requirements-build.txt,setup.cfg,docs,git-push.sh,test,test-requirements.txt,tox.ini}
+RUN rm -rf /storage/{*.toml,Makefile,*.lock,requirements.txt,requirements-build.txt,requirements-build-deps.txt,setup.cfg,docs,git-push.sh,test,test-requirements.txt,tox.ini}
 # clean hidden files/directories
 RUN cd /storage && rm -rf .??*
 

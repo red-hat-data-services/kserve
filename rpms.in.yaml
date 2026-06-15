@@ -34,6 +34,7 @@ packages:
   - cargo
   - perl
   - git
+  - tar
 context:
   containerfile:
     file: Dockerfiles/storage-initializer.Dockerfile.konflux

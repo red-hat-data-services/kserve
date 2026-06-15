@@ -4,52 +4,31 @@ FROM registry.access.redhat.com/ubi9/ubi-minimal:latest AS builder
 
 # Install Python and dependencies
 RUN microdnf install -y \
-    python3.11 \
-       python3.11-pip python3.11-devel gcc libffi-devel openssl-devel krb5-workstation krb5-libs krb5-devel && \
-    if [ "$(uname -m)" = "s390x" ] || [ "$(uname -m)" = "ppc64le" ]; then \
-       microdnf install -y gcc-c++ cmake perl git rust cargo tar ; \
-    fi \
+    python3.12 \
+       python3.12-pip python3.12-devel gcc libffi-devel openssl-devel krb5-workstation krb5-libs krb5-devel \
     && microdnf clean all \
-    && alternatives --install /usr/bin/unversioned-python python /usr/bin/python3.11 1
+    && alternatives --install /usr/bin/unversioned-python python /usr/bin/python3.12 1
 
 # Activate virtual env
 ARG VENV_PATH
 ENV VIRTUAL_ENV=${VENV_PATH}
-RUN /usr/bin/python3.11 -m venv $VIRTUAL_ENV
+RUN /usr/bin/python3.12 -m venv $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
-COPY storage/pyproject.toml storage/requirements.txt storage/requirements-build.txt storage/requirements-build-deps.txt storage/
+COPY storage/pyproject.toml storage/konflux-requirements.in storage/requirements.txt storage/requirements-build-deps.txt storage/
 
-# Install pip build deps for sdists (gssapi, etc.) on all arches
-RUN pip3.11 install --no-cache-dir \
+# Install setuptools/wheel for building the local storage package
+RUN pip3.12 install --no-cache-dir \
     --no-index --find-links /cachi2/output/deps/pip \
     -r storage/requirements-build-deps.txt
 
-# Build hf_xet from prefetched source for s390x and ppc64le
-RUN if [ "$(uname -m)" = "s390x" ] || [ "$(uname -m)" = "ppc64le" ]; then \
-       pip3.11 install --no-cache-dir \
-           --no-index --find-links /cachi2/output/deps/pip \
-           -r storage/requirements-build.txt && \
-       mkdir -p /hf_xet/wheels && \
-       tar -xf /cachi2/output/deps/generic/xet-core-1.5.1.tar.gz -C /tmp && \
-       cd /tmp/xet-core-*/hf_xet && \
-       sed -i '/python-source = "python"/d' pyproject.toml && \
-       maturin build --release --out /hf_xet/wheels/ ; \
-    fi
-
-# Install prefetched Python dependencies
-RUN if [ "$(uname -m)" = "s390x" ] || [ "$(uname -m)" = "ppc64le" ]; then \
-       export GRPC_PYTHON_BUILD_SYSTEM_OPENSSL=true && \
-       pip3.11 install --no-cache-dir \
-           --no-index --find-links /cachi2/output/deps/pip \
-           /hf_xet/wheels/*.whl ; \
-    fi && \
-    pip3.11 install --no-cache-dir \
-        --no-index --find-links /cachi2/output/deps/pip \
-        -r storage/requirements.txt
+# Install prefetched Python dependencies from the AIPCC index
+RUN pip3.12 install --no-cache-dir \
+    --no-index --find-links /cachi2/output/deps/pip \
+    -r storage/requirements.txt
 
 COPY storage storage
-RUN pip3.11 install --no-cache-dir \
+RUN pip3.12 install --no-cache-dir \
     --no-index --find-links /cachi2/output/deps/pip \
     --no-deps storage/
 
@@ -63,9 +42,9 @@ ENV VIRTUAL_ENV=${VENV_PATH}
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 RUN microdnf install -y  \
-        shadow-utils python3.11 \
+        shadow-utils python3.12 \
     &&  microdnf clean all \
-    && alternatives --install /usr/bin/unversioned-python python /usr/bin/python3.11 1
+    && alternatives --install /usr/bin/unversioned-python python /usr/bin/python3.12 1
 
 RUN useradd kserve -m -u 1000 -d /home/kserve && chgrp -R 0 /home/kserve && chmod -R g+rwx /home/kserve
 
@@ -75,7 +54,7 @@ COPY ./storage-initializer /storage-initializer
 
 # Remove kserve manifest and not needed files from final image, this can lead to false positives in regards to
 # CVEs since there are optional libraries which are not installed by storage-initializer
-RUN rm -rf /storage/{*.toml,Makefile,*.lock,requirements.txt,requirements-build.txt,requirements-build-deps.txt,setup.cfg,docs,git-push.sh,test,test-requirements.txt,tox.ini}
+RUN rm -rf /storage/{*.toml,Makefile,*.lock,requirements.txt,requirements-build-deps.txt,konflux-requirements.in,setup.cfg,docs,git-push.sh,test,test-requirements.txt,tox.ini}
 # clean hidden files/directories
 RUN cd /storage && rm -rf .??*
 

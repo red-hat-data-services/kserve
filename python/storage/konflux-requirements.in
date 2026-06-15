@@ -1,0 +1,13 @@
+# Direct dependencies for Konflux hermetic builds (AIPCC index).
+# Version ranges align with packages.redhat.com public-rhai/rhoai/3.5-EA2/cpu-ubi9.
+# azure-storage-file-share is omitted until onboarded to AIPCC (Azure Files backend).
+aiohttp>=3.10,<4.0.0
+requests>=2.32,<3.0.0
+google-cloud-storage>=3.10,<4.0.0
+azure-storage-blob>=12.20,<13.0.0
+azure-identity>=1.15,<2.0.0
+boto3>=1.29,<2.0.0
+huggingface-hub>=0.32.0
+dulwich>=0.21.0
+cryptography>=46.0.5
+pyjwt>=2.12.0

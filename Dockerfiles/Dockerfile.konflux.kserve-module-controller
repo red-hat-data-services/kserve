@@ -1,5 +1,5 @@
 # Build the manager binary
-FROM registry.access.redhat.com/ubi9/go-toolset@sha256:90a36bc2013b3fcb28e2a4b082c9b895d7c2c679e58b95aed9721970f3339d0e AS builder
+FROM registry.access.redhat.com/ubi9/go-toolset@sha256:ebcc3560ec892af7c081bcfbef9959fe54c4b1603dc1f6c6e1494992f6c71f89 AS builder
 ENV PATH="$PATH:/opt/app-root/src/go/bin"
 
 USER root

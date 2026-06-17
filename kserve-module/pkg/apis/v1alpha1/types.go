@@ -44,14 +44,21 @@ type KserveSpec struct {
 	RawDeploymentServiceConfig RawServiceConfig `json:"rawDeploymentServiceConfig,omitempty"`
 	NIM                        NIMSpec          `json:"nim,omitempty"`
 	WVA                        WVASpec          `json:"wva,omitempty"`
+	// Enables TLS for LLMInferenceService deployments.
+	// When unset, the KServe default (TLS enabled) is preserved.
+	EnableLLMInferenceServiceTLS *bool `json:"enableLLMInferenceServiceTLS,omitempty"`
 }
 
 type NIMSpec struct {
-	AirGapped       bool                   `json:"airGapped,omitempty"`
+	AirGapped bool `json:"airGapped,omitempty"`
+	// +kubebuilder:validation:Enum=Managed;Removed
+	// +kubebuilder:default=Managed
 	ManagementState common.ManagementState `json:"managementState,omitempty"`
 }
 
 type WVASpec struct {
+	// +kubebuilder:validation:Enum=Managed;Removed
+	// +kubebuilder:default=Removed
 	ManagementState common.ManagementState `json:"managementState,omitempty"`
 }
 

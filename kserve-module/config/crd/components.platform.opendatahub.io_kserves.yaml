@@ -46,6 +46,11 @@ spec:
             type: object
           spec:
             properties:
+              enableLLMInferenceServiceTLS:
+                description: |-
+                  Enables TLS for LLMInferenceService deployments.
+                  When unset, the KServe default (TLS enabled) is preserved.
+                type: boolean
               managementState:
                 default: Managed
                 description: |-
@@ -60,9 +65,13 @@ spec:
                   airGapped:
                     type: boolean
                   managementState:
+                    default: Managed
                     description: |-
                       ManagementState defines whether a component is actively managed by the
                       operator or scheduled for removal.
+                    enum:
+                    - Managed
+                    - Removed
                     type: string
                 type: object
               rawDeploymentServiceConfig:
@@ -74,9 +83,13 @@ spec:
               wva:
                 properties:
                   managementState:
+                    default: Removed
                     description: |-
                       ManagementState defines whether a component is actively managed by the
                       operator or scheduled for removal.
+                    enum:
+                    - Managed
+                    - Removed
                     type: string
                 type: object
             type: object

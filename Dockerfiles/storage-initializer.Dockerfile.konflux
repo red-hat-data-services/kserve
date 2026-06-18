@@ -58,6 +58,9 @@ RUN cd kserve && \
 
 RUN /usr/bin/pip3.11 install --no-cache-dir krbcontext==0.10 hdfs~=2.6.0 requests-kerberos==0.14.0
 
+# Remove pip from the venv to address CVE-2026-8643
+RUN pip uninstall pip -y
+
 ########################################################################
 # Runtime
 FROM registry.access.redhat.com/ubi9/ubi-minimal:latest AS prod
@@ -69,9 +72,13 @@ ARG VENV_PATH
 ENV VIRTUAL_ENV=${VENV_PATH}
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
+# Remove python3.11-pip-wheel and python3.11-setuptools-wheel to address CVE-2026-8643.
+# This will break the RPM dependency tree, however, no package installation
+# or removal is expected in the runtime image.
 RUN microdnf install -y  \
         shadow-utils python3.11 \
     &&  microdnf clean all \
+    && rpm -e --nodeps python3.11-pip-wheel python3.11-setuptools-wheel \
     && alternatives --install /usr/bin/unversioned-python python /usr/bin/python3.11 1
 
 RUN useradd kserve -m -u 1000 -d /home/kserve

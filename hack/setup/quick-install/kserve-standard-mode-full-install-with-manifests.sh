@@ -659,7 +659,7 @@ KEDA_VERSION=2.18.0
 OPENTELEMETRY_OPERATOR_VERSION=0.74.3
 LWS_VERSION=v0.8.0
 GATEWAY_API_VERSION=v1.4.1
-GIE_VERSION=v1.3.1
+GIE_VERSION=v1.5.0
 WVA_VERSION=v0.7.0
 
 #================================================
@@ -1370,6 +1370,46 @@ uninstall_kserve_manifest() {
 
 get_kserve_runtime_manifests() {
     cat <<'KSERVE_RUNTIME_MANIFEST_EOF'
+apiVersion: serving.kserve.io/v1alpha1
+kind: ClusterServingRuntime
+metadata:
+  annotations:
+    serving.kserve.io/server-type: autogluonserver
+  name: kserve-autogluonserver
+spec:
+  annotations:
+    prometheus.kserve.io/path: /metrics
+    prometheus.kserve.io/port: "8080"
+  containers:
+  - args:
+    - --model_name={{.Name}}
+    - --model_dir=/mnt/models
+    - --http_port=8080
+    image: kserve/autogluonserver:latest
+    name: kserve-container
+    resources:
+      limits:
+        cpu: "1"
+        memory: 2Gi
+      requests:
+        cpu: "1"
+        memory: 2Gi
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+      privileged: false
+      runAsNonRoot: true
+  protocolVersions:
+  - v1
+  - v2
+  supportedModelFormats:
+  - autoSelect: true
+    name: autogluon
+    priority: 1
+    version: "1"
+---
 apiVersion: serving.kserve.io/v1alpha1
 kind: ClusterServingRuntime
 metadata:
@@ -2321,7 +2361,7 @@ spec:
         value: INFO
       - name: HF_HUB_CACHE
         value: /models
-      image: ghcr.io/llm-d/llm-d-cuda:v0.6.0
+      image: ghcr.io/llm-d/llm-d-cuda:v0.7.0
       imagePullPolicy: IfNotPresent
       lifecycle:
         preStop:
@@ -2387,6 +2427,7 @@ spec:
       - --kv-connector=nixlv2
       - --enable-ssrf-protection=true
       - --pool-group=inference.networking.x-k8s.io
+      - --inference-pool={{ .GlobalConfig.InferencePoolNamespacedName }}
       - '{{ if .GlobalConfig.EnableTLS }}--secure-proxy=true{{else}}--secure-proxy=false{{-
         end }}'
       - '{{ if .GlobalConfig.EnableTLS }}--cert-path=/var/run/kserve/tls{{- end }}'
@@ -2399,7 +2440,7 @@ spec:
             fieldPath: metadata.namespace
       - name: SSL_CERT_DIR
         value: /var/run/kserve/tls:/var/run/secrets/kubernetes.io/serviceaccount:/etc/pki/tls/certs
-      image: ghcr.io/llm-d/llm-d-routing-sidecar:v0.7.1
+      image: ghcr.io/llm-d/llm-d-router-disagg-sidecar:v0.9.0-rc.2
       imagePullPolicy: IfNotPresent
       livenessProbe:
         failureThreshold: 3
@@ -2659,7 +2700,7 @@ spec:
         value: INFO
       - name: HF_HUB_CACHE
         value: /models
-      image: ghcr.io/llm-d/llm-d-cuda:v0.6.0
+      image: ghcr.io/llm-d/llm-d-cuda:v0.7.0
       imagePullPolicy: IfNotPresent
       lifecycle:
         preStop:
@@ -2729,6 +2770,7 @@ spec:
       - --kv-connector=nixlv2
       - --enable-ssrf-protection=true
       - --pool-group=inference.networking.x-k8s.io
+      - --inference-pool={{ .GlobalConfig.InferencePoolNamespacedName }}
       - '{{ if .GlobalConfig.EnableTLS }}--secure-proxy=true{{else}}--secure-proxy=false{{-
         end }}'
       - '{{ if .GlobalConfig.EnableTLS }}--cert-path=/var/run/kserve/tls{{- end }}'
@@ -2741,7 +2783,7 @@ spec:
             fieldPath: metadata.namespace
       - name: SSL_CERT_DIR
         value: /var/run/kserve/tls:/var/run/secrets/kubernetes.io/serviceaccount:/etc/pki/tls/certs
-      image: ghcr.io/llm-d/llm-d-routing-sidecar:v0.7.1
+      image: ghcr.io/llm-d/llm-d-router-disagg-sidecar:v0.9.0-rc.2
       imagePullPolicy: IfNotPresent
       livenessProbe:
         failureThreshold: 3
@@ -2995,7 +3037,7 @@ spec:
         value: /models
       - name: VLLM_RANDOMIZE_DP_DUMMY_INPUTS
         value: "1"
-      image: ghcr.io/llm-d/llm-d-cuda:v0.6.0
+      image: ghcr.io/llm-d/llm-d-cuda:v0.7.0
       imagePullPolicy: IfNotPresent
       lifecycle:
         preStop:
@@ -3225,7 +3267,7 @@ spec:
           value: INFO
         - name: HF_HUB_CACHE
           value: /models
-        image: ghcr.io/llm-d/llm-d-cuda:v0.6.0
+        image: ghcr.io/llm-d/llm-d-cuda:v0.7.0
         imagePullPolicy: IfNotPresent
         lifecycle:
           preStop:
@@ -3505,7 +3547,7 @@ spec:
           value: INFO
         - name: HF_HUB_CACHE
           value: /models
-        image: ghcr.io/llm-d/llm-d-cuda:v0.6.0
+        image: ghcr.io/llm-d/llm-d-cuda:v0.7.0
         imagePullPolicy: IfNotPresent
         lifecycle:
           preStop:
@@ -3779,7 +3821,7 @@ spec:
           value: INFO
         - name: HF_HUB_CACHE
           value: /models
-        image: ghcr.io/llm-d/llm-d-cuda:v0.6.0
+        image: ghcr.io/llm-d/llm-d-cuda:v0.7.0
         imagePullPolicy: IfNotPresent
         lifecycle:
           preStop:
@@ -4082,7 +4124,7 @@ spec:
   router:
     scheduler:
       annotations:
-        app.kubernetes.io/version: 0.7.0
+        app.kubernetes.io/version: 0.9.0
       pool:
         spec:
           endpointPickerRef:
@@ -4122,7 +4164,7 @@ spec:
           env:
           - name: SSL_CERT_DIR
             value: /var/run/kserve/tls:/var/run/secrets/kubernetes.io/serviceaccount:/etc/pki/tls/certs
-          image: ghcr.io/llm-d/llm-d-inference-scheduler:v0.7.1
+          image: ghcr.io/llm-d/llm-d-router-endpoint-picker:v0.9.0-rc.2
           imagePullPolicy: IfNotPresent
           lifecycle:
             preStop:
@@ -4186,7 +4228,7 @@ spec:
         - env:
           - name: TOKENIZERS_DIR
             value: /mnt/models
-          image: ghcr.io/llm-d/llm-d-uds-tokenizer:v0.7.1
+          image: ghcr.io/llm-d/llm-d-uds-tokenizer:vllm-v0.19.1
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
@@ -4427,7 +4469,7 @@ spec:
         value: INFO
       - name: HF_HUB_CACHE
         value: /models
-      image: ghcr.io/llm-d/llm-d-cuda:v0.6.0
+      image: ghcr.io/llm-d/llm-d-cuda:v0.7.0
       imagePullPolicy: IfNotPresent
       lifecycle:
         preStop:
@@ -4718,7 +4760,7 @@ spec:
         value: INFO
       - name: HF_HUB_CACHE
         value: /models
-      image: ghcr.io/llm-d/llm-d-cuda:v0.6.0
+      image: ghcr.io/llm-d/llm-d-cuda:v0.7.0
       imagePullPolicy: IfNotPresent
       lifecycle:
         preStop:
@@ -4992,7 +5034,7 @@ spec:
         value: INFO
       - name: HF_HUB_CACHE
         value: /models
-      image: ghcr.io/llm-d/llm-d-cuda:v0.6.0
+      image: ghcr.io/llm-d/llm-d-cuda:v0.7.0
       imagePullPolicy: IfNotPresent
       lifecycle:
         preStop:
@@ -16314,6 +16356,15 @@ spec:
                           type: string
                         type: array
                         x-kubernetes-list-type: atomic
+                      confidential:
+                        properties:
+                          enabled:
+                            type: boolean
+                          resourceId:
+                            type: string
+                        required:
+                        - enabled
+                        type: object
                       env:
                         items:
                           properties:
@@ -17778,6 +17829,15 @@ spec:
                           type: string
                         type: array
                         x-kubernetes-list-type: atomic
+                      confidential:
+                        properties:
+                          enabled:
+                            type: boolean
+                          resourceId:
+                            type: string
+                        required:
+                        - enabled
+                        type: object
                       env:
                         items:
                           properties:
@@ -18551,6 +18611,15 @@ spec:
                           type: string
                         type: array
                         x-kubernetes-list-type: atomic
+                      confidential:
+                        properties:
+                          enabled:
+                            type: boolean
+                          resourceId:
+                            type: string
+                        required:
+                        - enabled
+                        type: object
                       env:
                         items:
                           properties:
@@ -19298,6 +19367,15 @@ spec:
                           type: string
                         type: array
                         x-kubernetes-list-type: atomic
+                      confidential:
+                        properties:
+                          enabled:
+                            type: boolean
+                          resourceId:
+                            type: string
+                        required:
+                        - enabled
+                        type: object
                       env:
                         items:
                           properties:
@@ -20040,6 +20118,15 @@ spec:
                           type: string
                         type: array
                         x-kubernetes-list-type: atomic
+                      confidential:
+                        properties:
+                          enabled:
+                            type: boolean
+                          resourceId:
+                            type: string
+                        required:
+                        - enabled
+                        type: object
                       env:
                         items:
                           properties:
@@ -20769,6 +20856,15 @@ spec:
                           type: string
                         type: array
                         x-kubernetes-list-type: atomic
+                      confidential:
+                        properties:
+                          enabled:
+                            type: boolean
+                          resourceId:
+                            type: string
+                        required:
+                        - enabled
+                        type: object
                       env:
                         items:
                           properties:
@@ -21505,6 +21601,15 @@ spec:
                           type: string
                         type: array
                         x-kubernetes-list-type: atomic
+                      confidential:
+                        properties:
+                          enabled:
+                            type: boolean
+                          resourceId:
+                            type: string
+                        required:
+                        - enabled
+                        type: object
                       env:
                         items:
                           properties:
@@ -22413,6 +22518,15 @@ spec:
                           type: string
                         type: array
                         x-kubernetes-list-type: atomic
+                      confidential:
+                        properties:
+                          enabled:
+                            type: boolean
+                          resourceId:
+                            type: string
+                        required:
+                        - enabled
+                        type: object
                       env:
                         items:
                           properties:
@@ -23163,6 +23277,15 @@ spec:
                           type: string
                         type: array
                         x-kubernetes-list-type: atomic
+                      confidential:
+                        properties:
+                          enabled:
+                            type: boolean
+                          resourceId:
+                            type: string
+                        required:
+                        - enabled
+                        type: object
                       env:
                         items:
                           properties:
@@ -23972,6 +24095,15 @@ spec:
                           type: string
                         type: array
                         x-kubernetes-list-type: atomic
+                      confidential:
+                        properties:
+                          enabled:
+                            type: boolean
+                          resourceId:
+                            type: string
+                        required:
+                        - enabled
+                        type: object
                       env:
                         items:
                           properties:
@@ -29253,6 +29385,15 @@ spec:
                           type: string
                         type: array
                         x-kubernetes-list-type: atomic
+                      confidential:
+                        properties:
+                          enabled:
+                            type: boolean
+                          resourceId:
+                            type: string
+                        required:
+                        - enabled
+                        type: object
                       env:
                         items:
                           properties:

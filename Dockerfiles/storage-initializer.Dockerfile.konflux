@@ -15,22 +15,14 @@ ENV VIRTUAL_ENV=${VENV_PATH}
 RUN /usr/bin/python3.12 -m venv $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
-COPY storage/pyproject.toml storage/konflux-requirements.in storage/requirements.txt storage/requirements-build-deps.txt storage/
+COPY storage/requirements.txt storage/
 
-# Install setuptools/wheel for building the local storage package
-RUN pip3.12 install --no-cache-dir \
-    --no-index --find-links /cachi2/output/deps/pip \
-    -r storage/requirements-build-deps.txt
-
-# Install prefetched Python dependencies from the AIPCC index
+# Install kserve-storage and dependencies from prefetched AIPCC index
 RUN pip3.12 install --no-cache-dir \
     --no-index --find-links /cachi2/output/deps/pip \
     -r storage/requirements.txt
 
-COPY storage storage
-RUN pip3.12 install --no-cache-dir \
-    --no-index --find-links /cachi2/output/deps/pip \
-    --no-deps storage/
+COPY storage-initializer /storage-initializer
 
 ########################################################################
 # Runtime
@@ -49,20 +41,13 @@ RUN microdnf install -y  \
 RUN useradd kserve -m -u 1000 -d /home/kserve && chgrp -R 0 /home/kserve && chmod -R g+rwx /home/kserve
 
 COPY --from=builder --chown=kserve:kserve $VIRTUAL_ENV $VIRTUAL_ENV
-COPY --from=builder storage storage
-COPY ./storage-initializer /storage-initializer
-
-# Remove kserve manifest and not needed files from final image, this can lead to false positives in regards to
-# CVEs since there are optional libraries which are not installed by storage-initializer
-RUN rm -rf /storage/{*.toml,Makefile,*.lock,requirements.txt,requirements-build-deps.txt,konflux-requirements.in,setup.cfg,docs,git-push.sh,test,test-requirements.txt,tox.ini}
-# clean hidden files/directories
-RUN cd /storage && rm -rf .??*
+COPY --from=builder --chown=kserve:kserve /storage-initializer /storage-initializer
 
 RUN chmod +x /storage-initializer/scripts/initializer-entrypoint
 RUN mkdir /work
 WORKDIR /work
 
-# Set a  writable /mnt folder to avoid permission issue on Huggingface download. See https://huggingface.co/docs/hub/spaces-sdks-docker#permissions
+# Set a writable /mnt folder to avoid permission issue on Huggingface download. See https://huggingface.co/docs/hub/spaces-sdks-docker#permissions
 RUN chown -R kserve:kserve /mnt
 ENV HOME=/home/kserve
 ENV HF_HOME=/home/kserve

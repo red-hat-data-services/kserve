@@ -20,6 +20,7 @@ import (
 	"encoding/json"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/utils/ptr"
 	"sigs.k8s.io/controller-runtime/pkg/conversion"
 	igwapiv1 "sigs.k8s.io/gateway-api-inference-extension/api/v1"
 	igwapiv1alpha2 "sigs.k8s.io/gateway-api-inference-extension/apix/v1alpha2"
@@ -430,6 +431,14 @@ func convertInferencePoolSpecToV1(src *igwapiv1alpha2.InferencePoolSpec) *igwapi
 		// Return nil rather than an empty spec — callers nil-check Pool.Spec, and an
 		// empty spec would bypass those guards with invalid zero-value fields.
 		return nil
+	}
+
+	// The v1 InferencePool CRD requires port when kind is "Service" or unspecified. Old
+	// v1alpha2 pools may omit PortNumber, which would make the converted v1 object fail
+	// the CEL rule. Default to the standard EPP gRPC port (9002).
+	endpointPickerRef := &dstPool.Spec.EndpointPickerRef
+	if (endpointPickerRef.Port == nil || endpointPickerRef.Port.Number == 0) && (endpointPickerRef.Kind == "Service" || endpointPickerRef.Kind == "") {
+		endpointPickerRef.Port = ptr.To(igwapiv1.Port{Number: 9002})
 	}
 
 	return &dstPool.Spec

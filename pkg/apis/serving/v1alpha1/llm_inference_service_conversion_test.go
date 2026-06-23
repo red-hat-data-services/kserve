@@ -341,6 +341,139 @@ func TestLLMInferenceServiceConversion_PreservesInferencePoolSpec(t *testing.T) 
 	assert.Equal(t, igwapiv1alpha2.ObjectName("my-epp"), v1a2Spec.ExtensionRef.Name)
 }
 
+func TestLLMInferenceServiceConversion_NilPortDefaultsTo9002WhenKindIsService(t *testing.T) {
+	modelName := "test-model"
+	eppKind := igwapiv1alpha2.Kind("Service")
+	eppFailureMode := igwapiv1alpha2.ExtensionFailureMode("FailOpen")
+
+	src := &LLMInferenceService{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      "test-llm-isvc-nil-port-service",
+			Namespace: "default",
+		},
+		Spec: LLMInferenceServiceSpec{
+			Model: LLMModelSpec{
+				URI:  apis.URL{Scheme: "hf", Host: "meta-llama/Llama-2-7b"},
+				Name: &modelName,
+			},
+			Router: &RouterSpec{
+				Scheduler: &SchedulerSpec{
+					Pool: &InferencePoolSpec{
+						Spec: &igwapiv1alpha2.InferencePoolSpec{
+							Selector: map[igwapiv1alpha2.LabelKey]igwapiv1alpha2.LabelValue{
+								"app": "vllm",
+							},
+							TargetPortNumber: 8000,
+							ExtensionRef: igwapiv1alpha2.Extension{
+								Kind:        &eppKind,
+								Name:        "my-epp",
+								FailureMode: &eppFailureMode,
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+
+	dst := &v1alpha2.LLMInferenceService{}
+	err := src.ConvertTo(dst)
+	require.NoError(t, err)
+
+	require.NotNil(t, dst.Spec.Router.Scheduler.Pool.Spec)
+	require.NotNil(t, dst.Spec.Router.Scheduler.Pool.Spec.EndpointPickerRef.Port)
+	assert.Equal(t, igwapiv1.PortNumber(9002), dst.Spec.Router.Scheduler.Pool.Spec.EndpointPickerRef.Port.Number)
+}
+
+func TestLLMInferenceServiceConversion_NilPortDefaultsTo9002WhenKindIsNil(t *testing.T) {
+	modelName := "test-model"
+	eppFailureMode := igwapiv1alpha2.ExtensionFailureMode("FailClose")
+
+	src := &LLMInferenceService{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      "test-llm-isvc-nil-port-nil-kind",
+			Namespace: "default",
+		},
+		Spec: LLMInferenceServiceSpec{
+			Model: LLMModelSpec{
+				URI:  apis.URL{Scheme: "hf", Host: "meta-llama/Llama-2-7b"},
+				Name: &modelName,
+			},
+			Router: &RouterSpec{
+				Scheduler: &SchedulerSpec{
+					Pool: &InferencePoolSpec{
+						Spec: &igwapiv1alpha2.InferencePoolSpec{
+							Selector: map[igwapiv1alpha2.LabelKey]igwapiv1alpha2.LabelValue{
+								"app": "vllm",
+							},
+							TargetPortNumber: 8000,
+							ExtensionRef: igwapiv1alpha2.Extension{
+								Kind:        nil,
+								Name:        "my-epp",
+								FailureMode: &eppFailureMode,
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+
+	dst := &v1alpha2.LLMInferenceService{}
+	err := src.ConvertTo(dst)
+	require.NoError(t, err)
+
+	require.NotNil(t, dst.Spec.Router.Scheduler.Pool.Spec)
+	require.NotNil(t, dst.Spec.Router.Scheduler.Pool.Spec.EndpointPickerRef.Port)
+	assert.Equal(t, igwapiv1.PortNumber(9002), dst.Spec.Router.Scheduler.Pool.Spec.EndpointPickerRef.Port.Number)
+}
+
+func TestLLMInferenceServiceConversion_ExplicitPortIsPreserved(t *testing.T) {
+	modelName := "test-model"
+	eppKind := igwapiv1alpha2.Kind("Service")
+	eppPort := igwapiv1alpha2.PortNumber(8080)
+	eppFailureMode := igwapiv1alpha2.ExtensionFailureMode("FailClose")
+
+	src := &LLMInferenceService{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      "test-llm-isvc-explicit-port",
+			Namespace: "default",
+		},
+		Spec: LLMInferenceServiceSpec{
+			Model: LLMModelSpec{
+				URI:  apis.URL{Scheme: "hf", Host: "meta-llama/Llama-2-7b"},
+				Name: &modelName,
+			},
+			Router: &RouterSpec{
+				Scheduler: &SchedulerSpec{
+					Pool: &InferencePoolSpec{
+						Spec: &igwapiv1alpha2.InferencePoolSpec{
+							Selector: map[igwapiv1alpha2.LabelKey]igwapiv1alpha2.LabelValue{
+								"app": "vllm",
+							},
+							TargetPortNumber: 8000,
+							ExtensionRef: igwapiv1alpha2.Extension{
+								Kind:        &eppKind,
+								Name:        "my-epp",
+								PortNumber:  &eppPort,
+								FailureMode: &eppFailureMode,
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+
+	dst := &v1alpha2.LLMInferenceService{}
+	err := src.ConvertTo(dst)
+	require.NoError(t, err)
+
+	require.NotNil(t, dst.Spec.Router.Scheduler.Pool.Spec)
+	require.NotNil(t, dst.Spec.Router.Scheduler.Pool.Spec.EndpointPickerRef.Port)
+	assert.Equal(t, igwapiv1.PortNumber(8080), dst.Spec.Router.Scheduler.Pool.Spec.EndpointPickerRef.Port.Number)
+}
+
 func TestLLMInferenceServiceConversion_PreservesPoolRef(t *testing.T) {
 	modelName := "test-model"
 

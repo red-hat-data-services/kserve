@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	ctrl "sigs.k8s.io/controller-runtime"
 
 	"github.com/opendatahub-io/odh-platform-utilities/api/common"
 	odhLabels "github.com/opendatahub-io/odh-platform-utilities/pkg/metadata/labels"
@@ -40,6 +41,7 @@ var components = []componentConfig{
 		sourcePath:  ModelControllerSourcePath,
 		imageMap:    modelControllerImageParamMap,
 		extraParams: modelControllerExtraParams,
+		postRender:  modelControllerPostRender,
 	},
 	{
 		name:       WVAComponentName,
@@ -53,6 +55,13 @@ var components = []componentConfig{
 func kservePostRender(ctx context.Context, r *KserveModuleReconciler,
 	kserve *platformv1alpha1.Kserve,
 	resources []unstructured.Unstructured) ([]unstructured.Unstructured, error) {
+
+	log := ctrl.LoggerFrom(ctx)
+	beforeCount := len(resources)
+	resources = filterFastResources(resources)
+	if afterCount := len(resources); beforeCount != afterCount {
+		log.Info("filtered fast-variant resources", "before", beforeCount, "after", afterCount, "removed", beforeCount-afterCount)
+	}
 
 	resources, err := customizeKserveConfigMap(resources, kserve)
 	if err != nil {
@@ -101,6 +110,19 @@ func modelControllerExtraParams(kserve *platformv1alpha1.Kserve) map[string]stri
 		"nim-state":    strings.ToLower(nimState),
 		"kserve-state": strings.ToLower(string(platformv1alpha1.GetManagementState(kserve))),
 	}
+}
+
+func modelControllerPostRender(ctx context.Context, _ *KserveModuleReconciler,
+	_ *platformv1alpha1.Kserve,
+	resources []unstructured.Unstructured) ([]unstructured.Unstructured, error) {
+
+	log := ctrl.LoggerFrom(ctx)
+	beforeCount := len(resources)
+	result := filterFastResources(resources)
+	if afterCount := len(result); beforeCount != afterCount {
+		log.Info("filtered fast-variant resources", "before", beforeCount, "after", afterCount, "removed", beforeCount-afterCount)
+	}
+	return result, nil
 }
 
 func commonPostRender(resources []unstructured.Unstructured, componentName string) {

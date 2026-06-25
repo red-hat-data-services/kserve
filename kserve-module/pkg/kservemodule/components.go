@@ -14,9 +14,9 @@ import (
 	platformv1alpha1 "github.com/opendatahub-io/kserve-module/pkg/apis/v1alpha1"
 )
 
-
 type componentConfig struct {
 	name          string
+	manifestName  string // overrides name for manifest directory lookup; defaults to name if empty
 	sourcePath    string
 	sourcePathXKS string
 	imageMap      map[string]string
@@ -26,6 +26,13 @@ type componentConfig struct {
 		resources []unstructured.Unstructured) ([]unstructured.Unstructured, error)
 	enabled      func(kserve *platformv1alpha1.Kserve) bool
 	extraCleanup func(ctx context.Context, r *KserveModuleReconciler) error
+}
+
+func (c componentConfig) dirName() string {
+	if c.manifestName != "" {
+		return c.manifestName
+	}
+	return c.name
 }
 
 var components = []componentConfig{
@@ -49,6 +56,15 @@ var components = []componentConfig{
 		imageMap:   wvaImageParamMap,
 		enabled:    isWVAEnabled,
 		postRender: wvaPostRender,
+	},
+	{
+		name:         ModelCacheComponentName,
+		manifestName: KserveComponentName,
+		sourcePath:   ModelCacheManifestSourcePath,
+		imageMap:     kserveImageParamMap,
+		enabled:      isModelCacheEnabled,
+		postRender:   modelCacheComponentPostRender,
+		extraCleanup: cleanupModelCacheComponent,
 	},
 }
 
@@ -139,4 +155,3 @@ func applyManagedByLabel(resources []unstructured.Unstructured, componentName st
 		resources[i].SetLabels(labels)
 	}
 }
-

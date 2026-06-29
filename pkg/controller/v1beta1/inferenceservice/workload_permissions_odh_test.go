@@ -1036,34 +1036,6 @@ func TestGetServerTypeFromIsvc(t *testing.T) {
 			expectedType: constants.ServerTypeMLServer,
 			expectError:  false,
 		},
-		"ClusterRuntimeWithServerTypeAnnotation": {
-			isvc: &v1beta1.InferenceService{
-				ObjectMeta: metav1.ObjectMeta{
-					Name:      "test-isvc",
-					Namespace: namespace,
-				},
-				Status: v1beta1.InferenceServiceStatus{
-					ClusterServingRuntimeName: "global-mlserver",
-				},
-			},
-			runtimes: []runtime.Object{
-				&v1alpha1.ClusterServingRuntime{
-					ObjectMeta: metav1.ObjectMeta{
-						Name: "global-mlserver",
-						Annotations: map[string]string{
-							constants.ServerTypeAnnotationKey: constants.ServerTypeMLServer,
-						},
-					},
-					Spec: v1alpha1.ServingRuntimeSpec{
-						SupportedModelFormats: []v1alpha1.SupportedModelFormat{
-							{Name: "sklearn"},
-						},
-					},
-				},
-			},
-			expectedType: constants.ServerTypeMLServer,
-			expectError:  false,
-		},
 		"RuntimeWithoutAnnotation": {
 			isvc: &v1beta1.InferenceService{
 				ObjectMeta: metav1.ObjectMeta{
@@ -1103,50 +1075,7 @@ func TestGetServerTypeFromIsvc(t *testing.T) {
 			runtimes:     []runtime.Object{},
 			expectedType: "",
 			expectError:  true,
-			errorMatcher: gomega.MatchError(gomega.ContainSubstring("No ServingRuntimes or ClusterServingRuntimes")),
-		},
-		"NamespacedRuntimeTakesPrecedence": {
-			isvc: &v1beta1.InferenceService{
-				ObjectMeta: metav1.ObjectMeta{
-					Name:      "test-isvc",
-					Namespace: namespace,
-				},
-				Status: v1beta1.InferenceServiceStatus{
-					ServingRuntimeName:        "namespaced-runtime",
-					ClusterServingRuntimeName: "cluster-runtime",
-				},
-			},
-			runtimes: []runtime.Object{
-				&v1alpha1.ServingRuntime{
-					ObjectMeta: metav1.ObjectMeta{
-						Name:      "namespaced-runtime",
-						Namespace: namespace,
-						Annotations: map[string]string{
-							constants.ServerTypeAnnotationKey: "namespaced-type",
-						},
-					},
-					Spec: v1alpha1.ServingRuntimeSpec{
-						SupportedModelFormats: []v1alpha1.SupportedModelFormat{
-							{Name: "sklearn"},
-						},
-					},
-				},
-				&v1alpha1.ClusterServingRuntime{
-					ObjectMeta: metav1.ObjectMeta{
-						Name: "cluster-runtime",
-						Annotations: map[string]string{
-							constants.ServerTypeAnnotationKey: "cluster-type",
-						},
-					},
-					Spec: v1alpha1.ServingRuntimeSpec{
-						SupportedModelFormats: []v1alpha1.SupportedModelFormat{
-							{Name: "sklearn"},
-						},
-					},
-				},
-			},
-			expectedType: "namespaced-type",
-			expectError:  false,
+			errorMatcher: gomega.MatchError(gomega.ContainSubstring("No ServingRuntimes with the name")),
 		},
 	}
 

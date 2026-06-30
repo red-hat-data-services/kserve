@@ -293,6 +293,14 @@ func (r *InferenceServiceReconciler) Reconcile(ctx context.Context, req ctrl.Req
 			return result, nil
 		}
 	}
+
+	// Reconcile platform-specific permissions (e.g., SCC RoleBindings for OpenShift)
+	// This runs after component reconciliation so that isvc.Status.ClusterServingRuntimeName
+	// or isvc.Status.ServingRuntimeName is populated with the selected runtime.
+	if err := r.reconcileWorkloadPlatformPermissions(ctx, isvc, isvcConfigMap); err != nil {
+		return ctrl.Result{}, errors.Wrapf(err, "fails to reconcile workload platform permissions")
+	}
+
 	// Handle InferenceService status updates based on the force stop annotation.
 	// If true, transition the service to a stopped and unready state; otherwise, ensure it's not marked as stopped.
 	existingStoppedCondition := isvc.Status.GetCondition(v1beta1.Stopped)

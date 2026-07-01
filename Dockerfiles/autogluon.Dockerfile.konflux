@@ -36,8 +36,6 @@ COPY pyproject.toml pyproject.toml
 COPY third_party/pip-licenses.py pip-licenses.py
 RUN mkdir -p third_party/library && python3 pip-licenses.py
 
-RUN pwd && ls -la
-
 # =================== Final stage ===================
 FROM ${BASE_IMAGE} AS prod
 
@@ -45,7 +43,10 @@ FROM ${BASE_IMAGE} AS prod
 USER root
 # RUN microdnf install -y libgomp && microdnf clean all
 
-# Activate virtual env
+# Set up virtual environment in runtime stage
+ENV VIRTUAL_ENV=/opt/app-root/.venv
+ENV PATH="${VIRTUAL_ENV}/bin:$PATH"
+
 COPY --from=builder --chown=1001 /opt/app-root/ /opt/app-root/
 
 USER 1001

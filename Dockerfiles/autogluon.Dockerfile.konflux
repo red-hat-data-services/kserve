@@ -8,7 +8,9 @@ USER root
 # RUN microdnf install -y python3.12-devel gcc gcc-c++ make tar gzip && microdnf clean all
 
 # Create virtual environment
-RUN uv venv -p 3.12 && source .venv/bin/activate
+ENV VIRTUAL_ENV=/opt/app-root/.venv
+ENV PATH="${VIRTUAL_ENV}/bin:$PATH"
+RUN uv venv -p 3.12 ${VIRTUAL_ENV}
 
 # ========== Copy all dependencies ==========
 COPY kserve/pyproject.toml kserve/
@@ -17,18 +19,17 @@ COPY storage/pyproject.toml storage/
 COPY storage storage
 COPY autogluonserver autogluonserver
 
-# ========== Install all dependencies (hermeto) ==========
+# ========== Install all dependencies (hermetic) ==========
 RUN pip install --no-build-isolation --index-url https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/ \
     -r /opt/app-root/autogluonserver/autogluon-all-requirements.txt
 
-# ========== Install kserve dependencies ==========
-RUN cd kserve && pip install --no-build-isolation .
+# ========== Install local packages (kserve, storage, autogluonserver) without re-resolving dependencies ==========
+# Use --no-deps to prevent re-resolution since all deps are already installed from lockfile
+RUN cd kserve && pip install --no-build-isolation --no-deps .
 
-# ========== Install kserve storage dependencies ==========
-RUN cd storage && pip install --no-build-isolation .
+RUN cd storage && pip install --no-build-isolation --no-deps .
 
-# ========== Install autogluonserver dependencies ==========
-RUN cd autogluonserver && pip install --no-build-isolation .
+RUN cd autogluonserver && pip install --no-build-isolation --no-deps .
 
 # Generate third-party licenses
 COPY pyproject.toml pyproject.toml

@@ -1,0 +1,63 @@
+ARG BASE_IMAGE="registry.redhat.io/rhai/base-image-cpu-rhel9@sha256:118425714f88c5b24cd67e828e0bcc7a9bc634ab2a1448e8f0975dfd85aea45c"
+
+FROM ${BASE_IMAGE} AS builder
+
+USER root
+
+# # Install system dependencies
+# RUN microdnf install -y python3.12-devel gcc gcc-c++ make tar gzip && microdnf clean all
+
+# Create virtual environment
+ENV VIRTUAL_ENV=/opt/app-root/.venv
+ENV PATH="${VIRTUAL_ENV}/bin:$PATH"
+RUN uv venv -p 3.12 ${VIRTUAL_ENV}
+
+# ========== Copy all dependencies ==========
+COPY kserve/pyproject.toml kserve/
+COPY kserve kserve
+COPY storage/pyproject.toml storage/
+COPY storage storage
+COPY autogluonserver autogluonserver
+
+# ========== Install all dependencies (hermetic) ==========
+RUN pip install --no-build-isolation --index-url https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/ \
+    -r /opt/app-root/autogluonserver/autogluon-all-requirements.txt
+
+# ========== Install local packages (kserve, storage, autogluonserver) without re-resolving dependencies ==========
+# Use --no-deps to prevent re-resolution since all deps are already installed from lockfile
+RUN cd kserve && pip install --no-build-isolation --no-deps .
+
+RUN cd storage && pip install --no-build-isolation --no-deps .
+
+RUN cd autogluonserver && pip install --no-build-isolation --no-deps .
+
+# Generate third-party licenses
+COPY pyproject.toml pyproject.toml
+COPY third_party/pip-licenses.py pip-licenses.py
+RUN mkdir -p third_party/library && python3 pip-licenses.py
+
+# =================== Final stage ===================
+FROM ${BASE_IMAGE} AS prod
+
+# Runtime deps for AutoGluon backends (LightGBM, XGBoost, etc.) that use OpenMP
+USER root
+# RUN microdnf install -y libgomp && microdnf clean all
+
+# Set up virtual environment in runtime stage
+ENV VIRTUAL_ENV=/opt/app-root/.venv
+ENV PATH="${VIRTUAL_ENV}/bin:$PATH"
+
+COPY --from=builder --chown=1001 /opt/app-root/ /opt/app-root/
+
+USER 1001
+ENV PYTHONPATH=/opt/app-root/autogluonserver
+ENTRYPOINT ["python", "-m", "autogluonserver"]
+LABEL com.redhat.component="odh-kserve-autogluon-server-container" \
+      name="managed-open-data-hub/odh-kserve-autogluon-server-rhel9" \
+      description="odh-kserve-autogluon-server" \
+      summary="odh-kserve-autogluon-server" \
+      maintainer="['managed-open-data-hub@redhat.com']" \
+      io.openshift.expose-services="" \
+      io.k8s.display-name="odh-kserve-autogluon-server" \
+      io.k8s.description="odh-kserve-autogluon-server" \
+      com.redhat.license_terms="https://www.redhat.com/licenses/Red_Hat_Standard_EULA_20191108.pdf"

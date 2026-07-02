@@ -2,6 +2,11 @@
 FROM registry.access.redhat.com/ubi9/go-toolset@sha256:b2bc0c6c92c56dce575ed1b2dec1ec9f8b345a80ef5e74d9bfd530b6b354feeb AS builder
 ENV PATH="$PATH:/opt/app-root/src/go/bin"
 
+# These built-in args are defined in the global scope, and are not automatically accessible within build stages or RUN commands.
+# To expose these arguments inside the build stage, we need to redefine it without a value.
+ARG TARGETOS TARGETARCH
+RUN echo "GOOS=${TARGETOS} GOARCH=${TARGETARCH}"
+
 USER root
 WORKDIR /go/src/github.com/opendatahub-io/kserve-module
 COPY kserve-module/go.mod  go.mod
@@ -13,12 +18,7 @@ COPY kserve-module/cmd/kserve-module/ cmd/kserve-module/
 COPY kserve-module/pkg/              pkg/
 RUN --mount=type=cache,target=/go/pkg/mod \
     --mount=type=cache,target=/root/.cache/go-build \
-    CGO_ENABLED=0 GOOS=linux GOFLAGS=-mod=readonly go build -a -o manager ./cmd/kserve-module
-
-# Collect kserve + odh-model-controller manifests
-COPY kserve-module/hack/  hack/
-COPY config/               ../config/
-RUN bash hack/get_kserve_manifests.sh
+    CGO_ENABLED=1 GOOS=${TARGETOS} GOARCH=${TARGETARCH} GOFLAGS=-mod=readonly GOEXPERIMENT=strictfipsruntime  go build -tags strictfipsruntime -a -o manager ./cmd/kserve-module
 
 # Runtime
 FROM registry.access.redhat.com/ubi9/ubi-minimal@sha256:463cae32c6f6f5594b11a5c22de275016bd8545ce58a6373388e8b24f13fc15c
@@ -27,6 +27,7 @@ RUN microdnf install -y --disablerepo=* --enablerepo=ubi-9-baseos-rpms shadow-ut
     useradd kserve -m -u 1000 && \
     microdnf remove -y shadow-utils
 COPY --from=builder /go/src/github.com/opendatahub-io/kserve-module/manager /manager
-COPY --from=builder /go/src/github.com/opendatahub-io/kserve-module/opt/manifests/ /opt/manifests-template/
+COPY kserve-module/prefetched-manifests-rhoai /opt/manifests-template/
+COPY config/ /opt/manifests-template/kserve/
 USER 1000:1000
 ENTRYPOINT ["/manager"]

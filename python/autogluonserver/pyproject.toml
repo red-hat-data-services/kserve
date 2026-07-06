@@ -4,12 +4,12 @@ authors = [
     {name = "Dorota Laczak", email = "dlaczak@redhat.com"}
 ]
 license = {text = "Apache-2.0"}
-requires-python = "<3.13,>=3.10"
+requires-python = "<3.13,>=3.11"
 dependencies = [
     "kserve",
     "kserve-storage",
-    "autogluon.tabular[lightgbm,xgboost,tabm,fastai]==1.5.0+rhaiv.3",
-    "autogluon.timeseries==1.5.0+rhaiv.3",
+    "autogluon.tabular[lightgbm,xgboost,tabm,fastai]==1.5.0+rhaiv.4",
+    "autogluon.timeseries==1.5.0+rhaiv.4",
 ]
 name = "autogluonserver"
 version = "0.1.0"
@@ -32,8 +32,8 @@ kserve = { path = "../kserve", editable = false }
 kserve-storage = { path = "../storage", editable = false }
 
 [build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

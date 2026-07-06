@@ -4,12 +4,12 @@ authors = [
     {name = "Dorota Laczak", email = "dlaczak@redhat.com"}
 ]
 license = {text = "Apache-2.0"}
-requires-python = "<3.13,>=3.10"
+requires-python = "<3.13,>=3.11"
 dependencies = [
     "kserve",
     "kserve-storage",
-    "autogluon.tabular[lightgbm,xgboost,tabm,fastai]==1.5.0+rhaiv.3",
-    "autogluon.timeseries==1.5.0+rhaiv.3",
+    "autogluon.tabular[lightgbm,xgboost,tabm,fastai]==1.5.0+rhaiv.4",
+    "autogluon.timeseries==1.5.0+rhaiv.4",
 ]
 name = "autogluonserver"
 version = "0.1.0"

@@ -34,7 +34,7 @@ RUN cd autogluonserver && pip install --no-build-isolation --no-deps .
 # Generate third-party licenses
 COPY pyproject.toml pyproject.toml
 COPY third_party/pip-licenses.py pip-licenses.py
-RUN mkdir -p third_party/library && python3 pip-licenses.py
+RUN mkdir -p third_party/library && python pip-licenses.py
 
 # =================== Final stage ===================
 FROM ${BASE_IMAGE} AS prod

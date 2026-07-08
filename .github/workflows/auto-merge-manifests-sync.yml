@@ -5,6 +5,7 @@ on:
     types: [opened, synchronize, reopened]
     paths:
       - 'kserve-module/prefetched-manifests-rhoai/modelcontroller/**'
+      - 'kserve-module/prefetched-manifests-rhoai/wva/**'
 
 permissions:
   contents: write
@@ -18,14 +19,25 @@ jobs:
     runs-on: ubuntu-latest
     if: >-
       github.event.pull_request.user.login == 'github-actions[bot]' &&
-      startsWith(github.event.pull_request.head.ref, 'manifests-sync/odh-model-controller-')
+      (startsWith(github.event.pull_request.head.ref, 'manifests-sync/odh-model-controller-') ||
+       startsWith(github.event.pull_request.head.ref, 'manifests-sync/wva-'))
     steps:
       - name: Validate changed files
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
         run: |
+          if [[ "$HEAD_REF" == manifests-sync/odh-model-controller-* ]]; then
+            ALLOWED_PREFIX="kserve-module/prefetched-manifests-rhoai/modelcontroller/"
+          elif [[ "$HEAD_REF" == manifests-sync/wva-* ]]; then
+            ALLOWED_PREFIX="kserve-module/prefetched-manifests-rhoai/wva/"
+          else
+            echo "ERROR: Unrecognized sync branch pattern: $HEAD_REF"
+            exit 1
+          fi
+
           CHANGED_FILES=$(gh api \
             "repos/${REPO}/pulls/${PR_NUMBER}/files" \
             --paginate \
@@ -33,18 +45,18 @@ jobs:
 
           UNEXPECTED=0
           while IFS= read -r file; do
-            if [[ "$file" != kserve-module/prefetched-manifests-rhoai/modelcontroller/* ]]; then
+            if [[ "$file" != "${ALLOWED_PREFIX}"* ]]; then
               echo "ERROR: Unexpected file changed outside expected path: $file"
               UNEXPECTED=1
             fi
           done <<< "$CHANGED_FILES"
 
           if [ "$UNEXPECTED" -ne 0 ]; then
-            echo "Aborting auto-merge: PR contains changes outside kserve-module/prefetched-manifests-rhoai/modelcontroller/"
+            echo "Aborting auto-merge: PR contains changes outside ${ALLOWED_PREFIX}"
             exit 1
           fi
 
-          echo "All changed files are within the expected path. Proceeding with merge."
+          echo "All changed files are within ${ALLOWED_PREFIX}. Proceeding with merge."
 
       - name: Merge PR
         env:

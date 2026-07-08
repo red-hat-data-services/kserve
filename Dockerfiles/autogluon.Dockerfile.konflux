@@ -1,4 +1,4 @@
-ARG BASE_IMAGE="registry.redhat.io/rhai/base-image-cpu-rhel9@sha256:118425714f88c5b24cd67e828e0bcc7a9bc634ab2a1448e8f0975dfd85aea45c"
+ARG BASE_IMAGE="quay.io/aipcc/base-images/cpu:3.5"
 
 FROM ${BASE_IMAGE} AS builder
 
@@ -10,7 +10,7 @@ USER root
 # Create virtual environment
 ENV VIRTUAL_ENV=/opt/app-root/.venv
 ENV PATH="${VIRTUAL_ENV}/bin:$PATH"
-RUN uv venv -p 3.12 ${VIRTUAL_ENV}
+RUN python3.12 -m venv ${VIRTUAL_ENV}
 
 # ========== Copy all dependencies ==========
 COPY kserve/pyproject.toml kserve/

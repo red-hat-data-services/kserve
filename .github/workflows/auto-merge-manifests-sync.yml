@@ -29,6 +29,10 @@ jobs:
           PR_NUMBER: ${{ github.event.pull_request.number }}
           HEAD_REF: ${{ github.event.pull_request.head.ref }}
         run: |
+          echo "Head ref:       $HEAD_REF"
+          echo "Repository:     $REPO"
+          echo "PR number:      $PR_NUMBER"
+
           if [[ "$HEAD_REF" == manifests-sync/odh-model-controller-* ]]; then
             ALLOWED_PREFIX="kserve-module/prefetched-manifests-rhoai/modelcontroller/"
           elif [[ "$HEAD_REF" == manifests-sync/wva-* ]]; then
@@ -37,6 +41,8 @@ jobs:
             echo "ERROR: Unrecognized sync branch pattern: $HEAD_REF"
             exit 1
           fi
+
+          echo "Allowed prefix: $ALLOWED_PREFIX"
 
           CHANGED_FILES=$(gh api \
             "repos/${REPO}/pulls/${PR_NUMBER}/files" \

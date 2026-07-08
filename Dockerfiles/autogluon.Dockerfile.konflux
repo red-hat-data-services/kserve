@@ -20,8 +20,8 @@ COPY storage storage
 COPY autogluonserver autogluonserver
 
 # ========== Install all dependencies (hermetic) ==========
-RUN pip install --no-build-isolation --index-url https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/ \
-    -r /opt/app-root/autogluonserver/autogluon-all-requirements.txt
+RUN pip install --no-build-isolation \
+    -r /opt/app-root/autogluonserver/autogluon-all-requirements.txt   # Using index url from the autogluon-all-requirements.txt file
 
 # ========== Install local packages (kserve, storage, autogluonserver) without re-resolving dependencies ==========
 # Use --no-deps to prevent re-resolution since all deps are already installed from lockfile

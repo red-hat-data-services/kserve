@@ -1,0 +1,52 @@
+name: Auto-merge Manifest Sync PRs
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - 'kserve-module/prefetched-manifests-rhoai/modelcontroller/**'
+
+permissions:
+  contents: write
+  pull-requests: write
+  checks: write
+  statuses: write
+
+jobs:
+  auto-merge:
+    name: Validate and merge manifest sync PR
+    runs-on: ubuntu-latest
+    if: >-
+      github.event.pull_request.user.login == 'github-actions[bot]' &&
+      startsWith(github.event.pull_request.head.ref, 'manifests-sync/odh-model-controller-')
+    steps:
+      - name: Validate changed files
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          CHANGED_FILES=$(gh api \
+            "repos/${REPO}/pulls/${PR_NUMBER}/files" \
+            --paginate \
+            --jq '.[].filename')
+
+          UNEXPECTED=0
+          while IFS= read -r file; do
+            if [[ "$file" != kserve-module/prefetched-manifests-rhoai/modelcontroller/* ]]; then
+              echo "ERROR: Unexpected file changed outside expected path: $file"
+              UNEXPECTED=1
+            fi
+          done <<< "$CHANGED_FILES"
+
+          if [ "$UNEXPECTED" -ne 0 ]; then
+            echo "Aborting auto-merge: PR contains changes outside kserve-module/prefetched-manifests-rhoai/modelcontroller/"
+            exit 1
+          fi
+
+          echo "All changed files are within the expected path. Proceeding with merge."
+
+      - name: Merge PR
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: gh pr merge --merge --admin ${{ github.event.pull_request.html_url }}

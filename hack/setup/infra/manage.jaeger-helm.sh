@@ -74,8 +74,8 @@ install() {
     # Keep JAEGER_EXTRA_ARGS for simple flags (e.g. --set key=val). Paths with
     # spaces should use JAEGER_VALUES_FILE instead of embedding -f here.
     if [[ -n "${JAEGER_EXTRA_ARGS:-}" ]]; then
-        # shellcheck disable=SC2206 # intentional word-split of simple CLI flags
-        helm_extra_args+=(${JAEGER_EXTRA_ARGS})
+        read -ra parsed_extra_args <<< "${JAEGER_EXTRA_ARGS}"
+        helm_extra_args+=("${parsed_extra_args[@]}")
     fi
 
     log_info "Installing Jaeger All-in-One ${JAEGER_VERSION}..."

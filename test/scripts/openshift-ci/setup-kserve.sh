@@ -83,6 +83,13 @@ if [[ "${1:-}" =~ "llminferenceservice" ]]; then
   "${SCRIPT_DIR}/setup-llm.sh" --skip-kserve --deploy-kuadrant
 fi
 
+# LLMISvc tracing infrastructure: Jaeger All-in-One via Helm (not OLM).
+# Required by test/e2e/llmisvc/test_tracing.py (OTLP :4317, Query :16686).
+if [[ "${1:-}" =~ "tracing" ]]; then
+  echo "Setting up Jaeger (Helm) for LLMISVC tracing e2e..."
+  "${SCRIPT_DIR}/infra/deploy.jaeger.sh"
+fi
+
 # Early CA cert extraction for raw deployments. This reads from cluster-wide namespaces
 # (not KSERVE_NAMESPACE) so it can run immediately after the install.
 # setup-e2e-tests.sh overwrites /tmp/ca.crt later with the namespace-scoped cert for

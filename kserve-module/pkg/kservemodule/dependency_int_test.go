@@ -102,7 +102,7 @@ var _ = Describe("Dependency Integration", Ordered, func() {
 		}).WithContext(ctx).WithTimeout(30 * time.Second).WithPolling(2 * time.Second).Should(Succeed())
 	})
 
-	It("sets Degraded=True with Info severity when critical CRDs exist but some optional CRDs are missing", func(ctx SpecContext) {
+	It("sets Degraded=False with Info severity when critical CRDs exist but some optional CRDs are missing", func(ctx SpecContext) {
 		for _, info := range criticalCRDs {
 			crd := fixture.CreateCRDByName(ctx, testEnv.Client, info.Name, info.Group, "v1", apiextensionsv1.NamespaceScoped)
 			testCRDs[crd.Name] = crd
@@ -120,7 +120,7 @@ var _ = Describe("Dependency Integration", Ordered, func() {
 
 			degradedCond := fixture.FindCondition(kserve, string(common.ConditionTypeDegraded))
 			g.Expect(degradedCond).NotTo(BeNil())
-			g.Expect(degradedCond.Status).To(Equal(metav1.ConditionTrue))
+			g.Expect(degradedCond.Status).To(Equal(metav1.ConditionFalse))
 			g.Expect(degradedCond.Severity).To(Equal(common.ConditionSeverityInfo))
 		}).WithContext(ctx).WithTimeout(30 * time.Second).WithPolling(2 * time.Second).Should(Succeed())
 	})

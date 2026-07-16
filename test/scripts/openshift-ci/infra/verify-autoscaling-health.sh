@@ -92,7 +92,10 @@ echo "  [PASS] WVA controller pod is Ready"
 
 check_wva_no_errors() {
     local logs
-    logs=$(oc logs -n "${WVA_NAMESPACE}" deployment/"${WVA_DEPLOY}" --tail=50 2>/dev/null || echo "")
+    if ! logs=$(oc logs -n "${WVA_NAMESPACE}" \
+        deployment/"${WVA_DEPLOY}" --tail=50 2>/dev/null); then
+        return 1
+    fi
     if echo "${logs}" | grep -qi "error.*prometheus\|connection refused\|no such host\|x509.*certificate"; then
         return 1
     fi
@@ -107,30 +110,28 @@ echo ""
 echo "--- Step 3: Verifying KEDA/CMA operator ---"
 
 check_keda_operator() {
-    local running
     for selector in "app=keda-operator" "app.kubernetes.io/name=keda-operator"; do
-        running=$(oc get pods -n "${KEDA_NAMESPACE}" -l "${selector}" \
-            -o jsonpath='{.items[?(@.status.phase=="Running")].metadata.name}' 2>/dev/null)
-        if [[ -n "$running" ]]; then
+        if oc wait --for=condition=Ready pod \
+            -l "${selector}" -n "${KEDA_NAMESPACE}" \
+            --timeout=0s 2>/dev/null; then
             return 0
         fi
     done
     return 1
 }
-retry "KEDA operator pod is Running" 60 5 check_keda_operator
+retry "KEDA operator pod is Ready" 60 5 check_keda_operator
 
 check_keda_metrics_server() {
-    local running
     for selector in "app=keda-metrics-apiserver" "app.kubernetes.io/name=keda-operator-metrics-apiserver"; do
-        running=$(oc get pods -n "${KEDA_NAMESPACE}" -l "${selector}" \
-            -o jsonpath='{.items[?(@.status.phase=="Running")].metadata.name}' 2>/dev/null)
-        if [[ -n "$running" ]]; then
+        if oc wait --for=condition=Ready pod \
+            -l "${selector}" -n "${KEDA_NAMESPACE}" \
+            --timeout=0s 2>/dev/null; then
             return 0
         fi
     done
     return 1
 }
-retry "KEDA metrics API server is Running" 60 5 check_keda_metrics_server
+retry "KEDA metrics API server is Ready" 60 5 check_keda_metrics_server
 
 # ---------------------------------------------------------------------------
 # 4. ClusterTriggerAuthentication

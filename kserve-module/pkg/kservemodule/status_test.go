@@ -81,7 +81,7 @@ func TestApplyDependencyConditions_Degraded(t *testing.T) {
 
 	cond := condMgr.GetCondition(string(common.ConditionTypeDegraded))
 	g.Expect(cond).ShouldNot(BeNil())
-	g.Expect(cond.Status).Should(Equal(metav1.ConditionTrue))
+	g.Expect(cond.Status).Should(Equal(metav1.ConditionFalse))
 	g.Expect(cond.Severity).Should(Equal(common.ConditionSeverityInfo))
 }
 

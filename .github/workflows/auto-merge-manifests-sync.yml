@@ -18,7 +18,7 @@ jobs:
     name: Validate and merge manifest sync PR
     runs-on: ubuntu-latest
     if: >-
-      github.event.pull_request.user.login == 'github-actions[bot]' &&
+      github.event.pull_request.user.login == 'rhds-ci[bot]' &&
       (startsWith(github.event.pull_request.head.ref, 'manifests-sync/odh-model-controller-') ||
        startsWith(github.event.pull_request.head.ref, 'manifests-sync/wva-'))
     steps:

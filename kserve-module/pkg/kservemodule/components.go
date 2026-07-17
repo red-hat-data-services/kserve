@@ -5,8 +5,11 @@ import (
 	"fmt"
 	"strings"
 
+	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	"k8s.io/utils/ptr"
 	ctrl "sigs.k8s.io/controller-runtime"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	"github.com/opendatahub-io/odh-platform-utilities/api/common"
 	odhLabels "github.com/opendatahub-io/odh-platform-utilities/pkg/metadata/labels"
@@ -74,6 +77,14 @@ var components = []componentConfig{
 		imageMap:     map[string]string{},
 		postRender:   observabilityPostRender,
 	},
+	{
+		// No enabled func: namespace check requires API client, handled in postRender.
+		name:         ConsoleDashboardsComponentName,
+		manifestName: KserveComponentName,
+		sourcePath:   ConsoleDashboardsManifestSourcePath,
+		imageMap:     map[string]string{},
+		postRender:   consoleDashboardsPostRender,
+	},
 }
 
 func kservePostRender(ctx context.Context, r *KserveModuleReconciler,
@@ -138,6 +149,37 @@ func observabilityPostRender(ctx context.Context, r *KserveModuleReconciler,
 		resources[i].SetNamespace(ns)
 	}
 	log.Info("set monitoring namespace on observability resources", "namespace", ns, "count", len(resources))
+
+	return resources, nil
+}
+
+func consoleDashboardsPostRender(ctx context.Context, r *KserveModuleReconciler,
+	kserve *platformv1alpha1.Kserve,
+	resources []unstructured.Unstructured) ([]unstructured.Unstructured, error) {
+
+	log := ctrl.LoggerFrom(ctx)
+
+	if kserve == nil || !ptr.Deref(kserve.Spec.EnableLLMInferenceServiceConsoleDashboards, true) {
+		log.Info("EnableLLMInferenceServiceConsoleDashboards is disabled, skipping console dashboards")
+		return nil, nil
+	}
+
+	ns := &corev1.Namespace{}
+	if err := r.Client.Get(ctx, client.ObjectKey{Name: consoleDashboardsNamespace}, ns); err != nil {
+		if client.IgnoreNotFound(err) == nil {
+			log.Info("namespace not found, skipping console dashboards", "namespace", consoleDashboardsNamespace)
+			return nil, nil
+		}
+		return nil, fmt.Errorf("checking namespace %s: %w", consoleDashboardsNamespace, err)
+	}
+
+	for i := range resources {
+		if kind := resources[i].GetKind(); kind != "ConfigMap" {
+			return nil, fmt.Errorf("unauthorized resource kind %s in console dashboards manifest", kind)
+		}
+		resources[i].SetNamespace(consoleDashboardsNamespace)
+	}
+	log.Info("set namespace on console dashboard resources", "namespace", consoleDashboardsNamespace, "count", len(resources))
 
 	return resources, nil
 }

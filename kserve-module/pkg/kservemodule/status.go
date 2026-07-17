@@ -52,7 +52,7 @@ func applyDependencyConditions(condMgr *conditions.Manager, result dependencyRes
 	} else if len(result.degradedReasons) > 0 {
 		condMgr.MarkTrue(ConditionDependenciesAvailable,
 			conditions.WithReason("AllCriticalDependenciesMet"))
-		condMgr.MarkTrue(string(common.ConditionTypeDegraded),
+		condMgr.MarkFalse(string(common.ConditionTypeDegraded),
 			conditions.WithSeverity(common.ConditionSeverityInfo),
 			conditions.WithReason("MissingOptionalDependency"),
 			conditions.WithMessage("%s", strings.Join(result.degradedReasons, "; ")))
@@ -148,6 +148,12 @@ func (r *KserveModuleReconciler) updateStatus(ctx context.Context, kserve *platf
 
 	if condMgr.IsHappy() {
 		kserve.Status.Phase = common.PhaseReady
+		for i := range kserve.Status.Conditions {
+			if kserve.Status.Conditions[i].Type == string(common.ConditionTypeReady) {
+				kserve.Status.Conditions[i].Reason = ""
+				break
+			}
+		}
 	} else {
 		kserve.Status.Phase = common.PhaseNotReady
 	}

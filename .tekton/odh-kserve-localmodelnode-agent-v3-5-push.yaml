@@ -12,7 +12,7 @@ metadata:
     pipelinesascode.tekton.dev/on-cel-expression: |
       event == "push"
       && target_branch == "rhoai-3.5"
-      && ( files.all.exists(p, !p.matches('^\.tekton/')) || ".tekton/odh-kserve-localmodelnode-agent-v3-5-push.yaml".pathChanged() )
+      && ( files.all.exists(p, !p.matches('^\\.tekton/')) || ".tekton/odh-kserve-localmodelnode-agent-v3-5-push.yaml".pathChanged() )
   labels:
     appstudio.openshift.io/application: rhoai-v3-5
     appstudio.openshift.io/component: odh-kserve-localmodelnode-agent-v3-5

@@ -53,7 +53,7 @@ import (
 // --- Operand RBAC (cluster-scoped: operand ClusterRoles grant end-user access across namespaces) ---
 // +kubebuilder:rbac:groups=rbac.authorization.k8s.io,resources=roles;rolebindings;clusterroles;clusterrolebindings,verbs=create;delete;get;list;patch;update;watch
 // escalate/bind scoped to the exact roles and clusterroles deployed by this controller
-// +kubebuilder:rbac:groups=rbac.authorization.k8s.io,resources=clusterroles,verbs=bind;escalate,resourceNames=account-editor-role;account-viewer-role;kserve-admin;kserve-edit;kserve-view;kserve-manager-role;kserve-proxy-role;kserve-llmisvc-manager-role;kserve-llmisvc-distro-role;kserve-inferenceservice-distro-role;kserve-metrics-reader-cluster-role;openshift-ai-llminferenceservice-scc;openshift-ai-inferenceservice-image-volume-scc;odh-model-controller-role;proxy-role;model-serving-api;metrics-reader;kserve-prometheus-k8s;workload-variant-autoscaler-manager-role;workload-variant-autoscaler-metrics-auth-role;workload-variant-autoscaler-epp-metrics-reader-role;workload-variant-autoscaler-variantautoscaling-admin-role;workload-variant-autoscaler-variantautoscaling-editor-role;workload-variant-autoscaler-variantautoscaling-viewer-role;workload-variant-autoscaler-metrics-reader;kserve-localmodel-manager-role;kserve-localmodel-distro-role;kserve-localmodel-permfix-role;kserve-localmodelnode-agent-role;kserve-localmodelnode-distro-role
+// +kubebuilder:rbac:groups=rbac.authorization.k8s.io,resources=clusterroles,verbs=bind;escalate,resourceNames=account-editor-role;account-viewer-role;kserve-admin;kserve-edit;kserve-models-admin;kserve-models-edit;kserve-models-view;kserve-view;kserve-manager-role;kserve-proxy-role;kserve-llmisvc-manager-role;kserve-llmisvc-distro-role;kserve-inferenceservice-distro-role;kserve-metrics-reader-cluster-role;openshift-ai-llminferenceservice-scc;openshift-ai-inferenceservice-image-volume-scc;odh-model-controller-role;proxy-role;model-serving-api;metrics-reader;kserve-prometheus-k8s;workload-variant-autoscaler-manager-role;workload-variant-autoscaler-metrics-auth-role;workload-variant-autoscaler-epp-metrics-reader-role;workload-variant-autoscaler-variantautoscaling-admin-role;workload-variant-autoscaler-variantautoscaling-editor-role;workload-variant-autoscaler-variantautoscaling-viewer-role;workload-variant-autoscaler-metrics-reader;kserve-localmodel-manager-role;kserve-localmodel-distro-role;kserve-localmodel-permfix-role;kserve-localmodelnode-agent-role;kserve-localmodelnode-distro-role
 // +kubebuilder:rbac:groups=rbac.authorization.k8s.io,resources=roles,verbs=bind;escalate,resourceNames=kserve-leader-election-role;llmisvc-leader-election-role;leader-election-role;workload-variant-autoscaler-leader-election-role
 // +kubebuilder:rbac:groups=rbac.authorization.k8s.io,resources=roles/finalizers;rolebindings/finalizers;clusterroles/finalizers;clusterrolebindings/finalizers,verbs=update
 
@@ -75,6 +75,7 @@ import (
 
 // --- KServe cluster-scoped operand resources ---
 // +kubebuilder:rbac:groups=serving.kserve.io,resources=llminferenceserviceconfigs;clusterstoragecontainers,verbs=create;delete;get;list;patch;update;watch
+// +kubebuilder:rbac:groups=serving.kserve.io,resources=llminferenceservices,verbs=list
 
 // --- OpenShift-specific cluster-scoped resources ---
 // SCCs: required for InferenceService and LLMInferenceService workload pods
@@ -116,7 +117,6 @@ type KserveModuleReconciler struct {
 	Scheme                *runtime.Scheme
 	ManifestsTemplatePath string
 	Deployer              ResourceDeployer
-
 	workDir               string
 	initDone              bool
 	applicationsNamespace string
@@ -134,23 +134,28 @@ func (r *KserveModuleReconciler) Reconcile(ctx context.Context, req ctrl.Request
 
 	kserve := &platformv1alpha1.Kserve{}
 	if err := r.Get(ctx, req.NamespacedName, kserve); err != nil {
-		if client.IgnoreNotFound(err) == nil {
-			if cleanupErr := r.cleanupOnDelete(ctx); cleanupErr != nil {
-				log.Error(cleanupErr, "component extra-cleanup failed during CR deletion")
-			}
-		}
 		return ctrl.Result{}, client.IgnoreNotFound(err)
 	}
 
 	if !kserve.DeletionTimestamp.IsZero() {
-		log.Info("KServe CR is being deleted, removing platform finalizer")
-		if controllerutil.RemoveFinalizer(kserve, PlatformFinalizerName) {
+		if cleanupErr := r.cleanupOnDelete(ctx); cleanupErr != nil {
+			log.Error(cleanupErr, "component extra-cleanup failed during CR deletion")
+			return ctrl.Result{}, cleanupErr
+		}
+		if controllerutil.RemoveFinalizer(kserve, ModuleFinalizerName) {
 			if err := r.Update(ctx, kserve); err != nil {
-				return ctrl.Result{}, fmt.Errorf("removing platform finalizer: %w", err)
+				return ctrl.Result{}, fmt.Errorf("removing module finalizer: %w", err)
 			}
-			log.Info("platform finalizer removed")
+			log.Info("removed module finalizer from Kserve CR")
 		}
 		return ctrl.Result{}, nil
+	}
+
+	if controllerutil.AddFinalizer(kserve, ModuleFinalizerName) {
+		if err := r.Update(ctx, kserve); err != nil {
+			return ctrl.Result{}, fmt.Errorf("adding module finalizer: %w", err)
+		}
+		log.Info("added module finalizer to Kserve CR")
 	}
 
 	log.Info("reconciling Kserve CR", "name", kserve.Name)
@@ -235,17 +240,38 @@ func (r *KserveModuleReconciler) reconcile(ctx context.Context, kserve *platform
 		return componentErrors
 	}
 
+	owned, unowned := splitByOwnership(allResources)
 	if err := r.Deployer.Deploy(ctx, deploy.DeployInput{
 		Client:    r.Client,
 		Owner:     kserve,
-		Resources: allResources,
+		Resources: owned,
 	}); err != nil {
-		return map[string]error{"deploy": fmt.Errorf("applying resources: %w", err)}
+		return map[string]error{"deploy": fmt.Errorf("applying owned resources: %w", err)}
+	}
+	if len(unowned) > 0 {
+		if err := r.Deployer.Deploy(ctx, deploy.DeployInput{
+			Client:    r.Client,
+			Resources: unowned,
+		}); err != nil {
+			return map[string]error{"deploy": fmt.Errorf("applying unowned resources: %w", err)}
+		}
 	}
 
-	log.Info("deployed all resources", "count", len(allResources))
+	log.Info("deployed all resources", "owned", len(owned), "unowned", len(unowned))
 
 	return nil
+}
+
+func splitByOwnership(resources []unstructured.Unstructured) (owned, unowned []unstructured.Unstructured) {
+	for i := range resources {
+		gk := resources[i].GroupVersionKind().GroupKind()
+		if _, excluded := unownedGroupKinds[gk]; excluded {
+			unowned = append(unowned, resources[i])
+		} else {
+			owned = append(owned, resources[i])
+		}
+	}
+	return
 }
 
 func (r *KserveModuleReconciler) cleanupOnDelete(ctx context.Context) error {
@@ -432,3 +458,4 @@ func (r *KserveModuleReconciler) ensureWorkDir() (string, error) {
 	r.initDone = true
 	return workDir, nil
 }
+

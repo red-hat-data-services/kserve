@@ -1,5 +1,11 @@
 package kservemodule
 
+import "k8s.io/apimachinery/pkg/runtime/schema"
+
+var unownedGroupKinds = map[schema.GroupKind]struct{}{
+	{Group: llmISVCConfigGroup, Kind: llmISVCConfigKind}: {},
+}
+
 const (
 	// Component names
 	KserveComponentName             = "kserve"
@@ -49,12 +55,17 @@ const (
 	llmISVCConfigPrefixEnv   = "LLM_INFERENCE_SERVICE_CONFIG_PREFIX"
 	llmISVCConfigGroup       = "serving.kserve.io"
 	llmISVCConfigKind        = "LLMInferenceServiceConfig"
+	llmISVCKind = "LLMInferenceService"
 
 	// Template (ServingRuntime) resource type
 	templateGroup = "template.openshift.io"
 	templateKind  = "Template"
 
-	// Platform finalizer (inherited from ODH operator component reconciler)
+	// ModuleFinalizerName is managed by the module operator on the Kserve CR;
+	// added during reconcile, removed after cleanup on deletion.
+	ModuleFinalizerName = "kserve-module.opendatahub.io/finalizer"
+
+	// PlatformFinalizerName is set and removed by the platform operator.
 	PlatformFinalizerName = "platform.opendatahub.io/finalizer"
 
 	// cert-manager defaults

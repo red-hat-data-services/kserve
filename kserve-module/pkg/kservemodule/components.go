@@ -2,10 +2,20 @@ package kservemodule
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strings"
+	"time"
 
+	corev1 "k8s.io/api/core/v1"
+	k8serr "k8s.io/apimachinery/pkg/api/errors"
+	"k8s.io/apimachinery/pkg/api/meta"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	"k8s.io/apimachinery/pkg/runtime/schema"
+	"k8s.io/apimachinery/pkg/util/wait"
+	"k8s.io/utils/ptr"
+	ctrl "sigs.k8s.io/controller-runtime"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	"github.com/opendatahub-io/odh-platform-utilities/api/common"
 	odhLabels "github.com/opendatahub-io/odh-platform-utilities/pkg/metadata/labels"
@@ -13,9 +23,9 @@ import (
 	platformv1alpha1 "github.com/opendatahub-io/kserve-module/pkg/apis/v1alpha1"
 )
 
-
 type componentConfig struct {
 	name          string
+	manifestName  string // overrides name for manifest directory lookup; defaults to name if empty
 	sourcePath    string
 	sourcePathXKS string
 	imageMap      map[string]string
@@ -27,6 +37,13 @@ type componentConfig struct {
 	extraCleanup func(ctx context.Context, r *KserveModuleReconciler) error
 }
 
+func (c componentConfig) dirName() string {
+	if c.manifestName != "" {
+		return c.manifestName
+	}
+	return c.name
+}
+
 var components = []componentConfig{
 	{
 		name:          KserveComponentName,
@@ -34,12 +51,14 @@ var components = []componentConfig{
 		sourcePathXKS: KserveManifestSourcePathXKS,
 		imageMap:      kserveImageParamMap,
 		postRender:    kservePostRender,
+		extraCleanup:  cleanupKServeComponent,
 	},
 	{
 		name:        OdhModelControllerComponentName,
 		sourcePath:  ModelControllerSourcePath,
 		imageMap:    modelControllerImageParamMap,
 		extraParams: modelControllerExtraParams,
+		postRender:  modelControllerPostRender,
 	},
 	{
 		name:       WVAComponentName,
@@ -48,18 +67,50 @@ var components = []componentConfig{
 		enabled:    isWVAEnabled,
 		postRender: wvaPostRender,
 	},
+	{
+		name:         ModelCacheComponentName,
+		manifestName: KserveComponentName,
+		sourcePath:   ModelCacheManifestSourcePath,
+		imageMap:     kserveImageParamMap,
+		enabled:      isModelCacheEnabled,
+		postRender:   modelCacheComponentPostRender,
+		extraCleanup: cleanupModelCacheComponent,
+	},
+	{
+		// No enabled func: CRD check requires API client, handled in postRender.
+		name:         ObservabilityComponentName,
+		manifestName: KserveComponentName,
+		sourcePath:   ObservabilityManifestSourcePath,
+		imageMap:     map[string]string{},
+		postRender:   observabilityPostRender,
+	},
+	{
+		// No enabled func: namespace check requires API client, handled in postRender.
+		name:         ConsoleDashboardsComponentName,
+		manifestName: KserveComponentName,
+		sourcePath:   ConsoleDashboardsManifestSourcePath,
+		imageMap:     map[string]string{},
+		postRender:   consoleDashboardsPostRender,
+	},
 }
 
 func kservePostRender(ctx context.Context, r *KserveModuleReconciler,
 	kserve *platformv1alpha1.Kserve,
 	resources []unstructured.Unstructured) ([]unstructured.Unstructured, error) {
 
+	log := ctrl.LoggerFrom(ctx)
+	beforeCount := len(resources)
+	resources = filterFastResources(resources)
+	if afterCount := len(resources); beforeCount != afterCount {
+		log.Info("filtered fast-variant resources", "before", beforeCount, "after", afterCount, "removed", beforeCount-afterCount)
+	}
+
 	resources, err := customizeKserveConfigMap(resources, kserve)
 	if err != nil {
 		return nil, fmt.Errorf("customizing configmap: %w", err)
 	}
 
-	versionPrefix := r.getVersionPrefix(kserve)
+	versionPrefix := r.getVersionPrefix(ctx, kserve)
 	resources, err = versionedWellKnownLLMInferenceServiceConfigs(resources, versionPrefix)
 	if err != nil {
 		return nil, fmt.Errorf("versioning LLMInferenceServiceConfigs: %w", err)
@@ -85,6 +136,61 @@ func filterOutNamespaces(resources []unstructured.Unstructured) []unstructured.U
 	return filtered
 }
 
+func observabilityPostRender(ctx context.Context, r *KserveModuleReconciler,
+	_ *platformv1alpha1.Kserve,
+	resources []unstructured.Unstructured) ([]unstructured.Unstructured, error) {
+
+	log := ctrl.LoggerFrom(ctx)
+
+	reasons := r.checkCRD(ctx, dependencyCheck{
+		name:    "PersesDashboard",
+		crdName: "persesdashboards.perses.dev",
+	})
+	if len(reasons) > 0 {
+		log.Info("PersesDashboard CRD not available, skipping observability dashboards")
+		return nil, nil
+	}
+
+	ns := r.getMonitoringNamespace()
+	for i := range resources {
+		resources[i].SetNamespace(ns)
+	}
+	log.Info("set monitoring namespace on observability resources", "namespace", ns, "count", len(resources))
+
+	return resources, nil
+}
+
+func consoleDashboardsPostRender(ctx context.Context, r *KserveModuleReconciler,
+	kserve *platformv1alpha1.Kserve,
+	resources []unstructured.Unstructured) ([]unstructured.Unstructured, error) {
+
+	log := ctrl.LoggerFrom(ctx)
+
+	if kserve == nil || !ptr.Deref(kserve.Spec.EnableLLMInferenceServiceConsoleDashboards, true) {
+		log.Info("EnableLLMInferenceServiceConsoleDashboards is disabled, skipping console dashboards")
+		return nil, nil
+	}
+
+	ns := &corev1.Namespace{}
+	if err := r.Client.Get(ctx, client.ObjectKey{Name: consoleDashboardsNamespace}, ns); err != nil {
+		if client.IgnoreNotFound(err) == nil {
+			log.Info("namespace not found, skipping console dashboards", "namespace", consoleDashboardsNamespace)
+			return nil, nil
+		}
+		return nil, fmt.Errorf("checking namespace %s: %w", consoleDashboardsNamespace, err)
+	}
+
+	for i := range resources {
+		if kind := resources[i].GetKind(); kind != "ConfigMap" {
+			return nil, fmt.Errorf("unauthorized resource kind %s in console dashboards manifest", kind)
+		}
+		resources[i].SetNamespace(consoleDashboardsNamespace)
+	}
+	log.Info("set namespace on console dashboard resources", "namespace", consoleDashboardsNamespace, "count", len(resources))
+
+	return resources, nil
+}
+
 func isWVAEnabled(kserve *platformv1alpha1.Kserve) bool {
 	return kserve.Spec.WVA.ManagementState == common.Managed
 }
@@ -103,6 +209,19 @@ func modelControllerExtraParams(kserve *platformv1alpha1.Kserve) map[string]stri
 	}
 }
 
+func modelControllerPostRender(ctx context.Context, _ *KserveModuleReconciler,
+	_ *platformv1alpha1.Kserve,
+	resources []unstructured.Unstructured) ([]unstructured.Unstructured, error) {
+
+	log := ctrl.LoggerFrom(ctx)
+	beforeCount := len(resources)
+	result := filterFastResources(resources)
+	if afterCount := len(result); beforeCount != afterCount {
+		log.Info("filtered fast-variant resources", "before", beforeCount, "after", afterCount, "removed", beforeCount-afterCount)
+	}
+	return result, nil
+}
+
 func commonPostRender(resources []unstructured.Unstructured, componentName string) {
 	applyManagedByLabel(resources, componentName)
 }
@@ -118,3 +237,64 @@ func applyManagedByLabel(resources []unstructured.Unstructured, componentName st
 	}
 }
 
+func cleanupKServeComponent(ctx context.Context, r *KserveModuleReconciler) error {
+	log := ctrl.LoggerFrom(ctx)
+
+	llmisvcList := &unstructured.UnstructuredList{}
+	llmisvcList.SetGroupVersionKind(schema.GroupVersionKind{
+		Group: llmISVCConfigGroup, Version: "v1alpha2", Kind: llmISVCKind,
+	})
+	if err := r.Client.List(ctx, llmisvcList, client.Limit(1)); err != nil {
+		if !meta.IsNoMatchError(err) {
+			return fmt.Errorf("listing LLMInferenceServices: %w", err)
+		}
+	}
+	if len(llmisvcList.Items) > 0 {
+		log.Info("LLMInferenceService instances exist, keeping configs")
+		return nil
+	}
+
+	configList := &unstructured.UnstructuredList{}
+	configList.SetGroupVersionKind(schema.GroupVersionKind{
+		Group: llmISVCConfigGroup, Version: "v1alpha2", Kind: llmISVCConfigKind,
+	})
+	if err := r.Client.List(ctx, configList); err != nil {
+		if meta.IsNoMatchError(err) {
+			return nil
+		}
+		return fmt.Errorf("listing LLMInferenceServiceConfigs: %w", err)
+	}
+
+	var deleteErrs []error
+	for i := range configList.Items {
+		config := &configList.Items[i]
+		if err := r.Delete(ctx, config); client.IgnoreNotFound(err) != nil {
+			deleteErrs = append(deleteErrs, fmt.Errorf("%s: %w", config.GetName(), err))
+		}
+	}
+	if len(deleteErrs) > 0 {
+		return errors.Join(deleteErrs...)
+	}
+
+	err := wait.PollUntilContextTimeout(ctx, 2*time.Second, 60*time.Second, true, func(ctx context.Context) (bool, error) {
+		remaining := &unstructured.UnstructuredList{}
+		remaining.SetGroupVersionKind(schema.GroupVersionKind{
+			Group: llmISVCConfigGroup, Version: "v1alpha2", Kind: llmISVCConfigKind,
+		})
+		if err := r.Client.List(ctx, remaining, client.Limit(1)); err != nil {
+			if k8serr.IsNotFound(err) || meta.IsNoMatchError(err) {
+				return true, nil
+			}
+			return false, err
+		}
+		if len(remaining.Items) == 0 {
+			return true, nil
+		}
+		log.V(1).Info("waiting for LLMInferenceServiceConfig deletion", "remaining", len(remaining.Items))
+		return false, nil
+	})
+	if err != nil {
+		return fmt.Errorf("waiting for LLMInferenceServiceConfig deletion: %w", err)
+	}
+	return nil
+}

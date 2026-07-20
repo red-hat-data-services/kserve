@@ -81,7 +81,7 @@ func TestApplyDependencyConditions_Degraded(t *testing.T) {
 
 	cond := condMgr.GetCondition(string(common.ConditionTypeDegraded))
 	g.Expect(cond).ShouldNot(BeNil())
-	g.Expect(cond.Status).Should(Equal(metav1.ConditionTrue))
+	g.Expect(cond.Status).Should(Equal(metav1.ConditionFalse))
 	g.Expect(cond.Severity).Should(Equal(common.ConditionSeverityInfo))
 }
 
@@ -92,6 +92,8 @@ func markAllHealthy(condMgr *conditions.Manager) {
 		conditions.WithReason("AllDeploymentsAvailable"))
 	condMgr.MarkTrue(ConditionModelControllerReady,
 		conditions.WithReason("AllDeploymentsAvailable"))
+	condMgr.MarkTrue(ConditionModelCacheReady,
+		conditions.WithReason("Disabled"))
 	condMgr.MarkTrue(ConditionDependenciesAvailable,
 		conditions.WithReason("AllDependenciesMet"))
 	condMgr.ClearCondition(ConditionWVAReady)
@@ -161,7 +163,7 @@ func TestApplyDependencyConditions_GroupCondition(t *testing.T) {
 
 	cond := condMgr.GetCondition(conditionLLMISVCDeps)
 	g.Expect(cond).ShouldNot(BeNil())
-	g.Expect(cond.Status).Should(Equal(metav1.ConditionTrue))
+	g.Expect(cond.Status).Should(Equal(metav1.ConditionFalse))
 	g.Expect(cond.Severity).Should(Equal(common.ConditionSeverityInfo))
 	g.Expect(cond.Message).Should(ContainSubstring("RHCL"))
 }
@@ -200,5 +202,5 @@ func TestGroupConditionsSetByApply(t *testing.T) {
 
 	cond := condMgr.GetCondition(conditionLLMISVCDeps)
 	g.Expect(cond).ShouldNot(BeNil(), "group condition should be set after apply")
-	g.Expect(cond.Status).Should(Equal(metav1.ConditionTrue))
+	g.Expect(cond.Status).Should(Equal(metav1.ConditionFalse))
 }

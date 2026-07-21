@@ -75,7 +75,6 @@ import (
 
 // --- KServe cluster-scoped operand resources ---
 // +kubebuilder:rbac:groups=serving.kserve.io,resources=llminferenceserviceconfigs;clusterstoragecontainers,verbs=create;delete;get;list;patch;update;watch
-// +kubebuilder:rbac:groups=serving.kserve.io,resources=llminferenceservices,verbs=list
 
 // --- OpenShift-specific cluster-scoped resources ---
 // SCCs: required for InferenceService and LLMInferenceService workload pods
@@ -201,6 +200,12 @@ func (r *KserveModuleReconciler) Reconcile(ctx context.Context, req ctrl.Request
 
 func (r *KserveModuleReconciler) reconcile(ctx context.Context, kserve *platformv1alpha1.Kserve) map[string]error {
 	log := ctrl.LoggerFrom(ctx)
+
+	if !r.initDone {
+		if err := r.installCRDs(ctx, kserve); err != nil {
+			return map[string]error{"crds": fmt.Errorf("installing CRDs: %w", err)}
+		}
+	}
 
 	manifestDir, err := r.ensureWorkDir()
 	if err != nil {
@@ -423,6 +428,22 @@ func (r *KserveModuleReconciler) SetClusterType(ct cluster.ClusterType) {
 func (r *KserveModuleReconciler) SetWorkDir(dir string) {
 	r.workDir = dir
 	r.initDone = true
+}
+
+func (r *KserveModuleReconciler) installCRDs(ctx context.Context, kserve *platformv1alpha1.Kserve) error {
+	crdPath := filepath.Join(r.ManifestsTemplatePath, KserveComponentName, KserveCRDManifestSourcePath)
+	resources, err := kustomize.Render(crdPath, nil)
+	if err != nil {
+		return fmt.Errorf("rendering CRD manifests: %w", err)
+	}
+	if err := r.Deployer.Deploy(ctx, deploy.DeployInput{
+		Client:    r.Client,
+		Owner:     kserve,
+		Resources: resources,
+	}); err != nil {
+		return fmt.Errorf("applying CRDs: %w", err)
+	}
+	return nil
 }
 
 func (r *KserveModuleReconciler) ensureWorkDir() (string, error) {

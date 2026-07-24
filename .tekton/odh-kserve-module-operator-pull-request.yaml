@@ -34,7 +34,7 @@ spec:
     value: "false"
   - name: prefetch-input
     value: |
-      [{"type": "gomod", "path": "kserve-module/"}]
+      [{"type": "rpm", "path": "."}, {"type": "gomod", "path": "kserve-module/"}]
   - name: build-platforms
     value:
     - linux/x86_64

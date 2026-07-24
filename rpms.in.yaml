@@ -1,3 +1,6 @@
+# Shared lockfile input for all hermetic Konflux Dockerfiles (controller, agent,
+# router, localmodel*, storage-initializer, module-operator, etc.).
+# Resolve against the common runtime base (ubi-minimal), not builder stages.
 arches:
   - x86_64
   - aarch64
@@ -18,7 +21,6 @@ contentOrigin:
     baseurl: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/$basearch/appstream/source/SRPMS
 
 packages:
-  - shadow-utils #most kserve components need this
   - python3.11 # needed for storage-initializer
   - python3.11-pip
   - python3.11-devel
@@ -33,7 +35,9 @@ packages:
   - rust
   - cargo
   - perl
+
+reinstallPackages:
+  - shadow-utils
+
 context:
-  containerfile:
-    file: Dockerfiles/controller.Dockerfile.konflux
-    imagePattern: ubi9/ubi-minimal
+  image: registry.access.redhat.com/ubi9/ubi-minimal:latest

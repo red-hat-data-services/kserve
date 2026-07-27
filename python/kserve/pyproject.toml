@@ -59,6 +59,7 @@ pandas =  "^2.2.0"
 pydantic = "^2.5.0"
 pyyaml = "^6.0.0"
 # CVE-2025-66418 urllib3: Unbounded decompression chain leads to resource exhaustion
+# CVE-2025-66471 urllib3: Streaming API improperly handles highly compressed data
 # CVE-2026-44432 urllib3: Denial of Service due to excessive HTTP response decompression
 urllib3 = ">=2.7.0,<3.0.0"
 # CVE-2025-69223 AIOHTTP's HTTP Parser auto_decompress feature is vulnerable to zip bomb

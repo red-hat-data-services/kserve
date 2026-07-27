@@ -164,6 +164,7 @@ webhooks:
     - v1beta1
     operations:
     - CREATE
+    - UPDATE
     resources:
     - inferenceservices
   sideEffects: None

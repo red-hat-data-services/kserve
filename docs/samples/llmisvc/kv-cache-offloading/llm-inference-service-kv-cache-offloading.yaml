@@ -11,8 +11,17 @@ spec:
     route: {}
     gateway: {}
   template:
+    volumes:
+      - name: dshm
+        emptyDir:
+          medium: Memory
+          # sizeLimit should be set to 120% of CPU size + 1
+          sizeLimit: 13Gi
     containers:
       - name: main
+        volumeMounts:
+          - name: dshm
+            mountPath: /dev/shm
         resources:
           limits:
             cpu: '8'

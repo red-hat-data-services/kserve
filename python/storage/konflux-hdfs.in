@@ -1,0 +1,13 @@
+# HDFS / WebHDFS backend dependencies for the storage-initializer hermetic build.
+#
+# These are deliberately NOT declared in pyproject.toml: they are an optional
+# download backend, imported lazily in kserve_storage._download_hdfs, and the
+# upstream kserve-storage wheel does not carry them. Historically they were
+# installed as a separate `pip install` step in the Dockerfile. For the hermetic
+# build we lock them here so cachi2 prefetches them alongside the pyproject deps.
+#
+# All three (and their transitive deps) are onboarded to the AIPCC index
+# (public-rhai/rhoai/3.5/cpu-ubi9). Pins match the versions available there.
+krbcontext==0.10
+hdfs==2.7.3
+requests-kerberos==0.15.0

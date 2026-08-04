@@ -19,20 +19,11 @@ contentOrigin:
 
 packages:
   - shadow-utils #most kserve components need this
-  - python3.11 # needed for storage-initializer
-  - python3.11-pip
-  - python3.11-devel
-  - gcc
-  - libffi-devel
-  - openssl-devel
-  - krb5-workstation
-  - krb5-libs
-  - krb5-devel
-  - gcc-c++ # this and below - needed for storage-initializer on power/z
-  - cmake
-  - rust
-  - cargo
-  - perl
+  # storage-initializer: installs only prefetched cp312/abi3/py3 wheels (AIPCC
+  # index), so no compilers or -devel headers are needed at build time.
+  - python3.12 # AIPCC wheels are cp312
+  - python3.12-pip
+  - krb5-libs # runtime libkrb5/libgssapi for the HDFS Kerberos backend (python gssapi/krb5 wheels)
 context:
   containerfile:
     file: Dockerfiles/controller.Dockerfile.konflux

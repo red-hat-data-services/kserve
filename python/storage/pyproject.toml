@@ -22,6 +22,9 @@ dependencies = [
     # CVE-2026-48526 PyJWT authentication bypass via JWK accepted as HMAC secret
     # Pinning because it is a transitive dependency.
     "pyjwt>=2.13.0",
+    # CVE-2025-66471 urllib3 Streaming API improperly handles highly compressed data
+    # Pinning because it is a transitive dependency.
+    "urllib3>=2.6.0",
 ]
 name = "kserve-storage"
 version = "0.17.0"

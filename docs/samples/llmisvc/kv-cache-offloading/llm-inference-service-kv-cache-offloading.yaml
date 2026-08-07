@@ -19,9 +19,6 @@ spec:
           sizeLimit: 13Gi
     containers:
       - name: main
-        volumeMounts:
-          - name: dshm
-            mountPath: /dev/shm
         resources:
           limits:
             cpu: '8'

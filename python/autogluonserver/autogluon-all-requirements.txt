@@ -669,8 +669,8 @@ preshed==3.0.13 \
     # via
     #   spacy
     #   thinc
-prometheus-client==0.25.0 \
-    --hash=sha256:34577aeee817238adf900bebb60c63697fa70d15d8f9e1c6984729cce45fb10f
+prometheus-client==0.26.0 \
+    --hash=sha256:347c1aa82def23527399fe7d4c54f0f9ead3026169d3377173ddebcb5f597756
     # via kserve
 propcache==0.5.2 \
     --hash=sha256:37db9ae1c467dce775f463680d1bf110ec3237f08f5bee36fd60c399344fa617 \
@@ -707,10 +707,10 @@ psutil==5.9.8 \
     #   kserve
     #   peft
 pyarrow==20.0.0 \
-    --hash=sha256:61d6859a5fd8d28f9001d8822fd5005c93a396c3c5a8d1fb23e2ed86ac510b0d \
-    --hash=sha256:af96912a2c0942a6013127efcf6ce816eda16d528cb06ffb0d78e187ef754fac \
-    --hash=sha256:d982cd297909d08ef18f030a0a1b8af1a4eb33316d6f90c034dffd674378ebe3 \
-    --hash=sha256:f21dc36370749ffaf4f960605a68ce22c8390e37c32dfc1f5e14ece62347a586
+    --hash=sha256:21eaca6c60bfec2e572bfeed6ed9269467373d61b694d3bdbe0fcdef2ea70047 \
+    --hash=sha256:2791da6218232e6a3c12814d41501c20eb035d8031ddc3c5e53d576ccd98fd09 \
+    --hash=sha256:57c6cdb1e7cb257e54efc631e15f1bd975e1340d5987be006dc0da9737035b03 \
+    --hash=sha256:bc99efb37c030541e3ae3e22ec3c0551ac30683c3641dcd0f3b60bde6ea709a0
     # via
     #   autogluon-common
     #   triad

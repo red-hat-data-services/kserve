@@ -7,6 +7,9 @@ spec:
     spec:
       containers:
       - name: manager
+        args:
+        - --metrics-bind-address=:8080
+        - --metrics-secure=false
         env:
         - name: ODH_PLATFORM_TYPE
           value: xKS

@@ -1,6 +1,5 @@
 package kservemodule
 
-import "os"
 
 var kserveImageParamMap = map[string]string{
 	"kserve-controller":                                "RELATED_IMAGE_ODH_KSERVE_CONTROLLER_IMAGE",
@@ -39,14 +38,13 @@ var kserveImageParamMap = map[string]string{
 	"kserve-localmodel-controller":                     "RELATED_IMAGE_ODH_KSERVE_LOCALMODEL_CONTROLLER_IMAGE",
 	"kserve-localmodelnode-agent":                      "RELATED_IMAGE_ODH_KSERVE_LOCALMODELNODE_AGENT_IMAGE",
 	"kserve-llm-d-latency-predictor-prediction":        "RELATED_IMAGE_ODH_LATENCY_PREDICTOR_PREDICTION_IMAGE",
-	"kserve-llm-d-latency-predictor-training":          "RELATED_IMAGE_ODH_LATENCY_PREDICTOR_TEST_IMAGE",
+	"kserve-llm-d-latency-predictor-training":          "RELATED_IMAGE_ODH_LATENCY_PREDICTOR_TRAINING_IMAGE",
 	"ovms-versioning-ubi-micro":                        "RELATED_IMAGE_ODH_UBI_MICRO_IMAGE",
 }
 
 var modelControllerImageParamMap = map[string]string{
 	"odh-model-controller":                          "RELATED_IMAGE_ODH_MODEL_CONTROLLER_IMAGE",
 	"odh-model-serving-api":                         "RELATED_IMAGE_ODH_MODEL_SERVING_API_IMAGE",
-	"caikit-standalone-image":                       "RELATED_IMAGE_ODH_CAIKIT_NLP_IMAGE",
 	"ovms-image":                                    "RELATED_IMAGE_ODH_OPENVINO_MODEL_SERVER_IMAGE",
 	"mlserver-image":                                "RELATED_IMAGE_ODH_MLSERVER_IMAGE",
 	"vllm-cuda-image":                               "RELATED_IMAGE_RHAII_VLLM_CUDA_IMAGE",
@@ -90,23 +88,4 @@ var modelControllerImageParamMap = map[string]string{
 
 var wvaImageParamMap = map[string]string{
 	"wva-controller-image": "RELATED_IMAGE_ODH_WORKLOAD_VARIANT_AUTOSCALER_CONTROLLER_IMAGE",
-}
-
-func buildCertManagerParams(namespace, certManagerNS string) map[string]string {
-	return map[string]string{
-		"NAMESPACE":                 namespace,
-		"ISSUER_REF_NAME":           getEnvOrDefault("ISSUER_NAME", defaultCAIssuerName),
-		"ISSUER_REF_KIND":           getEnvOrDefault("ISSUER_KIND", defaultIssuerRefKind),
-		"ISSUER_REF_GROUP":          "cert-manager.io",
-		"CA_SECRET_NAME":            getEnvOrDefault("CA_SECRET_NAME", defaultCertName),
-		"CA_SECRET_NAMESPACE":       getEnvOrDefault("CA_SECRET_NAMESPACE", certManagerNS),
-		"ISTIO_CA_CERTIFICATE_PATH": getEnvOrDefault("ISTIO_CA_CERT_PATH", defaultIstioCACertPath),
-	}
-}
-
-func getEnvOrDefault(key, defaultVal string) string {
-	if v := os.Getenv(key); v != "" {
-		return v
-	}
-	return defaultVal
 }

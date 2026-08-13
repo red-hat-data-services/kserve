@@ -28,7 +28,6 @@ spec:
             cpu: '4'
             memory: 32Gi
             nvidia.com/gpu: "1"
-  workload:
     kvCacheOffloading:
       # Primary tier: CPU RAM. GPU overflows here first.
       cpu: "10Gi"

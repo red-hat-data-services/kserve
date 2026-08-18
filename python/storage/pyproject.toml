@@ -25,6 +25,9 @@ dependencies = [
     # CVE-2025-66471 urllib3 Streaming API improperly handles highly compressed data
     # Pinning because it is a transitive dependency.
     "urllib3>=2.6.0",
+    # CVE-2026-59885 / CVE-2026-30922 pyasn1 Denial of Service via crafted ASN.1 OBJECT IDENTIFIER
+    # Pinning because it is a transitive dependency.
+    "pyasn1>=0.6.4",
 ]
 name = "kserve-storage"
 version = "0.17.0"

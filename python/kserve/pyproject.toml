@@ -68,9 +68,9 @@ aiohttp = ">=3.14.0,<4.0.0"
 # CVE-2026-32597 PyJWT accepts unknown `crit` header extensions (RFC 7515 §4.1.11 MUST violation)
 # Pinning because it is a transitive dependency.
 PyJWT = ">=2.12.0"
-# CVE-2026-30922 / CVE-2026-23490 pyasn1 Vulnerable to Denial of Service
+# CVE-2026-30922 / CVE-2026-23490 / CVE-2026-59885 pyasn1 Vulnerable to Denial of Service
 # Pinning because it is a transitive dependency.
-pyasn1 = ">=0.6.3"
+pyasn1 = ">=0.6.4"
 
 # Storage dependencies. They can be opted into by apps.
 requests = { version = "^2.32.2", optional = true }

@@ -60,8 +60,6 @@ require (
 	sigs.k8s.io/yaml v1.6.0
 )
 
-require golang.org/x/net v0.57.0 // indirect; patching CVE
-
 require (
 	cel.dev/expr v0.24.0 // indirect
 	cloud.google.com/go v0.120.0 // indirect
@@ -192,6 +190,7 @@ require (
 	golang.org/x/crypto v0.54.0 // indirect
 	golang.org/x/exp v0.0.0-20250808145144-a408d31f581a // indirect
 	golang.org/x/mod v0.37.0 // indirect
+	golang.org/x/net v0.56.0 // indirect
 	golang.org/x/oauth2 v0.34.0 // indirect
 	golang.org/x/sync v0.22.0 // indirect
 	golang.org/x/sys v0.47.0 // indirect
@@ -232,3 +231,6 @@ replace github.com/expr-lang/expr => github.com/expr-lang/expr v1.17.7
 
 // github.com/lyft/protoc-gen-validate was moved to github.com/envoyproxy/protoc-gen-validate
 replace github.com/lyft/protoc-gen-validate => github.com/envoyproxy/protoc-gen-validate v1.0.4
+
+// Fixes CVE-2026-27136 and CVE-2026-25681
+replace golang.org/x/net => golang.org/x/net v0.57.0

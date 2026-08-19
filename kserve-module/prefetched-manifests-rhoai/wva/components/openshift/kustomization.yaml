@@ -78,12 +78,12 @@ patches:
       value: false
     - op: add
       path: /spec/endpoints/0/tlsConfig/serverName
-      value: wva-controller-manager-metrics-service.wva-system.svc
+      value: workload-variant-autoscaler-controller-manager-metrics-service.redhat-ods-applications.svc
     - op: add
       path: /spec/endpoints/0/tlsConfig/ca
       value:
         configMap:
-          name: wva-metrics-server-ca
+          name: workload-variant-autoscaler-metrics-server-ca
           key: service-ca.crt
   target:
     kind: ServiceMonitor

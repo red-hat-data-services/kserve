@@ -37,7 +37,7 @@ spec:
   - name: path-context
     value: python
   - name: hermetic
-    value: false
+    value: true
   - name: build-source-image
     value: true
   - name: build-image-index

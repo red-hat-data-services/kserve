@@ -38,6 +38,12 @@ spec:
     value: python
   - name: hermetic
     value: true
+  - name: prefetch-input
+    value: |
+      [
+        {"type": "rpm", "path": "."},
+        {"type": "pip", "path": "python/storage", "allow_binary": true}
+      ]
   - name: build-source-image
     value: true
   - name: build-image-index

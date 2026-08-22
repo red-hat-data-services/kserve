@@ -115,7 +115,7 @@ replacements:
       kind: ConfigMap
       version: v1
       name: odh-model-controller-parameters
-      fieldPath: data.vllm-cpu-image
+      fieldPath: data.vllm-cpu-pz-image
     targets:
       - select:
           kind: Template
@@ -314,7 +314,7 @@ replacements:
       kind: ConfigMap
       version: v1
       name: odh-model-controller-parameters
-      fieldPath: data.vllm-cpu-image-fast-1
+      fieldPath: data.vllm-cpu-pz-image-fast-1
     targets:
       - select:
           kind: Template
@@ -325,7 +325,7 @@ replacements:
       kind: ConfigMap
       version: v1
       name: odh-model-controller-parameters
-      fieldPath: data.vllm-cpu-image-fast-2
+      fieldPath: data.vllm-cpu-pz-image-fast-2
     targets:
       - select:
           kind: Template

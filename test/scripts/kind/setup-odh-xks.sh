@@ -533,9 +533,22 @@ setup_seaweedfs_models() {
   else
     kubectl delete secret hf-token -n "${KSERVE_NAMESPACE}" --ignore-not-found
   fi
-  sed "s|s3-service.kserve|s3-service.${KSERVE_NAMESPACE}|" \
+  sed -e "s|s3-service.kserve|s3-service.${KSERVE_NAMESPACE}|" \
+      -e "s|kserve/storage-initializer:latest|${STORAGE_INIT_IMAGE}|" \
     "${PROJECT_ROOT}/test/overlays/openshift-ci/seaweedfs-init-job-odh.yaml" | \
     kubectl apply -n "${KSERVE_NAMESPACE}" -f -
+
+  log_wait "Waiting for S3 init job to be created..."
+  for _ in $(seq 1 30); do
+    if kubectl get job s3-init -n "${KSERVE_NAMESPACE}" &>/dev/null; then
+      break
+    fi
+    sleep 1
+  done
+  if ! kubectl get job s3-init -n "${KSERVE_NAMESPACE}" &>/dev/null; then
+    log_error "S3 init job was not created"
+    return 1
+  fi
 
   log_wait "Waiting for S3 init job to complete (downloading model)..."
   if ! kubectl wait --for=condition=complete --timeout=300s job/s3-init -n "${KSERVE_NAMESPACE}"; then

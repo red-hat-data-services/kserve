@@ -21,7 +21,7 @@ declare -A ODH_COMPONENT_MANIFESTS=(
 
 declare -A ODH_RELEASE_COMPONENT_MANIFESTS=(
     ["kserve"]="opendatahub-io:kserve:release-v0.17:config"
-    ["modelcontroller"]="opendatahub-io:odh-model-controller:incubating:config"
+    ["modelcontroller"]="opendatahub-io:odh-model-controller:main:config"
     ["wva"]="opendatahub-io:workload-variant-autoscaler:main:config"
 )
 

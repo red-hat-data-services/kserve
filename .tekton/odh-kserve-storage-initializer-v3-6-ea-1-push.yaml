@@ -42,7 +42,8 @@ spec:
     value: |
       [
         {"type": "rpm", "path": "."},
-        {"type": "pip", "path": "python/storage", "allow_binary": true}
+        {"type": "pip", "path": "python/storage", "allow_binary": true,
+         "requirements_build_files": ["requirements-build-deps.txt"]}
       ]
   - name: build-source-image
     value: true

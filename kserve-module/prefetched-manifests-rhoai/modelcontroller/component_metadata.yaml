@@ -1,4 +1,7 @@
 releases:
+  - name: vLLM-Omni
+    version: v0.26.0
+    repoUrl: https://github.com/vllm-project/vllm-omni
   - name: OpenVINO Model Server
     version: v2025.4
     repoUrl: https://github.com/openvinotoolkit/model_server

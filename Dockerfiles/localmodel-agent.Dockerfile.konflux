@@ -24,7 +24,7 @@ RUN --mount=type=cache,target=/go/pkg/mod \
     CGO_ENABLED=1 GOOS=linux GOFLAGS=-mod=readonly GOEXPERIMENT=strictfipsruntime go build -tags "${GOTAGS},strictfipsruntime" -a -o localmodelnode-agent ./cmd/${CMD}
 
 # Copy the controller-manager into a thin image
-FROM registry.redhat.io/ubi9/ubi-minimal@sha256:175bafd5bc7893540ed6234bb979acfe3574fd6570e6762bbc527c757f854cea
+FROM registry.redhat.io/ubi9/ubi-minimal-pqc@sha256:8a842ac769de709143e4edeace516f2008dfdc431b64670ad3353fa323b44736
 
 RUN microdnf install -y shadow-utils && \
     microdnf clean all && \

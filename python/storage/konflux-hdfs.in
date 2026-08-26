@@ -7,7 +7,7 @@
 # build we lock them here so cachi2 prefetches them alongside the pyproject deps.
 #
 # All three (and their transitive deps) are onboarded to the AIPCC index
-# (public-rhai/rhoai/3.5/cpu-ubi9). Pins match the versions available there.
+# (public-rhai/rhoai/3.6-EA1/cpu-ubi9). Pins match the versions available there.
 krbcontext==0.10
 hdfs==2.7.3
 requests-kerberos==0.15.0

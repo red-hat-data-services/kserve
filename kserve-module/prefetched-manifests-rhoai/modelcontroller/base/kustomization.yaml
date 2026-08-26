@@ -38,7 +38,12 @@ replacements:
           kind: Template
           name: ovms
         fieldPaths:
-          - objects.0.spec.containers.0.image    
+          - objects.0.spec.containers.0.image
+      - select:
+          kind: ClusterServingRuntime
+          name: csr-kserve-ovms-v1
+        fieldPaths:
+          - spec.containers.0.image
   - source:
       kind: ConfigMap
       version: v1
@@ -61,6 +66,11 @@ replacements:
           name: mlserver-runtime-template
         fieldPaths:
           - objects.0.spec.containers.0.image
+      - select:
+          kind: ClusterServingRuntime
+          name: csr-kserve-mlserver-v1
+        fieldPaths:
+          - spec.containers.0.image
   - source:
       kind: ConfigMap
       version: v1
@@ -72,6 +82,11 @@ replacements:
           name: mlserver-cuda-runtime-template
         fieldPaths:
           - objects.0.spec.containers.0.image
+      - select:
+          kind: ClusterServingRuntime
+          name: csr-kserve-mlserver-cuda-v1
+        fieldPaths:
+          - spec.containers.0.image
   - source:
       kind: ConfigMap
       version: v1
@@ -89,6 +104,11 @@ replacements:
         fieldPaths:
           - objects.0.spec.containers.0.image
           - objects.0.spec.workerSpec.containers.0.image
+      - select:
+          kind: ClusterServingRuntime
+          name: csr-kserve-vllm-cuda-v1
+        fieldPaths:
+          - spec.containers.0.image
   - source:
       kind: ConfigMap
       version: v1
@@ -100,6 +120,11 @@ replacements:
           name: vllm-rocm-runtime-template
         fieldPaths:
           - objects.0.spec.containers.0.image
+      - select:
+          kind: ClusterServingRuntime
+          name: csr-kserve-vllm-rocm-v1
+        fieldPaths:
+          - spec.containers.0.image
   - source:
       kind: ConfigMap
       version: v1
@@ -111,6 +136,11 @@ replacements:
           name: vllm-gaudi-runtime-template
         fieldPaths:
           - objects.0.spec.containers.0.image
+      - select:
+          kind: ClusterServingRuntime
+          name: csr-kserve-vllm-gaudi-v1
+        fieldPaths:
+          - spec.containers.0.image
   - source:
       kind: ConfigMap
       version: v1
@@ -122,6 +152,11 @@ replacements:
           name: vllm-cpu-runtime-template
         fieldPaths:
           - objects.0.spec.containers.0.image
+      - select:
+          kind: ClusterServingRuntime
+          name: csr-kserve-vllm-cpu-v1
+        fieldPaths:
+          - spec.containers.0.image
   - source:
       kind: ConfigMap
       version: v1
@@ -133,6 +168,11 @@ replacements:
           name: vllm-cpu-x86-runtime-template
         fieldPaths:
           - objects.0.spec.containers.0.image
+      - select:
+          kind: ClusterServingRuntime
+          name: csr-kserve-vllm-cpu-x86-v1
+        fieldPaths:
+          - spec.containers.0.image
   - source:
       kind: ConfigMap
       version: v1
@@ -144,6 +184,11 @@ replacements:
           name: vllm-spyre-x86-runtime-template
         fieldPaths:
           - objects.0.spec.containers.0.image
+      - select:
+          kind: ClusterServingRuntime
+          name: csr-kserve-vllm-spyre-x86-v1
+        fieldPaths:
+          - spec.containers.0.image
   - source:
       kind: ConfigMap
       version: v1
@@ -155,6 +200,11 @@ replacements:
           name: vllm-spyre-s390x-runtime-template
         fieldPaths:
           - objects.0.spec.containers.0.image
+      - select:
+          kind: ClusterServingRuntime
+          name: csr-kserve-vllm-spyre-s390x-v1
+        fieldPaths:
+          - spec.containers.0.image
   - source:
       kind: ConfigMap
       version: v1
@@ -166,6 +216,11 @@ replacements:
           name: vllm-spyre-ppc64le-runtime-template
         fieldPaths:
           - objects.0.spec.containers.0.image
+      - select:
+          kind: ClusterServingRuntime
+          name: csr-kserve-vllm-spyre-ppc64le-v1
+        fieldPaths:
+          - spec.containers.0.image
   - source:
       kind: ConfigMap
       version: v1
@@ -352,6 +407,39 @@ replacements:
       - select:
           kind: Template
           name: vllm-cpu-x86-runtime-template-fast-2
+        fieldPaths:
+          - objects.0.spec.containers.0.image
+  - source:
+      kind: ConfigMap
+      version: v1
+      name: odh-model-controller-parameters
+      fieldPath: data.vllm-omni-cuda-image
+    targets:
+      - select:
+          kind: Template
+          name: vllm-omni-cuda-runtime-template
+        fieldPaths:
+          - objects.0.spec.containers.0.image
+  - source:
+      kind: ConfigMap
+      version: v1
+      name: odh-model-controller-parameters
+      fieldPath: data.vllm-omni-cuda-image-fast-1
+    targets:
+      - select:
+          kind: Template
+          name: vllm-omni-cuda-runtime-template-fast-1
+        fieldPaths:
+          - objects.0.spec.containers.0.image
+  - source:
+      kind: ConfigMap
+      version: v1
+      name: odh-model-controller-parameters
+      fieldPath: data.vllm-omni-cuda-image-fast-2
+    targets:
+      - select:
+          kind: Template
+          name: vllm-omni-cuda-runtime-template-fast-2
         fieldPaths:
           - objects.0.spec.containers.0.image
   - source:

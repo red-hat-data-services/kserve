@@ -525,9 +525,30 @@ setup_seaweedfs_models() {
 
   log_info "Pre-caching opt-125m model in SeaweedFS..."
   kubectl delete job s3-init -n "${KSERVE_NAMESPACE}" --ignore-not-found
-  sed "s/s3-service.kserve/s3-service.${KSERVE_NAMESPACE}/" \
+  if [[ -n "${HF_TOKEN:-}" ]]; then
+    printf '%s' "${HF_TOKEN}" | kubectl create secret generic hf-token \
+      --from-file=token=/dev/stdin \
+      -n "${KSERVE_NAMESPACE}" \
+      --dry-run=client -o yaml | kubectl apply -f -
+  else
+    kubectl delete secret hf-token -n "${KSERVE_NAMESPACE}" --ignore-not-found
+  fi
+  sed -e "s|s3-service.kserve|s3-service.${KSERVE_NAMESPACE}|" \
+      -e "s|kserve/storage-initializer:latest|${STORAGE_INIT_IMAGE}|" \
     "${PROJECT_ROOT}/test/overlays/openshift-ci/seaweedfs-init-job-odh.yaml" | \
     kubectl apply -n "${KSERVE_NAMESPACE}" -f -
+
+  log_wait "Waiting for S3 init job to be created..."
+  for _ in $(seq 1 30); do
+    if kubectl get job s3-init -n "${KSERVE_NAMESPACE}" &>/dev/null; then
+      break
+    fi
+    sleep 1
+  done
+  if ! kubectl get job s3-init -n "${KSERVE_NAMESPACE}" &>/dev/null; then
+    log_error "S3 init job was not created"
+    return 1
+  fi
 
   log_wait "Waiting for S3 init job to complete (downloading model)..."
   if ! kubectl wait --for=condition=complete --timeout=300s job/s3-init -n "${KSERVE_NAMESPACE}"; then

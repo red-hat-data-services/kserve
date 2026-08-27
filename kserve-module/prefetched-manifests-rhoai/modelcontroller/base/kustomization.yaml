@@ -358,6 +358,39 @@ replacements:
       kind: ConfigMap
       version: v1
       name: odh-model-controller-parameters
+      fieldPath: data.vllm-omni-cuda-image
+    targets:
+      - select:
+          kind: Template
+          name: vllm-omni-cuda-runtime-template
+        fieldPaths:
+          - objects.0.spec.containers.0.image
+  - source:
+      kind: ConfigMap
+      version: v1
+      name: odh-model-controller-parameters
+      fieldPath: data.vllm-omni-cuda-image-fast-1
+    targets:
+      - select:
+          kind: Template
+          name: vllm-omni-cuda-runtime-template-fast-1
+        fieldPaths:
+          - objects.0.spec.containers.0.image
+  - source:
+      kind: ConfigMap
+      version: v1
+      name: odh-model-controller-parameters
+      fieldPath: data.vllm-omni-cuda-image-fast-2
+    targets:
+      - select:
+          kind: Template
+          name: vllm-omni-cuda-runtime-template-fast-2
+        fieldPaths:
+          - objects.0.spec.containers.0.image
+  - source:
+      kind: ConfigMap
+      version: v1
+      name: odh-model-controller-parameters
       fieldPath: data.odh-model-controller
     targets:
       - select:

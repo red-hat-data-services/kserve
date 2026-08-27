@@ -10,5 +10,6 @@ resources:
   - mlserver-template.yaml
   - mlserver-cuda-template.yaml
   - vllm/
+  - vllm-omni/
   - hf-detector-template.yaml
   - autogluon-template.yaml

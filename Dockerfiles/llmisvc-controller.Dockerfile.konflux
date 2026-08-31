@@ -24,7 +24,7 @@ RUN CGO_ENABLED=1 GOOS=${TARGETOS} GOARCH=${TARGETARCH} GOEXPERIMENT=strictfipsr
 COPY LICENSE LICENSE
 
 # Copy the controller-manager into a thin image
-FROM registry.redhat.io/ubi9/ubi-minimal-pqc@sha256:8a842ac769de709143e4edeace516f2008dfdc431b64670ad3353fa323b44736
+FROM registry.redhat.io/ubi9/ubi-minimal-pqc:latest
 COPY --from=builder /go/src/github.com/kserve/kserve/manager /
 USER 1000:1000
 

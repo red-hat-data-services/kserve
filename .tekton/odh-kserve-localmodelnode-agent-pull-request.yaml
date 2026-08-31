@@ -52,7 +52,7 @@ spec:
     value: true
   - name: prefetch-input
     value: |
-      [{"type": "gomod", "path": "."}, {"type": "rpm"}]
+      [{"type": "gomod", "path": "."}]
   - name: build-image-index
     value: true
   - name: enable-slack-failure-notification

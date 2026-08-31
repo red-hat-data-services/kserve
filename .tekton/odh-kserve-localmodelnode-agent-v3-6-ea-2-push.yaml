@@ -11,7 +11,7 @@ metadata:
     pipelinesascode.tekton.dev/max-keep-runs: "3"
     build.appstudio.openshift.io/build-nudge-files: "build/operator-nudging.yaml"
     pipelinesascode.tekton.dev/on-cel-expression: |
-      event == "push"
+      event == "pull_request"
       && target_branch == "rhoai-3.6-ea.2"
       && ( files.all.exists(p, !p.matches('^\\.tekton/')) || ".tekton/odh-kserve-localmodelnode-agent-v3-6-ea-2-push.yaml".pathChanged() )
   labels:
@@ -30,7 +30,7 @@ spec:
     value:
     - '{{target_branch}}-{{revision}}'
   - name: output-image
-    value: quay.io/rhoai/odh-kserve-localmodelnode-agent-rhel9:{{target_branch}}
+    value: quay.io/rhoai/odh-kserve-localmodelnode-agent-rhel9:pqc
   - name: rhoai-version
     value: "3.6.0-ea.2"
   - name: dockerfile
@@ -54,6 +54,10 @@ spec:
     - linux/s390x
   - name: rhel-subscription-activation-key
     value: "rhel-subscription-activation-key-nonexistent"
+  - name: image-expires-after
+    value: 5d
+  - name: enable-slack-failure-notification
+    value: "false"
   pipelineRef:
     resolver: git
     params:

@@ -108,12 +108,6 @@ patches:
     kind: MutatingWebhookConfiguration
     name: mutating.odh-model-controller.opendatahub.io
     version: v1
-- path: patches/remove-openshift-rbac.yaml
-  target:
-    group: rbac.authorization.k8s.io
-    kind: ClusterRole
-    name: odh-model-controller-role
-    version: v1
 - target:
     kind: Template
   patch: |-

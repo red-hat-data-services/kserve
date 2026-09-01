@@ -109,6 +109,14 @@ patches:
     name: mutating.odh-model-controller.opendatahub.io
     version: v1
 - target:
+    kind: ClusterServingRuntime
+  patch: |-
+    $patch: delete
+    apiVersion: serving.kserve.io/v1alpha1
+    kind: ClusterServingRuntime
+    metadata:
+      name: placeholder
+- target:
     kind: Template
   patch: |-
     $patch: delete

@@ -6,7 +6,7 @@ metadata:
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
-  name: kserve-localmodel-leader-election-role
+  name: kserve-leader-election-role
 subjects:
 - kind: ServiceAccount
   name: kserve-localmodel-controller-manager

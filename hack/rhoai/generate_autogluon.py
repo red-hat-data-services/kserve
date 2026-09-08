@@ -8,9 +8,9 @@
 from __future__ import annotations
 
 import argparse
-import copy
 import os
 from pathlib import Path
+import re
 import shutil
 import subprocess
 import sys
@@ -23,10 +23,11 @@ import tomlkit
 
 UV_VERSION = "0.7.8"
 CONTENT_OUTPUTS = (
-    "pyproject.rhoai.toml",
     "uv.rhoai.lock",
     "autogluon-all-requirements.txt",
 )
+RHOAI_PROJECT = "pyproject.rhoai.toml"
+AIPCC_ARTIFACT_HOST = "packages.redhat.com"
 LOCAL_PACKAGE_SOURCES = {
     ("autogluonserver", "editable", "."),
     ("kserve", "directory", "../kserve"),
@@ -50,30 +51,15 @@ def _table(value: Any, name: str) -> Any:
     return value
 
 
-def _exact_keys(value: Any, expected: set[str], name: str) -> None:
-    actual = set(_table(value, name).keys())
-    if actual != expected:
-        raise GenerationError(
-            f"{name} keys must be {sorted(expected)}; got {sorted(actual)}"
-        )
+def _validate_project(project_path: Path) -> str:
+    project = tomlkit.parse(project_path.read_text(encoding="utf-8"))
+    project_table = _table(project.get("project"), "project")
+    if project_table.get("name") != "autogluonserver":
+        raise GenerationError("project.name must be autogluonserver")
+    if project_table.get("requires-python") != ">=3.11,<3.13":
+        raise GenerationError("RHOAI project must target Python >=3.11,<3.13")
 
-
-def _render_project(base_path: Path, overlay_path: Path) -> tuple[str, str]:
-    base = tomlkit.parse(base_path.read_text(encoding="utf-8"))
-    overlay = tomlkit.parse(overlay_path.read_text(encoding="utf-8"))
-
-    _exact_keys(
-        overlay,
-        {"project", "build-system", "dependency-groups", "tool"},
-        "overlay",
-    )
-    _exact_keys(overlay["project"], {"requires-python", "dependencies"}, "project")
-    _exact_keys(overlay["build-system"], {"requires", "build-backend"}, "build-system")
-    _exact_keys(overlay["dependency-groups"], {"rhoai-build"}, "dependency-groups")
-    _exact_keys(overlay["tool"], {"uv"}, "tool")
-    _exact_keys(overlay["tool"]["uv"], {"index", "sources"}, "tool.uv")
-
-    dependencies = overlay["project"]["dependencies"]
+    dependencies = project_table.get("dependencies")
     if not dependencies or not all(isinstance(item, str) for item in dependencies):
         raise GenerationError("project.dependencies must be a non-empty string array")
     required_packages = ("autogluon.tabular", "autogluon.timeseries")
@@ -83,9 +69,30 @@ def _render_project(base_path: Path, overlay_path: Path) -> tuple[str, str]:
     ):
         raise GenerationError("both patched AutoGluon packages are required")
 
-    indexes = overlay["tool"]["uv"]["index"]
-    if len(indexes) != 1 or indexes[0].get("default") is not True:
-        raise GenerationError("the overlay must define one default RHOAI index")
+    build_system = _table(project.get("build-system"), "build-system")
+    if build_system.get("requires") != ["setuptools>=61.0"]:
+        raise GenerationError("RHOAI build-system must require setuptools>=61.0")
+    if build_system.get("build-backend") != "setuptools.build_meta":
+        raise GenerationError("RHOAI build-system must use setuptools.build_meta")
+
+    dependency_groups = _table(project.get("dependency-groups"), "dependency-groups")
+    if set(dependency_groups) != {"rhoai-build"}:
+        raise GenerationError("RHOAI project must contain only the rhoai-build group")
+    if dependency_groups["rhoai-build"] != ["setuptools>=61.0", "wheel"]:
+        raise GenerationError("rhoai-build must contain setuptools and wheel")
+
+    tool = _table(project.get("tool"), "tool")
+    uv = _table(tool.get("uv"), "tool.uv")
+    if set(uv) != {"index", "sources"}:
+        raise GenerationError("tool.uv must contain only index and sources")
+
+    indexes = uv["index"]
+    if (
+        len(indexes) != 1
+        or set(indexes[0]) != {"name", "url", "default"}
+        or indexes[0].get("default") is not True
+    ):
+        raise GenerationError("RHOAI project must define one default index")
     index_name = str(indexes[0].get("name", ""))
     index_url = str(indexes[0].get("url", ""))
     parsed_url = urlsplit(index_url)
@@ -94,33 +101,39 @@ def _render_project(base_path: Path, overlay_path: Path) -> tuple[str, str]:
     if parsed_url.username or parsed_url.password:
         raise GenerationError("the RHOAI index URL must not contain credentials")
 
-    sources = _table(overlay["tool"]["uv"]["sources"], "tool.uv.sources")
+    sources = _table(uv["sources"], "tool.uv.sources")
     expected_sources = {
         "autogluon.common",
         "autogluon.core",
         "autogluon.features",
         "autogluon.tabular",
         "autogluon.timeseries",
+        "kserve",
+        "kserve-storage",
     }
-    _exact_keys(sources, expected_sources, "tool.uv.sources")
+    if set(sources) != expected_sources:
+        raise GenerationError(
+            "tool.uv.sources keys must be "
+            f"{sorted(expected_sources)}; got {sorted(sources)}"
+        )
+
+    expected_local_sources = {
+        "kserve": {"path": "../kserve", "editable": False},
+        "kserve-storage": {"path": "../storage", "editable": False},
+    }
+    for package, expected in expected_local_sources.items():
+        source = _table(sources[package], f"tool.uv.sources.{package}")
+        if dict(source) != expected:
+            raise GenerationError(f"{package} must use the local source {expected}")
+
     for package, source in sources.items():
+        if package in expected_local_sources:
+            continue
         if set(_table(source, f"tool.uv.sources.{package}").keys()) != {"index"}:
             raise GenerationError(f"{package} must declare only an index source")
         if source["index"] != index_name:
             raise GenerationError(f"{package} must use the RHOAI index")
-
-    base["project"]["requires-python"] = copy.deepcopy(
-        overlay["project"]["requires-python"]
-    )
-    base["project"]["dependencies"] = copy.deepcopy(dependencies)
-    base["build-system"] = copy.deepcopy(overlay["build-system"])
-    base["dependency-groups"] = {
-        "rhoai-build": copy.deepcopy(overlay["dependency-groups"]["rhoai-build"])
-    }
-    for package, source in sources.items():
-        base["tool"]["uv"]["sources"][package] = copy.deepcopy(source)
-    base["tool"]["uv"]["index"] = copy.deepcopy(indexes)
-    return tomlkit.dumps(base), index_url
+    return index_url
 
 
 def _validate_lock(lock: bytes, index_url: str) -> None:
@@ -141,8 +154,16 @@ def _validate_lock(lock: bytes, index_url: str) -> None:
         else:
             raise GenerationError(f"{name} has an invalid package source")
 
-        for artifact in package.get("wheels", []):
+        artifacts = list(package.get("wheels", []))
+        if "sdist" in package:
+            artifacts.append(package["sdist"])
+        for artifact in artifacts:
             url = str(artifact["url"])
+            parsed_url = urlsplit(url)
+            if parsed_url.scheme != "https" or parsed_url.netloc != AIPCC_ARTIFACT_HOST:
+                raise GenerationError(
+                    f"{name} has an artifact outside {AIPCC_ARTIFACT_HOST}"
+                )
             platform_markers.update(
                 marker for marker in KONFLUX_PLATFORM_MARKERS if marker in url
             )
@@ -159,6 +180,19 @@ def _validate_lock(lock: bytes, index_url: str) -> None:
         )
     if b"pypi.org" in lock or b"pythonhosted.org" in lock:
         raise GenerationError("RHOAI lock contains public PyPI artifact URLs")
+
+
+def _validate_requirements(requirements: bytes) -> None:
+    current = ""
+    for line in requirements.decode("utf-8").splitlines():
+        if re.match(r"^[A-Za-z0-9_.-]+==", line):
+            if current and "--hash=sha256:" not in current:
+                raise GenerationError("exported requirement is missing a hash")
+            current = line
+        elif current:
+            current += "\n" + line
+    if current and "--hash=sha256:" not in current:
+        raise GenerationError("exported requirement is missing a hash")
 
 
 def _run_uv(project_dir: Path) -> tuple[bytes, bytes]:
@@ -206,13 +240,12 @@ def _run_uv(project_dir: Path) -> tuple[bytes, bytes]:
 
 
 def _generate(
-    base_path: Path,
-    overlay_path: Path,
+    project_path: Path,
     output_dir: Path,
 ) -> dict[str, bytes]:
-    rendered_text, index_url = _render_project(base_path, overlay_path)
-    rendered = rendered_text.encode()
-    python_dir = base_path.parent.parent
+    index_url = _validate_project(project_path)
+    project = project_path.read_bytes()
+    python_dir = project_path.parent.parent
     for local_project in ("kserve", "storage"):
         if not (python_dir / local_project / "pyproject.toml").is_file():
             raise GenerationError(f"missing local project: {local_project}")
@@ -220,12 +253,18 @@ def _generate(
     with tempfile.TemporaryDirectory(prefix="autogluon-rhoai-") as temp_dir:
         temp_python = Path(temp_dir) / "python"
         temp_python.mkdir()
-        ignored = shutil.ignore_patterns(".venv", "__pycache__", *CONTENT_OUTPUTS)
-        for project in ("kserve", "storage"):
-            shutil.copytree(python_dir / project, temp_python / project, ignore=ignored)
-        temp_project = temp_python / "autogluonserver"
-        shutil.copytree(base_path.parent, temp_project, ignore=ignored)
-        (temp_project / "pyproject.toml").write_bytes(rendered)
+        ignored = shutil.ignore_patterns(
+            ".venv", "__pycache__", RHOAI_PROJECT, *CONTENT_OUTPUTS
+        )
+        for local_project in ("kserve", "storage"):
+            shutil.copytree(
+                python_dir / local_project,
+                temp_python / local_project,
+                ignore=ignored,
+            )
+        temp_project = temp_python / project_path.parent.name
+        shutil.copytree(project_path.parent, temp_project, ignore=ignored)
+        (temp_project / "pyproject.toml").write_bytes(project)
         existing_lock = output_dir / "uv.rhoai.lock"
         if existing_lock.is_file():
             shutil.copy2(existing_lock, temp_project / "uv.lock")
@@ -235,12 +274,12 @@ def _generate(
 
     if b"--index-url" in requirements_body or b"--extra-index-url" in requirements_body:
         raise GenerationError("uv export unexpectedly emitted an index directive")
+    _validate_requirements(requirements_body)
     if not requirements_body.endswith(b"\n"):
         requirements_body += b"\n"
     requirements = f"--index-url {index_url}\n\n".encode() + requirements_body
 
     outputs = {
-        "pyproject.rhoai.toml": rendered,
         "uv.rhoai.lock": lock,
         "autogluon-all-requirements.txt": requirements,
     }
@@ -277,16 +316,14 @@ def _apply_outputs(outputs: dict[str, bytes], output_dir: Path, check: bool) -> 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--base", type=Path, required=True)
-    parser.add_argument("--overlay", type=Path, required=True)
+    parser.add_argument("--project", type=Path, required=True)
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--check", action="store_true")
     arguments = parser.parse_args()
 
     try:
         outputs = _generate(
-            arguments.base.resolve(),
-            arguments.overlay.resolve(),
+            arguments.project.resolve(),
             arguments.output_dir.resolve(),
         )
         return _apply_outputs(outputs, arguments.output_dir.resolve(), arguments.check)

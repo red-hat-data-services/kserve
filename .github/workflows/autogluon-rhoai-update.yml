@@ -4,8 +4,7 @@ on:
   push:
     branches: [main]
     paths:
-      - python/autogluonserver/pyproject.toml
-      - python/autogluonserver/rhoai-overrides.toml
+      - python/autogluonserver/pyproject.rhoai.toml
       - python/autogluonserver/autogluonserver/**
       - python/kserve/**
       - python/storage/**
@@ -55,8 +54,7 @@ jobs:
       - name: Generate RHOAI artifacts
         run: |
           uv run hack/rhoai/generate_autogluon.py \
-            --base python/autogluonserver/pyproject.toml \
-            --overlay python/autogluonserver/rhoai-overrides.toml \
+            --project python/autogluonserver/pyproject.rhoai.toml \
             --output-dir python/autogluonserver
 
       - name: Commit generated artifacts
@@ -64,7 +62,6 @@ jobs:
           TARGET_BRANCH: main
         run: |
           GENERATED=(
-            python/autogluonserver/pyproject.rhoai.toml
             python/autogluonserver/uv.rhoai.lock
             python/autogluonserver/autogluon-all-requirements.txt
           )

@@ -2,17 +2,25 @@ name: Update RHOAI AutoGluon artifacts
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+      - 'rhoai-*'
     paths:
       - python/autogluonserver/pyproject.rhoai.toml
-      - python/autogluonserver/autogluonserver/**
-      - python/kserve/**
-      - python/storage/**
-      - python/pyproject.toml
-      - python/third_party/pip-licenses.py
+      - python/autogluonserver/uv.lock
+      - python/kserve/pyproject.toml
+      - python/storage/pyproject.toml
       - hack/rhoai/generate_autogluon.py
-      - Dockerfiles/autogluon.Dockerfile.konflux
-      - kserve-deps.env
+      - .github/workflows/autogluon-rhoai-update.yml
+  pull_request_target:
+    types: [closed]
+    branches: ['rhoai-*']
+    paths:
+      - python/autogluonserver/pyproject.rhoai.toml
+      - python/autogluonserver/uv.lock
+      - python/kserve/pyproject.toml
+      - python/storage/pyproject.toml
+      - hack/rhoai/generate_autogluon.py
       - .github/workflows/autogluon-rhoai-update.yml
   workflow_dispatch:
 
@@ -20,12 +28,16 @@ permissions:
   contents: read
 
 concurrency:
-  group: autogluon-rhoai-main
+  group: autogluon-rhoai-${{ github.event_name == 'pull_request_target' && github.event.pull_request.base.ref || github.ref_name }}
   cancel-in-progress: false
 
 jobs:
   generate:
+    if: github.event_name != 'pull_request_target' || github.event.pull_request.merged == true
     runs-on: ubuntu-latest
+    env:
+      TARGET_BRANCH: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.base.ref || github.ref_name }}
+      CHECKOUT_REF: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.merge_commit_sha || github.sha }}
     steps:
       - name: Generate repository token
         id: app-token
@@ -36,12 +48,15 @@ jobs:
           owner: ${{ github.repository_owner }}
           repositories: kserve
 
-      - name: Check out KServe main
+      - name: Check out target revision
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           fetch-depth: 0
-          ref: main
+          ref: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.merge_commit_sha || github.sha }}
           token: ${{ steps.app-token.outputs.token }}
+
+      - name: Prepare local target branch
+        run: git switch --force-create "$TARGET_BRANCH" "$CHECKOUT_REF"
 
       - name: Set up Python
         uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
@@ -53,37 +68,37 @@ jobs:
 
       - name: Generate RHOAI artifacts
         run: |
-          uv run hack/rhoai/generate_autogluon.py \
-            --project python/autogluonserver/pyproject.rhoai.toml \
-            --output-dir python/autogluonserver
-
-      - name: Commit generated artifacts
-        env:
-          TARGET_BRANCH: main
-        run: |
-          GENERATED=(
-            python/autogluonserver/uv.rhoai.lock
-            python/autogluonserver/autogluon-all-requirements.txt
-          )
-          git add -- "${GENERATED[@]}"
-          if git diff --staged --quiet; then
-            echo "RHOAI AutoGluon artifacts are already current"
-            exit 0
-          fi
-
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "chore(autogluon): regenerate RHOAI artifacts"
 
           MAX_RETRIES=5
           for attempt in $(seq 1 "$MAX_RETRIES"); do
-            if git push origin "$TARGET_BRANCH"; then
+            if [ "$attempt" -gt 1 ]; then
+              git fetch origin "$TARGET_BRANCH"
+              git reset --hard "origin/$TARGET_BRANCH"
+            fi
+
+            uv run hack/rhoai/generate_autogluon.py \
+              --project python/autogluonserver/pyproject.rhoai.toml \
+              --output-dir python/autogluonserver
+
+            GENERATED=(
+              python/autogluonserver/uv.rhoai.lock
+              python/autogluonserver/autogluon-all-requirements.txt
+            )
+            git add -- "${GENERATED[@]}"
+            if git diff --staged --quiet; then
+              echo "RHOAI AutoGluon artifacts are already current"
+              exit 0
+            fi
+
+            git commit -m "chore(autogluon): regenerate RHOAI artifacts"
+            if git push origin "HEAD:refs/heads/$TARGET_BRANCH"; then
               echo "Generated artifact push succeeded (attempt ${attempt})"
               exit 0
             fi
-            if [ "$attempt" -lt "$MAX_RETRIES" ]; then
-              git pull --rebase origin "$TARGET_BRANCH"
-            fi
+
+            echo "Generated artifact push rejected (attempt ${attempt})" >&2
           done
           echo "ERROR: generated artifact push failed after ${MAX_RETRIES} attempts" >&2
           exit 1

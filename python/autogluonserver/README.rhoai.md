@@ -18,5 +18,7 @@ uv run hack/rhoai/generate_autogluon.py \
 
 Use `--check` to validate that the committed generated files are current. The
 downstream update workflow regenerates and commits the same two files after
-relevant changes land on `main`. Edit the RHOAI pyproject directly; do not
-edit the generated lock or requirements file by hand.
+relevant changes land on `main` or an active `rhoai-*` release branch. For a
+merged release-branch PR, it runs against the merge commit. Edit the RHOAI
+pyproject directly; do not edit the generated lock or requirements file by
+hand.

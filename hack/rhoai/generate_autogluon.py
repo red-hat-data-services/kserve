@@ -22,6 +22,9 @@ import tomlkit
 
 
 UV_VERSION = "0.7.8"
+REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
+DEFAULT_PROJECT = REPOSITORY_ROOT / "python/autogluonserver/pyproject.rhoai.toml"
+DEFAULT_OUTPUT_DIR = REPOSITORY_ROOT / "python/autogluonserver"
 CONTENT_OUTPUTS = (
     "uv.rhoai.lock",
     "autogluon-all-requirements.txt",
@@ -316,8 +319,8 @@ def _apply_outputs(outputs: dict[str, bytes], output_dir: Path, check: bool) -> 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--project", type=Path, required=True)
-    parser.add_argument("--output-dir", type=Path, required=True)
+    parser.add_argument("--project", type=Path, default=DEFAULT_PROJECT)
+    parser.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT_DIR)
     parser.add_argument("--check", action="store_true")
     arguments = parser.parse_args()
 

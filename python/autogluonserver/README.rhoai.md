@@ -11,9 +11,7 @@ Generate the two content artifacts locally with the repository-pinned uv
 version (`0.7.8`):
 
 ```bash
-uv run hack/rhoai/generate_autogluon.py \
-  --project python/autogluonserver/pyproject.rhoai.toml \
-  --output-dir python/autogluonserver
+uv run hack/rhoai/generate_autogluon.py
 ```
 
 Use `--check` to validate that the committed generated files are current. The

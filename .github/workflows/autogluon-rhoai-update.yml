@@ -78,9 +78,7 @@ jobs:
               git reset --hard "origin/$TARGET_BRANCH"
             fi
 
-            uv run hack/rhoai/generate_autogluon.py \
-              --project python/autogluonserver/pyproject.rhoai.toml \
-              --output-dir python/autogluonserver
+            uv run hack/rhoai/generate_autogluon.py
 
             GENERATED=(
               python/autogluonserver/uv.rhoai.lock

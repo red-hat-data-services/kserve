@@ -57,8 +57,7 @@ jobs:
           uv run hack/rhoai/generate_autogluon.py \
             --base python/autogluonserver/pyproject.toml \
             --overlay python/autogluonserver/rhoai-overrides.toml \
-            --output-dir python/autogluonserver \
-            --source-commit "$GITHUB_SHA"
+            --output-dir python/autogluonserver
 
       - name: Commit generated artifacts
         env:
@@ -68,7 +67,6 @@ jobs:
             python/autogluonserver/pyproject.rhoai.toml
             python/autogluonserver/uv.rhoai.lock
             python/autogluonserver/autogluon-all-requirements.txt
-            python/autogluonserver/rhoai-generation.toml
           )
           git add -- "${GENERATED[@]}"
           if git diff --staged --quiet; then
@@ -78,9 +76,7 @@ jobs:
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit \
-            -m "chore(autogluon): regenerate RHOAI artifacts" \
-            -m "Source: ${GITHUB_SHA}"
+          git commit -m "chore(autogluon): regenerate RHOAI artifacts"
 
           MAX_RETRIES=5
           for attempt in $(seq 1 "$MAX_RETRIES"); do

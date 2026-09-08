@@ -9,10 +9,8 @@ from __future__ import annotations
 
 import argparse
 import copy
-import hashlib
 import os
 from pathlib import Path
-import re
 import shutil
 import subprocess
 import sys
@@ -23,14 +21,12 @@ from urllib.parse import urlsplit
 import tomlkit
 
 
-PYTHON_VERSION = "3.12"
 UV_VERSION = "0.7.8"
 CONTENT_OUTPUTS = (
     "pyproject.rhoai.toml",
     "uv.rhoai.lock",
     "autogluon-all-requirements.txt",
 )
-PROVENANCE_OUTPUT = "rhoai-generation.toml"
 
 
 class GenerationError(RuntimeError):
@@ -160,46 +156,10 @@ def _run_uv(project_dir: Path) -> tuple[bytes, bytes]:
     return (project_dir / "uv.lock").read_bytes(), requirements_body.read_bytes()
 
 
-def _sha256(content: bytes) -> str:
-    return hashlib.sha256(content).hexdigest()
-
-
-def _provenance(
-    source_commit: str,
-    base: bytes,
-    overlay: bytes,
-    rendered: bytes,
-    lock: bytes,
-    requirements: bytes,
-) -> bytes:
-    if not re.fullmatch(r"[0-9a-fA-F]{40}", source_commit):
-        raise GenerationError("--source-commit must be a 40-character Git SHA")
-    generator = Path(__file__).read_bytes()
-    values: list[tuple[str, str | int]] = [
-        ("schema_version", 1),
-        ("source_commit", source_commit.lower()),
-        ("base_sha256", _sha256(base)),
-        ("overlay_sha256", _sha256(overlay)),
-        ("generator_sha256", _sha256(generator)),
-        ("rendered_project_sha256", _sha256(rendered)),
-        ("lock_sha256", _sha256(lock)),
-        ("requirements_sha256", _sha256(requirements)),
-        ("python_version", PYTHON_VERSION),
-        ("uv_version", UV_VERSION),
-    ]
-    lines = []
-    for key, value in values:
-        lines.append(
-            f"{key} = {value}" if isinstance(value, int) else f'{key} = "{value}"'
-        )
-    return ("\n".join(lines) + "\n").encode()
-
-
 def _generate(
     base_path: Path,
     overlay_path: Path,
     output_dir: Path,
-    source_commit: str | None,
 ) -> dict[str, bytes]:
     rendered_text, index_url = _render_project(base_path, overlay_path)
     rendered = rendered_text.encode()
@@ -211,9 +171,7 @@ def _generate(
     with tempfile.TemporaryDirectory(prefix="autogluon-rhoai-") as temp_dir:
         temp_python = Path(temp_dir) / "python"
         temp_python.mkdir()
-        ignored = shutil.ignore_patterns(
-            ".venv", "__pycache__", *CONTENT_OUTPUTS, PROVENANCE_OUTPUT
-        )
+        ignored = shutil.ignore_patterns(".venv", "__pycache__", *CONTENT_OUTPUTS)
         for project in ("kserve", "storage"):
             shutil.copytree(python_dir / project, temp_python / project, ignore=ignored)
         temp_project = temp_python / "autogluonserver"
@@ -235,15 +193,6 @@ def _generate(
         "uv.rhoai.lock": lock,
         "autogluon-all-requirements.txt": requirements,
     }
-    if source_commit:
-        outputs[PROVENANCE_OUTPUT] = _provenance(
-            source_commit,
-            base_path.read_bytes(),
-            overlay_path.read_bytes(),
-            rendered,
-            lock,
-            requirements,
-        )
     return outputs
 
 
@@ -280,9 +229,7 @@ def main() -> int:
     parser.add_argument("--base", type=Path, required=True)
     parser.add_argument("--overlay", type=Path, required=True)
     parser.add_argument("--output-dir", type=Path, required=True)
-    exclusive = parser.add_mutually_exclusive_group()
-    exclusive.add_argument("--source-commit")
-    exclusive.add_argument("--check", action="store_true")
+    parser.add_argument("--check", action="store_true")
     arguments = parser.parse_args()
 
     try:
@@ -290,7 +237,6 @@ def main() -> int:
             arguments.base.resolve(),
             arguments.overlay.resolve(),
             arguments.output_dir.resolve(),
-            arguments.source_commit,
         )
         return _apply_outputs(outputs, arguments.output_dir.resolve(), arguments.check)
     except (GenerationError, tomlkit.exceptions.ParseError) as error:

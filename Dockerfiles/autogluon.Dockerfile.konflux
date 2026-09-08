@@ -25,7 +25,7 @@ RUN cp autogluonserver/pyproject.rhoai.toml autogluonserver/pyproject.toml
 
 # ========== Install all dependencies (hermetic) ==========
 RUN pip install --no-build-isolation --require-hashes \
-    -r /opt/app-root/autogluonserver/autogluon-rhoai-requirements.txt
+    -r /opt/app-root/autogluonserver/autogluon-all-requirements.txt
 
 # ========== Install local packages (kserve, storage, autogluonserver) without re-resolving dependencies ==========
 # Use --no-deps to prevent re-resolution since all deps are already installed from lockfile

@@ -28,7 +28,7 @@ UV_VERSION = "0.7.8"
 CONTENT_OUTPUTS = (
     "pyproject.rhoai.toml",
     "uv.rhoai.lock",
-    "autogluon-rhoai-requirements.txt",
+    "autogluon-all-requirements.txt",
 )
 PROVENANCE_OUTPUT = "rhoai-generation.toml"
 
@@ -233,7 +233,7 @@ def _generate(
     outputs = {
         "pyproject.rhoai.toml": rendered,
         "uv.rhoai.lock": lock,
-        "autogluon-rhoai-requirements.txt": requirements,
+        "autogluon-all-requirements.txt": requirements,
     }
     if source_commit:
         outputs[PROVENANCE_OUTPUT] = _provenance(

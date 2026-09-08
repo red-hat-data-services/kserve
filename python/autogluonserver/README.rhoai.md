@@ -5,7 +5,7 @@ package policy is kept separately in `rhoai-overrides.toml` and rendered into:
 
 - `pyproject.rhoai.toml`;
 - `uv.rhoai.lock`;
-- `autogluon-rhoai-requirements.txt`; and
+- `autogluon-all-requirements.txt`; and
 - `rhoai-generation.toml` after a relevant change lands on downstream `main`.
 
 Generate the three content artifacts locally with the repository-pinned uv
@@ -19,5 +19,6 @@ uv run hack/rhoai/generate_autogluon.py \
 ```
 
 Use `--check` in validation jobs. The downstream update workflow passes
-`--source-commit` and commits the resulting provenance file. Do not edit any
-generated file by hand.
+`--source-commit` and commits the resulting provenance file. Provenance is an
+audit record; release builds continue to use their existing push triggers. Do
+not edit any generated file by hand.

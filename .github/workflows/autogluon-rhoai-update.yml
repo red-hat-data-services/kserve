@@ -67,7 +67,7 @@ jobs:
           GENERATED=(
             python/autogluonserver/pyproject.rhoai.toml
             python/autogluonserver/uv.rhoai.lock
-            python/autogluonserver/autogluon-rhoai-requirements.txt
+            python/autogluonserver/autogluon-all-requirements.txt
             python/autogluonserver/rhoai-generation.toml
           )
           git add -- "${GENERATED[@]}"

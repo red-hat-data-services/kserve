@@ -27,4 +27,4 @@ rhoai-build = ["setuptools>=61.0", "wheel"]
 [[tool.uv.index]]
 name = "aipcc"
 url = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/"
-explicit = true
+default = true

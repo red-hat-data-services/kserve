@@ -27,6 +27,17 @@ CONTENT_OUTPUTS = (
     "uv.rhoai.lock",
     "autogluon-all-requirements.txt",
 )
+LOCAL_PACKAGE_SOURCES = {
+    ("autogluonserver", "editable", "."),
+    ("kserve", "directory", "../kserve"),
+    ("kserve-storage", "virtual", "../storage"),
+}
+KONFLUX_PLATFORM_MARKERS = {
+    "linux_aarch64",
+    "linux_ppc64le",
+    "linux_s390x",
+    "linux_x86_64",
+}
 
 
 class GenerationError(RuntimeError):
@@ -73,8 +84,8 @@ def _render_project(base_path: Path, overlay_path: Path) -> tuple[str, str]:
         raise GenerationError("both patched AutoGluon packages are required")
 
     indexes = overlay["tool"]["uv"]["index"]
-    if len(indexes) != 1 or indexes[0].get("explicit") is not True:
-        raise GenerationError("the overlay must define one explicit RHOAI index")
+    if len(indexes) != 1 or indexes[0].get("default") is not True:
+        raise GenerationError("the overlay must define one default RHOAI index")
     index_name = str(indexes[0].get("name", ""))
     index_url = str(indexes[0].get("url", ""))
     parsed_url = urlsplit(index_url)
@@ -103,13 +114,51 @@ def _render_project(base_path: Path, overlay_path: Path) -> tuple[str, str]:
     )
     base["project"]["dependencies"] = copy.deepcopy(dependencies)
     base["build-system"] = copy.deepcopy(overlay["build-system"])
-    base["dependency-groups"]["rhoai-build"] = copy.deepcopy(
-        overlay["dependency-groups"]["rhoai-build"]
-    )
+    base["dependency-groups"] = {
+        "rhoai-build": copy.deepcopy(overlay["dependency-groups"]["rhoai-build"])
+    }
     for package, source in sources.items():
         base["tool"]["uv"]["sources"][package] = copy.deepcopy(source)
     base["tool"]["uv"]["index"] = copy.deepcopy(indexes)
     return tomlkit.dumps(base), index_url
+
+
+def _validate_lock(lock: bytes, index_url: str) -> None:
+    document = tomlkit.parse(lock.decode("utf-8"))
+    registry_urls = set[str]()
+    platform_markers = set[str]()
+    for package in document.get("package", []):
+        name = str(package["name"])
+        source = package.get("source", {})
+        if "registry" in source:
+            if set(source.keys()) != {"registry"}:
+                raise GenerationError(f"{name} has an invalid registry source")
+            registry_urls.add(str(source["registry"]))
+        elif len(source) == 1:
+            source_kind, source_value = next(iter(source.items()))
+            if (name, source_kind, str(source_value)) not in LOCAL_PACKAGE_SOURCES:
+                raise GenerationError(f"{name} has a non-local package source")
+        else:
+            raise GenerationError(f"{name} has an invalid package source")
+
+        for artifact in package.get("wheels", []):
+            url = str(artifact["url"])
+            platform_markers.update(
+                marker for marker in KONFLUX_PLATFORM_MARKERS if marker in url
+            )
+
+    if registry_urls != {index_url}:
+        raise GenerationError(
+            "RHOAI lock contains a non-RHOAI package source: "
+            + ", ".join(sorted(registry_urls))
+        )
+    if platform_markers != KONFLUX_PLATFORM_MARKERS:
+        raise GenerationError(
+            "RHOAI lock is missing Konflux platform artifacts: "
+            + ", ".join(sorted(KONFLUX_PLATFORM_MARKERS - platform_markers))
+        )
+    if b"pypi.org" in lock or b"pythonhosted.org" in lock:
+        raise GenerationError("RHOAI lock contains public PyPI artifact URLs")
 
 
 def _run_uv(project_dir: Path) -> tuple[bytes, bytes]:
@@ -181,6 +230,8 @@ def _generate(
         if existing_lock.is_file():
             shutil.copy2(existing_lock, temp_project / "uv.lock")
         lock, requirements_body = _run_uv(temp_project)
+
+    _validate_lock(lock, index_url)
 
     if b"--index-url" in requirements_body or b"--extra-index-url" in requirements_body:
         raise GenerationError("uv export unexpectedly emitted an index directive")

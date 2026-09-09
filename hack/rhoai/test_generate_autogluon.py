@@ -17,6 +17,7 @@ REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
 PROJECT_PATH = REPOSITORY_ROOT / "python/autogluonserver/pyproject.rhoai.toml"
 LOCK_PATH = REPOSITORY_ROOT / "python/autogluonserver/uv.rhoai.lock"
 GENERATOR_PATH = Path(__file__).with_name("generate_autogluon.py")
+WORKFLOW_PATH = REPOSITORY_ROOT / ".github/workflows/autogluon-rhoai-update.yml"
 
 spec = importlib.util.spec_from_file_location("generate_autogluon", GENERATOR_PATH)
 if spec is None or spec.loader is None:
@@ -26,6 +27,17 @@ spec.loader.exec_module(generator)
 
 
 class GeneratorContractTests(unittest.TestCase):
+    def test_manual_dispatch_requires_trusted_branch_and_approval(self):
+        workflow = WORKFLOW_PATH.read_text(encoding="utf-8")
+
+        self.assertIn("name: autogluon-manual-regeneration", workflow)
+        self.assertIn(
+            "github.ref_name == 'main' || startsWith(github.ref_name, 'rhoai-')",
+            workflow,
+        )
+        self.assertIn("needs: manual-approval", workflow)
+        self.assertIn("needs.manual-approval.result == 'success'", workflow)
+
     def test_checked_in_project_and_lock_pass_validation(self):
         index_url = generator._validate_project(PROJECT_PATH)
 

@@ -41,6 +41,17 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  manual-approval:
+    if: >-
+      github.event_name == 'workflow_dispatch' &&
+      (github.ref_name == 'main' || startsWith(github.ref_name, 'rhoai-'))
+    runs-on: ubuntu-latest
+    environment:
+      name: autogluon-manual-regeneration
+    steps:
+      - name: Approve manual regeneration
+        run: echo "Manual regeneration approved for ${GITHUB_REF_NAME}"
+
   test:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
@@ -63,9 +74,18 @@ jobs:
         run: uv run hack/rhoai/test_generate_autogluon.py
 
   generate:
+    needs: manual-approval
     if: >-
+      always() &&
       github.event_name != 'pull_request' &&
-      (github.event_name != 'pull_request_target' || github.event.pull_request.merged == true)
+      (github.event_name != 'pull_request_target' || github.event.pull_request.merged == true) &&
+      (
+        github.event_name != 'workflow_dispatch' ||
+        (
+          (github.ref_name == 'main' || startsWith(github.ref_name, 'rhoai-')) &&
+          needs.manual-approval.result == 'success'
+        )
+      )
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:

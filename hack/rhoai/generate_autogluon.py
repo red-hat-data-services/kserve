@@ -21,8 +21,8 @@ from urllib.parse import urlsplit
 import tomlkit
 
 
-UV_VERSION = "0.7.8"
 REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
+DEPENDENCY_ENV = REPOSITORY_ROOT / "kserve-deps.env"
 DEFAULT_PROJECT = REPOSITORY_ROOT / "python/autogluonserver/pyproject.rhoai.toml"
 DEFAULT_OUTPUT_DIR = REPOSITORY_ROOT / "python/autogluonserver"
 CONTENT_OUTPUTS = (
@@ -46,6 +46,19 @@ KONFLUX_PLATFORM_MARKERS = {
 
 class GenerationError(RuntimeError):
     """An invalid input or generated artifact."""
+
+
+def _read_dependency_version(name: str) -> str:
+    """Read one simple NAME=value assignment without executing the env file."""
+    for raw_line in DEPENDENCY_ENV.read_text(encoding="utf-8").splitlines():
+        line = raw_line.strip()
+        match = re.fullmatch(rf"{re.escape(name)}=([^\s#]+)", line)
+        if match:
+            return match.group(1)
+    raise GenerationError(f"{name} is not defined in {DEPENDENCY_ENV.name}")
+
+
+UV_VERSION = _read_dependency_version("UV_VERSION")
 
 
 def _table(value: Any, name: str) -> Any:

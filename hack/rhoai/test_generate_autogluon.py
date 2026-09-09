@@ -27,6 +27,18 @@ spec.loader.exec_module(generator)
 
 
 class GeneratorContractTests(unittest.TestCase):
+    def test_uv_version_comes_from_kserve_deps(self):
+        dependency_env = (REPOSITORY_ROOT / "kserve-deps.env").read_text(
+            encoding="utf-8"
+        )
+        expected_version = next(
+            line.split("=", 1)[1]
+            for line in dependency_env.splitlines()
+            if line.startswith("UV_VERSION=")
+        )
+
+        self.assertEqual(generator.UV_VERSION, expected_version)
+
     def test_workflow_event_contract(self):
         workflow = WORKFLOW_PATH.read_text(encoding="utf-8")
 
@@ -42,6 +54,7 @@ class GeneratorContractTests(unittest.TestCase):
             "python/storage/pyproject.toml",
             "hack/rhoai/*.py",
             ".github/workflows/autogluon-rhoai-update.yml",
+            "kserve-deps.env",
         )
         push_event = workflow.split("  pull_request_target:", 1)[0]
         self.assertIn("branches:\n      - main", push_event)

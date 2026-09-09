@@ -12,6 +12,7 @@ on:
       - python/storage/pyproject.toml
       - hack/rhoai/*.py
       - .github/workflows/autogluon-rhoai-update.yml
+      - kserve-deps.env
   pull_request_target:
     types: [closed]
     branches: ['rhoai-[0-9].[0-9]**']
@@ -23,6 +24,7 @@ on:
       - python/storage/pyproject.toml
       - hack/rhoai/*.py
       - .github/workflows/autogluon-rhoai-update.yml
+      - kserve-deps.env
   pull_request:
     paths:
       - python/autogluonserver/pyproject.rhoai.toml
@@ -32,6 +34,7 @@ on:
       - python/storage/pyproject.toml
       - hack/rhoai/*.py
       - .github/workflows/autogluon-rhoai-update.yml
+      - kserve-deps.env
   workflow_dispatch:
 permissions:
   contents: read
@@ -57,6 +60,8 @@ jobs:
           python-version: "3.12"
 
       - name: Install uv
+        # Keep the bootstrap version trusted; the generator validates it
+        # against kserve-deps.env from the checked-out revision.
         run: python -m pip install uv==0.7.8
 
       - name: Test generator contract
@@ -99,7 +104,9 @@ jobs:
           python-version: "3.12"
 
       - name: Install uv
-        run: python -m pip install uv==0.7.8
+        run: |
+          uv_version="$(awk -F= '$1 == "UV_VERSION" { print $2; exit }' kserve-deps.env)"
+          python -m pip install "uv==${uv_version}"
 
       - name: Generate RHOAI artifacts
         run: |

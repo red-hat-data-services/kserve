@@ -20,3 +20,9 @@ relevant changes land on `main` or an active `rhoai-*` release branch. For a
 merged release-branch PR, it runs against the merge commit. Edit the RHOAI
 pyproject directly; do not edit the generated lock or requirements file by
 hand.
+
+Run generator contract tests locally with:
+
+```bash
+uv run hack/rhoai/test_generate_autogluon.py
+```

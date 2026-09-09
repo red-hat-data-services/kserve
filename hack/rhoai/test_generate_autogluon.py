@@ -27,16 +27,20 @@ spec.loader.exec_module(generator)
 
 
 class GeneratorContractTests(unittest.TestCase):
-    def test_manual_dispatch_requires_trusted_branch_and_approval(self):
+    def test_workflow_uses_automatic_branch_events(self):
         workflow = WORKFLOW_PATH.read_text(encoding="utf-8")
 
-        self.assertIn("name: autogluon-manual-regeneration", workflow)
-        self.assertIn(
-            "github.ref_name == 'main' || startsWith(github.ref_name, 'rhoai-')",
-            workflow,
-        )
-        self.assertIn("needs: manual-approval", workflow)
-        self.assertIn("needs.manual-approval.result == 'success'", workflow)
+        self.assertNotIn("workflow_dispatch:", workflow)
+        push_event = workflow.split("  pull_request_target:", 1)[0]
+        self.assertIn("branches:\n      - main", push_event)
+        self.assertNotIn("rhoai-*", push_event)
+
+        release_event = workflow.split("  pull_request_target:", 1)[1].split(
+            "  pull_request:", 1
+        )[0]
+        self.assertIn("types: [closed]", release_event)
+        self.assertIn("branches: ['rhoai-*']", release_event)
+        self.assertIn("github.event.pull_request.merged == true", workflow)
 
     def test_checked_in_project_and_lock_pass_validation(self):
         index_url = generator._validate_project(PROJECT_PATH)

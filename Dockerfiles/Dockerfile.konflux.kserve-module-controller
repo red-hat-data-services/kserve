@@ -21,7 +21,7 @@ RUN --mount=type=cache,target=/go/pkg/mod \
     CGO_ENABLED=1 GOOS=${TARGETOS} GOARCH=${TARGETARCH} GOFLAGS=-mod=readonly GOEXPERIMENT=strictfipsruntime  go build -tags strictfipsruntime -a -o manager ./cmd/kserve-module
 
 # Runtime
-FROM registry.access.redhat.com/ubi9/ubi-minimal@sha256:7fbeae18dc9476399f565e68255f602a3374ea8614ba3d14843565131a13ff93
+FROM registry.access.redhat.com/ubi9/ubi-minimal@sha256:d235f607e1d6d833f031db107dc42206e4dd4d5aa9142c43d3771fb7f9bea76a
 RUN microdnf install -y shadow-utils && \
     microdnf clean all && \
     useradd kserve -m -u 1000 && \

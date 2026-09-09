@@ -7,8 +7,15 @@ The generator uses it to produce:
 - `uv.rhoai.lock`;
 - `autogluon-all-requirements.txt`.
 
-Generate the two content artifacts locally with the repository-pinned uv
-version (`0.7.8`):
+The requirements file is generated with the `requirements` Make target, which
+uses the historical single-pass `uv pip compile` process. The generator runs
+that target in an isolated copy with `pyproject.rhoai.toml` staged as
+`pyproject.toml`. It intentionally resolves for `x86_64-manylinux_2_34` so the
+generated hashes pass Hermeto's validation; do not remove or replace the
+platform setting.
+
+Generate both content artifacts locally with the repository-pinned uv version
+(`0.7.8`):
 
 ```bash
 uv run hack/rhoai/generate_autogluon.py

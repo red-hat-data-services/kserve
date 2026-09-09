@@ -211,7 +211,7 @@ def _validate_requirements(requirements: bytes) -> None:
         raise GenerationError("exported requirement is missing a hash")
 
 
-def _run_uv(project_dir: Path) -> tuple[bytes, bytes]:
+def _run_uv(project_dir: Path, index_url: str) -> tuple[bytes, bytes]:
     version = subprocess.run(
         ["uv", "--version"],
         check=True,
@@ -227,32 +227,19 @@ def _run_uv(project_dir: Path) -> tuple[bytes, bytes]:
     subprocess.run(
         ["uv", "lock", "--check"], cwd=project_dir, check=True, env=environment
     )
-    requirements_body = project_dir / "requirements.body.txt"
     subprocess.run(
         [
-            "uv",
-            "export",
-            "--locked",
-            "--format",
-            "requirements.txt",
-            "--no-dev",
-            "--group",
-            "rhoai-build",
-            "--no-header",
-            "--no-emit-project",
-            "--no-emit-package",
-            "kserve",
-            "--no-emit-package",
-            "kserve-storage",
-            "--output-file",
-            str(requirements_body),
+            "make",
+            "requirements",
+            f"AIPCC_INDEX_URL={index_url}",
         ],
         cwd=project_dir,
         check=True,
         env=environment,
         stdout=subprocess.DEVNULL,
     )
-    return (project_dir / "uv.lock").read_bytes(), requirements_body.read_bytes()
+    requirements = project_dir / "autogluon-all-requirements.txt"
+    return (project_dir / "uv.lock").read_bytes(), requirements.read_bytes()
 
 
 def _generate(
@@ -284,20 +271,22 @@ def _generate(
         existing_lock = output_dir / "uv.rhoai.lock"
         if existing_lock.is_file():
             shutil.copy2(existing_lock, temp_project / "uv.lock")
-        lock, requirements_body = _run_uv(temp_project)
+        lock, requirements_body = _run_uv(temp_project, index_url)
 
     _validate_lock(lock, index_url)
 
-    if b"--index-url" in requirements_body or b"--extra-index-url" in requirements_body:
-        raise GenerationError("uv export unexpectedly emitted an index directive")
+    expected_header = f"--index-url {index_url}\n\n".encode()
+    if not requirements_body.startswith(expected_header):
+        raise GenerationError("requirements do not start with the RHOAI index")
+    if b"--extra-index-url" in requirements_body:
+        raise GenerationError("requirements unexpectedly contain an extra index")
     _validate_requirements(requirements_body)
     if not requirements_body.endswith(b"\n"):
         requirements_body += b"\n"
-    requirements = f"--index-url {index_url}\n\n".encode() + requirements_body
 
     outputs = {
         "uv.rhoai.lock": lock,
-        "autogluon-all-requirements.txt": requirements,
+        "autogluon-all-requirements.txt": requirements_body,
     }
     return outputs
 

@@ -6,6 +6,8 @@ on:
       - main
     paths:
       - python/autogluonserver/pyproject.rhoai.toml
+      - python/autogluonserver/Makefile
+      - python/autogluonserver/build-requirements.in
       - python/autogluonserver/uv.rhoai.lock
       - python/autogluonserver/autogluon-all-requirements.txt
       - python/kserve/pyproject.toml
@@ -17,6 +19,8 @@ on:
     branches: ['rhoai-[0-9].[0-9]**']
     paths:
       - python/autogluonserver/pyproject.rhoai.toml
+      - python/autogluonserver/Makefile
+      - python/autogluonserver/build-requirements.in
       - python/autogluonserver/uv.rhoai.lock
       - python/autogluonserver/autogluon-all-requirements.txt
       - python/kserve/pyproject.toml
@@ -26,6 +30,8 @@ on:
   pull_request:
     paths:
       - python/autogluonserver/pyproject.rhoai.toml
+      - python/autogluonserver/Makefile
+      - python/autogluonserver/build-requirements.in
       - python/autogluonserver/uv.rhoai.lock
       - python/autogluonserver/autogluon-all-requirements.txt
       - python/kserve/pyproject.toml

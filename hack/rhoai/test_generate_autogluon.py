@@ -16,6 +16,13 @@ import unittest
 REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
 PROJECT_PATH = REPOSITORY_ROOT / "python/autogluonserver/pyproject.rhoai.toml"
 LOCK_PATH = REPOSITORY_ROOT / "python/autogluonserver/uv.rhoai.lock"
+REQUIREMENTS_PATH = (
+    REPOSITORY_ROOT / "python/autogluonserver/autogluon-all-requirements.txt"
+)
+MAKEFILE_PATH = REPOSITORY_ROOT / "python/autogluonserver/Makefile"
+BUILD_REQUIREMENTS_PATH = (
+    REPOSITORY_ROOT / "python/autogluonserver/build-requirements.in"
+)
 GENERATOR_PATH = Path(__file__).with_name("generate_autogluon.py")
 WORKFLOW_PATH = REPOSITORY_ROOT / ".github/workflows/autogluon-rhoai-update.yml"
 
@@ -48,6 +55,8 @@ class GeneratorContractTests(unittest.TestCase):
         self.assertNotIn("github.event_name == 'workflow_dispatch'", workflow)
         relevant_paths = (
             "python/autogluonserver/pyproject.rhoai.toml",
+            "python/autogluonserver/Makefile",
+            "python/autogluonserver/build-requirements.in",
             "python/autogluonserver/uv.rhoai.lock",
             "python/autogluonserver/autogluon-all-requirements.txt",
             "python/kserve/pyproject.toml",
@@ -75,6 +84,28 @@ class GeneratorContractTests(unittest.TestCase):
         index_url = generator._validate_project(PROJECT_PATH)
 
         generator._validate_lock(LOCK_PATH.read_bytes(), index_url)
+
+        requirements = REQUIREMENTS_PATH.read_bytes()
+        self.assertTrue(
+            requirements.startswith(f"--index-url {index_url}\n\n".encode())
+        )
+        self.assertNotIn(b"--extra-index-url", requirements)
+        generator._validate_requirements(requirements)
+
+    def test_requirements_generation_uses_hermeto_platform_contract(self):
+        makefile = MAKEFILE_PATH.read_text(encoding="utf-8")
+
+        self.assertIn("requirements:", makefile)
+        self.assertIn("uv pip compile", makefile)
+        self.assertIn("build-requirements.in", makefile)
+        self.assertIn("--generate-hashes", makefile)
+        self.assertIn("--python-version $(PYTHON_VERSION)", makefile)
+        self.assertIn("--python-platform $(PYTHON_PLATFORM)", makefile)
+        self.assertIn("PYTHON_PLATFORM := x86_64-manylinux_2_34", makefile)
+        self.assertEqual(
+            BUILD_REQUIREMENTS_PATH.read_text(encoding="utf-8"),
+            "setuptools\nwheel\n",
+        )
 
     def test_project_rejects_credentials_in_index_url(self):
         with tempfile.TemporaryDirectory() as directory:

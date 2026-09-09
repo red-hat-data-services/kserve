@@ -34,15 +34,29 @@ class GeneratorContractTests(unittest.TestCase):
         self.assertNotIn("manual-approval", workflow)
         self.assertNotIn("autogluon-manual", workflow)
         self.assertNotIn("github.event_name == 'workflow_dispatch'", workflow)
+        relevant_paths = (
+            "python/autogluonserver/pyproject.rhoai.toml",
+            "python/autogluonserver/uv.rhoai.lock",
+            "python/autogluonserver/autogluon-all-requirements.txt",
+            "python/kserve/pyproject.toml",
+            "python/storage/pyproject.toml",
+            "hack/rhoai/*.py",
+            ".github/workflows/autogluon-rhoai-update.yml",
+        )
         push_event = workflow.split("  pull_request_target:", 1)[0]
         self.assertIn("branches:\n      - main", push_event)
         self.assertNotIn("rhoai-*", push_event)
+        self.assertIn("    paths:", push_event)
 
         release_event = workflow.split("  pull_request_target:", 1)[1].split(
             "  pull_request:", 1
         )[0]
         self.assertIn("types: [closed]", release_event)
-        self.assertIn("branches: ['rhoai-*']", release_event)
+        self.assertIn("branches: ['rhoai-[0-9].[0-9]**']", release_event)
+        self.assertIn("    paths:", release_event)
+        for path in relevant_paths:
+            self.assertIn(f"      - {path}", push_event)
+            self.assertIn(f"      - {path}", release_event)
         self.assertIn("github.event.pull_request.merged == true", workflow)
 
     def test_checked_in_project_and_lock_pass_validation(self):

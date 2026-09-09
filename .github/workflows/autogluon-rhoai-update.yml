@@ -4,9 +4,25 @@ on:
   push:
     branches:
       - main
+    paths:
+      - python/autogluonserver/pyproject.rhoai.toml
+      - python/autogluonserver/uv.rhoai.lock
+      - python/autogluonserver/autogluon-all-requirements.txt
+      - python/kserve/pyproject.toml
+      - python/storage/pyproject.toml
+      - hack/rhoai/*.py
+      - .github/workflows/autogluon-rhoai-update.yml
   pull_request_target:
     types: [closed]
-    branches: ['rhoai-*']
+    branches: ['rhoai-[0-9].[0-9]**']
+    paths:
+      - python/autogluonserver/pyproject.rhoai.toml
+      - python/autogluonserver/uv.rhoai.lock
+      - python/autogluonserver/autogluon-all-requirements.txt
+      - python/kserve/pyproject.toml
+      - python/storage/pyproject.toml
+      - hack/rhoai/*.py
+      - .github/workflows/autogluon-rhoai-update.yml
   pull_request:
     paths:
       - python/autogluonserver/pyproject.rhoai.toml

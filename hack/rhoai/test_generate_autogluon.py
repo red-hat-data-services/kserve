@@ -27,10 +27,13 @@ spec.loader.exec_module(generator)
 
 
 class GeneratorContractTests(unittest.TestCase):
-    def test_workflow_uses_automatic_branch_events(self):
+    def test_workflow_event_contract(self):
         workflow = WORKFLOW_PATH.read_text(encoding="utf-8")
 
-        self.assertNotIn("workflow_dispatch:", workflow)
+        self.assertIn("  workflow_dispatch:", workflow)
+        self.assertNotIn("manual-approval", workflow)
+        self.assertNotIn("autogluon-manual", workflow)
+        self.assertNotIn("github.event_name == 'workflow_dispatch'", workflow)
         push_event = workflow.split("  pull_request_target:", 1)[0]
         self.assertIn("branches:\n      - main", push_event)
         self.assertNotIn("rhoai-*", push_event)

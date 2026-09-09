@@ -16,6 +16,7 @@ on:
       - python/storage/pyproject.toml
       - hack/rhoai/*.py
       - .github/workflows/autogluon-rhoai-update.yml
+  workflow_dispatch:
 permissions:
   contents: read
 

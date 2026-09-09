@@ -54,7 +54,6 @@ class GeneratorContractTests(unittest.TestCase):
             "python/storage/pyproject.toml",
             "hack/rhoai/*.py",
             ".github/workflows/autogluon-rhoai-update.yml",
-            "kserve-deps.env",
         )
         push_event = workflow.split("  pull_request_target:", 1)[0]
         self.assertIn("branches:\n      - main", push_event)

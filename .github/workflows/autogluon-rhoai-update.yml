@@ -1,0 +1,147 @@
+name: Update RHOAI AutoGluon artifacts
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - python/autogluonserver/pyproject.rhoai.toml
+      - python/autogluonserver/Makefile
+      - python/autogluonserver/build-requirements.in
+      - python/autogluonserver/uv.rhoai.lock
+      - python/autogluonserver/autogluon-all-requirements.txt
+      - python/kserve/pyproject.toml
+      - python/storage/pyproject.toml
+      - hack/rhoai/*.py
+      - .github/workflows/autogluon-rhoai-update.yml
+  pull_request_target:
+    types: [closed]
+    branches: ['rhoai-[0-9].[0-9]**']
+    paths:
+      - python/autogluonserver/pyproject.rhoai.toml
+      - python/autogluonserver/Makefile
+      - python/autogluonserver/build-requirements.in
+      - python/autogluonserver/uv.rhoai.lock
+      - python/autogluonserver/autogluon-all-requirements.txt
+      - python/kserve/pyproject.toml
+      - python/storage/pyproject.toml
+      - hack/rhoai/*.py
+      - .github/workflows/autogluon-rhoai-update.yml
+  pull_request:
+    paths:
+      - python/autogluonserver/pyproject.rhoai.toml
+      - python/autogluonserver/Makefile
+      - python/autogluonserver/build-requirements.in
+      - python/autogluonserver/uv.rhoai.lock
+      - python/autogluonserver/autogluon-all-requirements.txt
+      - python/kserve/pyproject.toml
+      - python/storage/pyproject.toml
+      - hack/rhoai/*.py
+      - .github/workflows/autogluon-rhoai-update.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+
+concurrency:
+  group: autogluon-rhoai-${{ github.event_name == 'pull_request_target' && github.event.pull_request.base.ref || github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  test:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out pull request
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: "3.12"
+
+      - name: Install uv
+        # Keep the bootstrap version trusted; the generator validates it
+        # against kserve-deps.env from the checked-out revision.
+        run: python -m pip install uv==0.7.8
+
+      - name: Test generator contract
+        run: uv run hack/rhoai/test_generate_autogluon.py
+
+  generate:
+    if: >-
+      github.event_name != 'pull_request' &&
+      (github.event_name != 'pull_request_target' || github.event.pull_request.merged == true)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      TARGET_BRANCH: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.base.ref || github.ref_name }}
+      CHECKOUT_REF: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.merge_commit_sha || github.sha }}
+    steps:
+      - name: Generate repository token
+        id: app-token
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        with:
+          client-id: ${{ secrets.RHDS_CI_APP_CLIENT_ID }}
+          private-key: ${{ secrets.RHDS_CI_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: kserve
+          permission-contents: write
+
+      - name: Check out target revision
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.merge_commit_sha || github.sha }}
+          token: ${{ steps.app-token.outputs.token }}
+          persist-credentials: false
+
+      - name: Prepare local target branch
+        run: git switch --force-create "$TARGET_BRANCH" "$CHECKOUT_REF"
+
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: "3.12"
+
+      - name: Install uv
+        run: |
+          uv_version="$(awk -F= '$1 == "UV_VERSION" { print $2; exit }' kserve-deps.env)"
+          python -m pip install "uv==${uv_version}"
+
+      - name: Generate RHOAI artifacts
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          MAX_RETRIES=5
+          for attempt in $(seq 1 "$MAX_RETRIES"); do
+            if [ "$attempt" -gt 1 ]; then
+              git -c "http.extraheader=AUTHORIZATION: bearer ${{ steps.app-token.outputs.token }}" fetch origin "$TARGET_BRANCH"
+              git reset --hard "origin/$TARGET_BRANCH"
+            fi
+
+            uv run hack/rhoai/generate_autogluon.py
+
+            GENERATED=(
+              python/autogluonserver/uv.rhoai.lock
+              python/autogluonserver/autogluon-all-requirements.txt
+            )
+            git add -- "${GENERATED[@]}"
+            if git diff --staged --quiet; then
+              echo "RHOAI AutoGluon artifacts are already current"
+              exit 0
+            fi
+
+            git commit -m "chore(autogluon): regenerate RHOAI artifacts"
+            if git -c "http.extraheader=AUTHORIZATION: bearer ${{ steps.app-token.outputs.token }}" push origin "HEAD:refs/heads/$TARGET_BRANCH"; then
+              echo "Generated artifact push succeeded (attempt ${attempt})"
+              exit 0
+            fi
+
+            echo "Generated artifact push rejected (attempt ${attempt})" >&2
+          done
+          echo "ERROR: generated artifact push failed after ${MAX_RETRIES} attempts" >&2
+          exit 1

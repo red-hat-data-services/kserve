@@ -1,0 +1,2753 @@
+version = 1
+revision = 2
+requires-python = ">=3.11, <3.13"
+resolution-markers = [
+    "python_full_version >= '3.12'",
+    "python_full_version < '3.12'",
+]
+
+[[package]]
+name = "absl-py"
+version = "2.4.0"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/absl_py-2.4.0-2-py3-none-any.whl", hash = "sha256:89270ac19d667cec91fcf7793982b1afd9beb5d05714f2c57509ec78d7cdd225" },
+]
+
+[[package]]
+name = "accelerate"
+version = "1.13.0"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "huggingface-hub" },
+    { name = "numpy" },
+    { name = "packaging" },
+    { name = "psutil" },
+    { name = "pyyaml" },
+    { name = "safetensors" },
+    { name = "torch" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/accelerate-1.13.0-2-py3-none-any.whl", hash = "sha256:d384119b3d44376edcdc8af6bfcd930ff5addd758dcb18246a84d92d1edc2764" },
+]
+
+[[package]]
+name = "adagio"
+version = "0.2.6"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "triad" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/adagio-0.2.6-2-py3-none-any.whl", hash = "sha256:4d2422959b43e3f109d1b89a65e0c4be2a44200dfd99395328aa7039b29d4af4" },
+]
+
+[[package]]
+name = "aiohappyeyeballs"
+version = "2.7.1"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/aiohappyeyeballs-2.7.1-2-py3-none-any.whl", hash = "sha256:148c42ea64254eff51702e3643744a5d29e19f1cc7f1adcfb2289d7ac711ae80" },
+]
+
+[[package]]
+name = "aiohttp"
+version = "3.14.1"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "aiohappyeyeballs" },
+    { name = "aiosignal" },
+    { name = "attrs" },
+    { name = "frozenlist" },
+    { name = "multidict" },
+    { name = "propcache" },
+    { name = "typing-extensions" },
+    { name = "yarl" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/aiohttp-3.14.1-2-cp312-cp312-linux_aarch64.whl", hash = "sha256:f3c686257c0297a912e82e2582f6587b922f1e7b1e3ff0a2d3d3fb7093db545e" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/aiohttp-3.14.1-2-cp312-cp312-linux_ppc64le.whl", hash = "sha256:bd49302b6aa79db20905429d539a0a328adf440c0a75508892ae9700d6318857" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/aiohttp-3.14.1-2-cp312-cp312-linux_s390x.whl", hash = "sha256:dc7528950c7a168f8f70cfba05e112f4a857d658c9f0dfc854d6d4e9b17ecc23" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/aiohttp-3.14.1-2-cp312-cp312-linux_x86_64.whl", hash = "sha256:c958019fc4a4a4536be8308b5efdebb7b31b51dbcf9cc651e16d782ec404d372" },
+]
+
+[[package]]
+name = "aiosignal"
+version = "1.4.0"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "frozenlist" },
+    { name = "typing-extensions" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/aiosignal-1.4.0-2-py3-none-any.whl", hash = "sha256:f67c1242810c1da35afc04f8fe6057d1f133fa581d32ecc4c841d08134436218" },
+]
+
+[[package]]
+name = "alembic"
+version = "1.18.4"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "mako" },
+    { name = "sqlalchemy" },
+    { name = "typing-extensions" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/alembic-1.18.4-2-py3-none-any.whl", hash = "sha256:71f1ba8af317c88248c49371a87749eef7991392609abc8ac8a2ad1074ee6149" },
+]
+
+[[package]]
+name = "annotated-doc"
+version = "0.0.4"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/annotated_doc-0.0.4-2-py3-none-any.whl", hash = "sha256:1ecb2803f2d35e57ba03d74245d9ece70ffce1552a51d1ab1d2b439d791e5086" },
+]
+
+[[package]]
+name = "annotated-types"
+version = "0.7.0"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/annotated_types-0.7.0-2-py3-none-any.whl", hash = "sha256:d31d6f386f3ecd6cdca12274844b969c3f9c90d15ebef7774f2eb34857108758" },
+]
+
+[[package]]
+name = "anyio"
+version = "4.12.1"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "idna" },
+    { name = "typing-extensions" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/anyio-4.12.1-2-py3-none-any.whl", hash = "sha256:dca02e926e3a7108eb7ad78cca5ec87d400583f7a400d779f79239b51ca0df9f" },
+]
+
+[[package]]
+name = "apsw"
+version = "3.53.3.1"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/apsw-3.53.3.1-2-cp312-cp312-linux_aarch64.whl", hash = "sha256:88037832f60378b85c261728d8c61b6fbb1243b59e698bd3a2f1c7f2a432a9c6" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/apsw-3.53.3.1-2-cp312-cp312-linux_ppc64le.whl", hash = "sha256:0ef9225484f3e93bd1389edd2ad6f06470633affea8e67789a24f3dad05e03b5" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/apsw-3.53.3.1-2-cp312-cp312-linux_s390x.whl", hash = "sha256:c6666cb445b0b3964d26b1bd4c649018be88452488da310fa90c56aa872d34ca" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/apsw-3.53.3.1-2-cp312-cp312-linux_x86_64.whl", hash = "sha256:405c613c44ec4e27f57a75d4271c94e823844eb9ff3359032e18a3196f18466c" },
+]
+
+[[package]]
+name = "apswutils"
+version = "0.1.2"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "apsw" },
+    { name = "fastcore" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/apswutils-0.1.2-2-py3-none-any.whl", hash = "sha256:93c25816cc520a6c6017e4b74ea2087298acc955bcc31b6646edfe6687a14a65" },
+]
+
+[[package]]
+name = "attrs"
+version = "26.1.0"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/attrs-26.1.0-2-py3-none-any.whl", hash = "sha256:72a7cd6c5cd0ba459eec87d0cff40ba06839196b8355a01450ea1db9f6ab6a3d" },
+]
+
+[[package]]
+name = "autogluon-common"
+version = "1.5.0+rhaiv.5"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "boto3" },
+    { name = "joblib" },
+    { name = "numpy" },
+    { name = "pandas" },
+    { name = "psutil" },
+    { name = "pyarrow" },
+    { name = "pyyaml" },
+    { name = "requests" },
+    { name = "tqdm" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/autogluon_common-1.5.0+rhaiv.5-3-py3-none-any.whl", hash = "sha256:479d0a9367d2c5c6e4dc0e66a94734d65e806988b362a32ac7f5c76fa1552f18" },
+]
+
+[[package]]
+name = "autogluon-core"
+version = "1.5.0+rhaiv.5"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "autogluon-common" },
+    { name = "boto3" },
+    { name = "matplotlib" },
+    { name = "networkx" },
+    { name = "numpy" },
+    { name = "pandas" },
+    { name = "requests" },
+    { name = "scikit-learn" },
+    { name = "scipy" },
+    { name = "tqdm" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/autogluon_core-1.5.0+rhaiv.5-3-py3-none-any.whl", hash = "sha256:59d70751efeb384b113a92bcf01a6a48eb98306a8e893ec4cd5e9751920897c9" },
+]
+
+[[package]]
+name = "autogluon-features"
+version = "1.5.0+rhaiv.5"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "autogluon-common" },
+    { name = "numpy" },
+    { name = "pandas" },
+    { name = "scikit-learn" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/autogluon_features-1.5.0+rhaiv.5-3-py3-none-any.whl", hash = "sha256:1568faee500c2d7ba2dcdc68f6e12932a39d811d71546f9f1206f8a751b255fc" },
+]
+
+[[package]]
+name = "autogluon-tabular"
+version = "1.5.0+rhaiv.5"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "autogluon-core" },
+    { name = "autogluon-features" },
+    { name = "networkx" },
+    { name = "numpy" },
+    { name = "pandas" },
+    { name = "scikit-learn" },
+    { name = "scipy" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/autogluon_tabular-1.5.0+rhaiv.5-3-py3-none-any.whl", hash = "sha256:dbfe5e5f0a59fe969f6da2d68958b0f748260dd2c23764428bf107e524292fe9" },
+]
+
+[package.optional-dependencies]
+fastai = [
+    { name = "fastai" },
+    { name = "fastcore" },
+    { name = "spacy" },
+    { name = "torch" },
+]
+lightgbm = [
+    { name = "lightgbm" },
+]
+tabm = [
+    { name = "torch" },
+]
+xgboost = [
+    { name = "xgboost" },
+]
+
+[[package]]
+name = "autogluon-timeseries"
+version = "1.5.0+rhaiv.5"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "accelerate" },
+    { name = "autogluon-common" },
+    { name = "autogluon-core" },
+    { name = "autogluon-features" },
+    { name = "autogluon-tabular", extra = ["lightgbm", "xgboost"] },
+    { name = "chronos-forecasting" },
+    { name = "coreforecast" },
+    { name = "einops" },
+    { name = "fugue" },
+    { name = "gluonts" },
+    { name = "joblib" },
+    { name = "lightning" },
+    { name = "mlforecast" },
+    { name = "networkx" },
+    { name = "numpy" },
+    { name = "orjson" },
+    { name = "pandas" },
+    { name = "peft" },
+    { name = "scipy" },
+    { name = "statsforecast" },
+    { name = "tensorboard" },
+    { name = "torch" },
+    { name = "tqdm" },
+    { name = "transformers", extra = ["sentencepiece"] },
+    { name = "utilsforecast" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/autogluon_timeseries-1.5.0+rhaiv.5-3-py3-none-any.whl", hash = "sha256:fd454bde4ebe575481a814cb199e15df838821b4a0f3e9627f367b9dcedb525f" },
+]
+
+[[package]]
+name = "autogluonserver"
+version = "0.1.0"
+source = { editable = "." }
+dependencies = [
+    { name = "autogluon-common" },
+    { name = "autogluon-core" },
+    { name = "autogluon-features" },
+    { name = "autogluon-tabular", extra = ["fastai", "lightgbm", "tabm", "xgboost"] },
+    { name = "autogluon-timeseries" },
+    { name = "kserve" },
+    { name = "kserve-storage" },
+]
+
+[package.dev-dependencies]
+rhoai-build = [
+    { name = "setuptools" },
+    { name = "wheel" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "autogluon-common", specifier = "==1.5.0+rhaiv.5", index = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" },
+    { name = "autogluon-core", specifier = "==1.5.0+rhaiv.5", index = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" },
+    { name = "autogluon-features", specifier = "==1.5.0+rhaiv.5", index = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" },
+    { name = "autogluon-tabular", extras = ["lightgbm", "xgboost", "tabm", "fastai"], specifier = "==1.5.0+rhaiv.5", index = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" },
+    { name = "autogluon-timeseries", specifier = "==1.5.0+rhaiv.5", index = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" },
+    { name = "kserve", directory = "../kserve" },
+    { name = "kserve-storage", virtual = "../storage" },
+]
+
+[package.metadata.requires-dev]
+rhoai-build = [
+    { name = "setuptools", specifier = ">=61.0" },
+    { name = "wheel" },
+]
+
+[[package]]
+name = "azure-core"
+version = "1.41.0"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "requests" },
+    { name = "typing-extensions" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/azure_core-1.41.0-2-py3-none-any.whl", hash = "sha256:c48efb0ab2d42215cfb53cb348d5fe4a1edbf90d6da90c1a2060b665dfd956a4" },
+]
+
+[[package]]
+name = "azure-identity"
+version = "1.25.3"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "azure-core" },
+    { name = "cryptography" },
+    { name = "msal" },
+    { name = "msal-extensions" },
+    { name = "typing-extensions" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/azure_identity-1.25.3-2-py3-none-any.whl", hash = "sha256:ddb57aa5e631f75dfad74a87841dc1b6ba48f0c4f128cd82f493de456229e344" },
+]
+
+[[package]]
+name = "azure-storage-blob"
+version = "12.30.0"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "azure-core" },
+    { name = "cryptography" },
+    { name = "isodate" },
+    { name = "typing-extensions" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/azure_storage_blob-12.30.0-2-py3-none-any.whl", hash = "sha256:81248dc1d9b50824e389610139ff547b1bb25c529c3c1ae9814d59c84a9e2b14" },
+]
+
+[[package]]
+name = "azure-storage-file-share"
+version = "12.26.0"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "azure-core" },
+    { name = "cryptography" },
+    { name = "isodate" },
+    { name = "typing-extensions" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/azure_storage_file_share-12.26.0-2-py3-none-any.whl", hash = "sha256:fe17c90215048d210d4f746596cc366ec15c22bc3b69adae534596258bea1eb3" },
+]
+
+[[package]]
+name = "beartype"
+version = "0.22.9"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/beartype-0.22.9-2-py3-none-any.whl", hash = "sha256:7e0e03f04547689224dd1fb5471f9f0080426e8227b34a6d7d1eefd4c190a6a6" },
+]
+
+[[package]]
+name = "beautifulsoup4"
+version = "4.15.0"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "soupsieve" },
+    { name = "typing-extensions" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/beautifulsoup4-4.15.0-2-py3-none-any.whl", hash = "sha256:79d127e40edb07f252fb2c5e802665c5a28a26a49eaf9c5f1be7b9af93b4d61e" },
+]
+
+[[package]]
+name = "blis"
+version = "1.3.3"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "numpy" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/blis-1.3.3-2-cp312-cp312-linux_aarch64.whl", hash = "sha256:47a8d7cf4f430c4e6f95082cf02d9e61bf8961a50d9d41abf1820a1f8dac2b29" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/blis-1.3.3-2-cp312-cp312-linux_ppc64le.whl", hash = "sha256:80c8d5f0e51831694734105d9a047193aebf7918c05c865923abe52b56785910" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/blis-1.3.3-2-cp312-cp312-linux_s390x.whl", hash = "sha256:3b6ff9381a57816ec92731cdc8a5797444f11289a7458ec9d63da8f8354faa0f" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/blis-1.3.3-2-cp312-cp312-linux_x86_64.whl", hash = "sha256:c1ae9d426e7345eb936fda81639a7dddcaaf479bffc948da7c0c4018fe18103b" },
+]
+
+[[package]]
+name = "boto3"
+version = "1.43.50"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "botocore" },
+    { name = "jmespath" },
+    { name = "s3transfer" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/boto3-1.43.50-2-py3-none-any.whl", hash = "sha256:00c080260af44da1faaed39ed97e3d37762e9414426eed89cc9137e7e8ae96a9" },
+]
+
+[[package]]
+name = "botocore"
+version = "1.43.50"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "jmespath" },
+    { name = "python-dateutil" },
+    { name = "urllib3" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/botocore-1.43.50-2-py3-none-any.whl", hash = "sha256:a202e00c75172a292d6cd3f5d217b7c27333c496ef854ead607ea6b3d7b6bb2d" },
+]
+
+[[package]]
+name = "catalogue"
+version = "2.0.10"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/catalogue-2.0.10-2-py3-none-any.whl", hash = "sha256:c984aab0d6a13531a38af6de79747392d81210df460324eb29b62ecd30240fe8" },
+]
+
+[[package]]
+name = "certifi"
+version = "2026.6.17"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/certifi-2026.6.17-2-py3-none-any.whl", hash = "sha256:36a32caf926900a4f112e18621636a19ce6474c5b2aeb148588147d2633ec530" },
+]
+
+[[package]]
+name = "cffi"
+version = "2.0.0"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "pycparser", marker = "implementation_name != 'PyPy'" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/cffi-2.0.0-2-cp312-cp312-linux_aarch64.whl", hash = "sha256:400ea3a9004c2d47638dbefec51ef0775667a48bde8a53e741dd8ad63af54795" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/cffi-2.0.0-2-cp312-cp312-linux_ppc64le.whl", hash = "sha256:e581c23e80f3ab8537cfbc3123af0892b0746c361d2304a1e249c20f9c48a3a8" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/cffi-2.0.0-2-cp312-cp312-linux_s390x.whl", hash = "sha256:6374f45e552853f9428077e5ff238b1e6ae7c61fdca9d2f4bbb03d8885dbe4b7" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/cffi-2.0.0-2-cp312-cp312-linux_x86_64.whl", hash = "sha256:a01703f2ae468ea980f4d5917f6fb193dfee5f4cbdf270c9e70435da5ef87847" },
+]
+
+[[package]]
+name = "charset-normalizer"
+version = "3.4.9"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/charset_normalizer-3.4.9-2-py3-none-any.whl", hash = "sha256:f18b10e61ad57e6dcfe041ff3b09cead474856d11ec7c0f14edbdad695760780" },
+]
+
+[[package]]
+name = "chronos-forecasting"
+version = "2.3.1"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "accelerate" },
+    { name = "einops" },
+    { name = "numpy" },
+    { name = "pandas" },
+    { name = "torch" },
+    { name = "transformers" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/chronos_forecasting-2.3.1-2-py3-none-any.whl", hash = "sha256:1773bc3377592e59390ed829d205d7a7b34be1749536851874227e68a51a0267" },
+]
+
+[[package]]
+name = "click"
+version = "8.4.2"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "colorama", marker = "sys_platform == 'win32'" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/click-8.4.2-2-py3-none-any.whl", hash = "sha256:368d4af9976de9fc5efc4d8a26c64d23c187c21a2eba9336254832d466dd6198" },
+]
+
+[[package]]
+name = "cloudevents"
+version = "1.13.0"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "deprecation" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/cloudevents-1.13.0-2-py3-none-any.whl", hash = "sha256:4a5175f5a606f47410cb3404e6bae236611e8956662ba56303a14b7b52bce214" },
+]
+
+[[package]]
+name = "cloudpathlib"
+version = "0.24.0"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/cloudpathlib-0.24.0-2-py3-none-any.whl", hash = "sha256:705101c181a990a335cd83d870583f1457083faef090eaef69e3c53274392733" },
+]
+
+[[package]]
+name = "cloudpickle"
+version = "3.1.2"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/cloudpickle-3.1.2-2-py3-none-any.whl", hash = "sha256:9aee37571b1a841f201c56528ac234800e83e08ce5648963848e7646831d0588" },
+]
+
+[[package]]
+name = "colorama"
+version = "0.4.6"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/colorama-0.4.6-2-py2.py3-none-any.whl", hash = "sha256:6ed541f077995070cebe515f805f043a0282651a5f0d77f16ccdd0e1edc43d17" },
+]
+
+[[package]]
+name = "colorlog"
+version = "6.10.1"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "colorama", marker = "sys_platform == 'win32'" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/colorlog-6.10.1-2-py3-none-any.whl", hash = "sha256:3156d4eba09beca2edc59694c6ab680c72dc8567ee7d2cf84468e45e5a5c6224" },
+]
+
+[[package]]
+name = "confection"
+version = "1.3.3"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/confection-1.3.3-2-py3-none-any.whl", hash = "sha256:984c46ff067823064c604c67dc3ceb41b6d03824d5641283b3ae36b530a076af" },
+]
+
+[[package]]
+name = "contourpy"
+version = "1.3.3"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "numpy" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/contourpy-1.3.3-2-cp312-cp312-linux_aarch64.whl", hash = "sha256:e85bca01a42490526f6b1abce1240741c594f7437132fb9c20105703594d917d" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/contourpy-1.3.3-2-cp312-cp312-linux_ppc64le.whl", hash = "sha256:4fd9e177b70c1fa9237021ce8a9dabe3d90d9cee8d33f96776ac6bc9bf6536e7" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/contourpy-1.3.3-2-cp312-cp312-linux_s390x.whl", hash = "sha256:89d84de0bb9c3bb306602c3168157b0f3146868b6c2035dd07e3d8c3737adde7" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/contourpy-1.3.3-2-cp312-cp312-linux_x86_64.whl", hash = "sha256:98f77c0895252557b5e4cb3bfa3f7cb356f835290f52fd2a9f415ccc00de06ce" },
+]
+
+[[package]]
+name = "coreforecast"
+version = "0.0.16"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "numpy" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/coreforecast-0.0.16-2-cp312-cp312-linux_aarch64.whl", hash = "sha256:24b8e8078a4843330da983bda3e22e8e2c96ba1d59d21c79c16f4b2f02703274" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/coreforecast-0.0.16-2-cp312-cp312-linux_ppc64le.whl", hash = "sha256:c5e807a13794a14c84809be772715d904565113dca24d8def269337908980924" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/coreforecast-0.0.16-2-cp312-cp312-linux_s390x.whl", hash = "sha256:89c946cf1fa5c8ef6e128507b78054df13036b4c66ab747550d56d1060cc06e6" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/coreforecast-0.0.16-2-cp312-cp312-linux_x86_64.whl", hash = "sha256:7eeaee3eac5e53f916fb55c1cb0972190b5aeb1e06cee0b00838e2c508cdbc05" },
+]
+
+[[package]]
+name = "cryptography"
+version = "50.0.1"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "cffi", marker = "platform_python_implementation != 'PyPy'" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/cryptography-50.0.1-2-cp312-abi3-linux_aarch64.whl", hash = "sha256:8ae962f84e7f36290feca5f8ba7bfc01fea9cd9a48f446bca52ef115657cca3d" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/cryptography-50.0.1-2-cp312-abi3-linux_ppc64le.whl", hash = "sha256:213953b7dbd5bbc9b309d930b687e7e5157d36f31c5b2d4d4ebd84cb2d7cab1a" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/cryptography-50.0.1-2-cp312-abi3-linux_s390x.whl", hash = "sha256:7a115ac6dd9930b7893e530dce680d55afdfad6939da19b398fd15f850327743" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/cryptography-50.0.1-2-cp312-abi3-linux_x86_64.whl", hash = "sha256:3e29639a33400721f710beeba7741e275bdb4c5bc53107c9dfef240d251c0590" },
+]
+
+[[package]]
+name = "cycler"
+version = "0.12.1"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/cycler-0.12.1-2-py3-none-any.whl", hash = "sha256:c93768aa1167913cc1ee77ba332a658274fc7f1f78f2d8be2d9d6b5f00fa3cb6" },
+]
+
+[[package]]
+name = "cymem"
+version = "2.0.13"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/cymem-2.0.13-2-cp312-cp312-linux_aarch64.whl", hash = "sha256:6a5518f1a7e4dc32f965fa36d877e9340f82756b0b28bfdaa67036d197738efc" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/cymem-2.0.13-2-cp312-cp312-linux_ppc64le.whl", hash = "sha256:77f56c266fb31b1c53b49623587b50165b328062075c64215ea9305c44a60974" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/cymem-2.0.13-2-cp312-cp312-linux_s390x.whl", hash = "sha256:317d6d7c24922f8ea461aafb05e261bb0c98ea2be1165e036d978949a5e783a7" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/cymem-2.0.13-2-cp312-cp312-linux_x86_64.whl", hash = "sha256:099cbced01c64a81d26a92c836b8dcbce044a414f7b10cdf3ff7a235694d8544" },
+]
+
+[[package]]
+name = "deprecation"
+version = "2.1.0"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "packaging" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/deprecation-2.1.0-2-py2.py3-none-any.whl", hash = "sha256:337b05e2af07ef5fba9e4fa4219fb3d549dde2985eaff6fd70aefa02c32c498e" },
+]
+
+[[package]]
+name = "dulwich"
+version = "1.2.10"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "typing-extensions", marker = "python_full_version < '3.12'" },
+    { name = "urllib3" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/dulwich-1.2.10-2-cp312-cp312-linux_aarch64.whl", hash = "sha256:6fbb7869f425816966a40c7b7e43865bb65aada1af2bd1aeb2ded3d6594f8527" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/dulwich-1.2.10-2-cp312-cp312-linux_ppc64le.whl", hash = "sha256:6791ef9bee8282bd10c465b820c4f033d9e097dd61c2fe24a42f5568fc01e490" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/dulwich-1.2.10-2-cp312-cp312-linux_s390x.whl", hash = "sha256:2b0bf0257875b5574ed864bf8de3809b4be06b7539e1e036d84460c291b9a7f0" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/dulwich-1.2.10-2-cp312-cp312-linux_x86_64.whl", hash = "sha256:ebaae61545961f0aa808ac95aa248ff9ec70c54a3e43e92b12357d0c0319c3e1" },
+]
+
+[[package]]
+name = "durationpy"
+version = "0.10"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/durationpy-0.10-2-py3-none-any.whl", hash = "sha256:7f09ea3ef8ceecbade4314c9dd1e9269e77bde08f3569802ae1606d6f6775efa" },
+]
+
+[[package]]
+name = "einops"
+version = "0.8.2"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/einops-0.8.2-2-py3-none-any.whl", hash = "sha256:8d6101bd5244fcdee471aaf8cd8bfc6be8644cbdfea35e49f5e55e37a077b552" },
+]
+
+[[package]]
+name = "fastai"
+version = "2.8.7"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "cloudpickle" },
+    { name = "fastcore" },
+    { name = "fastdownload" },
+    { name = "fastprogress" },
+    { name = "fasttransform" },
+    { name = "matplotlib" },
+    { name = "packaging" },
+    { name = "pandas" },
+    { name = "pillow" },
+    { name = "plum-dispatch" },
+    { name = "pyyaml" },
+    { name = "requests" },
+    { name = "scikit-learn" },
+    { name = "scipy" },
+    { name = "spacy" },
+    { name = "torch" },
+    { name = "torchvision" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/fastai-2.8.7-2-py3-none-any.whl", hash = "sha256:807e2f12314d88cf73e04bd5aa56b09b3894de1ceadfd0147dd06d27d082bbb5" },
+]
+
+[[package]]
+name = "fastapi"
+version = "0.136.3"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "annotated-doc" },
+    { name = "pydantic" },
+    { name = "starlette" },
+    { name = "typing-extensions" },
+    { name = "typing-inspection" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/fastapi-0.136.3-2-py3-none-any.whl", hash = "sha256:691af4cfa72721b15151732f9e7b5ed3998fa4553c1664519a8766c4f509690e" },
+]
+
+[[package]]
+name = "fastcore"
+version = "1.14.5"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/fastcore-1.14.5-2-py3-none-any.whl", hash = "sha256:ab8c11e4104cec183f8909c5bdf6feeb1571c624bb0f894109107db291d64be8" },
+]
+
+[[package]]
+name = "fastdownload"
+version = "0.0.7"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "fastcore" },
+    { name = "fastprogress" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/fastdownload-0.0.7-2-py3-none-any.whl", hash = "sha256:befea8501d2ccb488b40dd5086bb5cdfc3ccbdaa4f8c352ca0c27d3710b4d704" },
+]
+
+[[package]]
+name = "fastlite"
+version = "0.2.4"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "apswutils" },
+    { name = "fastcore" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/fastlite-0.2.4-2-py3-none-any.whl", hash = "sha256:048dce4df8ac31d500ad0fa16fb212af026d7564d716e6b08718a81078266f64" },
+]
+
+[[package]]
+name = "fastprogress"
+version = "1.1.6"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "fastcore" },
+    { name = "python-fasthtml" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/fastprogress-1.1.6-2-py3-none-any.whl", hash = "sha256:df6736c8f06b1c07fa85ecf36bff8f58eb770b273795ee3d2329f08a2cd15939" },
+]
+
+[[package]]
+name = "fasttransform"
+version = "0.0.2"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "fastcore" },
+    { name = "plum-dispatch" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/fasttransform-0.0.2-2-py3-none-any.whl", hash = "sha256:84a8ea9d5e91f85b0e3d6f03f864dbdf02d6706c073a5034f7bf541e69e93e80" },
+]
+
+[[package]]
+name = "filelock"
+version = "3.30.2"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/filelock-3.30.2-2-py3-none-any.whl", hash = "sha256:3876bce9fb39cd4dc9dc025336708416b2159bd96c5b4ca2d77dd14c9c7600ba" },
+]
+
+[[package]]
+name = "fonttools"
+version = "4.63.0"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/fonttools-4.63.0-2-py3-none-any.whl", hash = "sha256:abcf2674eed3d941d1671f966f3bebbc42b4906b0477c3a6a0e8c05c6669efa4" },
+]
+
+[[package]]
+name = "frozenlist"
+version = "1.8.0"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/frozenlist-1.8.0-2-cp312-cp312-linux_aarch64.whl", hash = "sha256:0e702e35f72baf35d3c6d8b34e664a4b90bb7bd2090e585c4419bd77a9e0eb37" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/frozenlist-1.8.0-2-cp312-cp312-linux_ppc64le.whl", hash = "sha256:866c929c5c39e63efa1d48fffa6f38add29f7e97eca458963e1d078ab1d52a25" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/frozenlist-1.8.0-2-cp312-cp312-linux_s390x.whl", hash = "sha256:053403b043ebba4431ecd530760be926f862f441280a20703e157b33a5b69e2f" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/frozenlist-1.8.0-2-cp312-cp312-linux_x86_64.whl", hash = "sha256:824190e162bc775e7f6ded9bde5897738987c51548677c213d1ff728b10efe5b" },
+]
+
+[[package]]
+name = "fsspec"
+version = "2026.2.0"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/fsspec-2026.2.0-2-py3-none-any.whl", hash = "sha256:49b6a55beff15391f0263932bb504812a5153780a4560c702de3662fd6a648b5" },
+]
+
+[package.optional-dependencies]
+http = [
+    { name = "aiohttp" },
+]
+
+[[package]]
+name = "fugue"
+version = "0.9.7"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "adagio" },
+    { name = "pandas" },
+    { name = "triad" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/fugue-0.9.7-2-py3-none-any.whl", hash = "sha256:11b454affe75b2de88f45de82a4d435fedde2fec73c772a2502c20bb60ee43d2" },
+]
+
+[[package]]
+name = "gluonts"
+version = "0.16.2"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "numpy" },
+    { name = "pandas" },
+    { name = "pydantic" },
+    { name = "toolz" },
+    { name = "tqdm" },
+    { name = "typing-extensions" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/gluonts-0.16.2-2-py3-none-any.whl", hash = "sha256:38c1036c4074f48e816c1b2180fd8d6b46ab8e03262deb8430ea09eb08f50acf" },
+]
+
+[[package]]
+name = "google-api-core"
+version = "2.29.0"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "google-auth" },
+    { name = "googleapis-common-protos" },
+    { name = "proto-plus" },
+    { name = "protobuf" },
+    { name = "requests" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/google_api_core-2.29.0-2-py3-none-any.whl", hash = "sha256:7b7222e57b41c96e43b1afe9bc9d9a337c76d80f6a298f3d1584a315b4ed74c5" },
+]
+
+[[package]]
+name = "google-auth"
+version = "2.48.0"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "cryptography" },
+    { name = "pyasn1-modules" },
+    { name = "rsa" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/google_auth-2.48.0-2-py3-none-any.whl", hash = "sha256:5d93ee6b952c5de30f203d6d423ccc4a9755c7e6501142c6427ccf3e2c8994ed" },
+]
+
+[[package]]
+name = "google-cloud-core"
+version = "2.6.0"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "google-api-core" },
+    { name = "google-auth" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/google_cloud_core-2.6.0-2-py3-none-any.whl", hash = "sha256:2b0e1f09be56b927f3cb231052fea35805cb74f5594235a927eb519af1c78b17" },
+]
+
+[[package]]
+name = "google-cloud-storage"
+version = "2.19.0"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "google-api-core" },
+    { name = "google-auth" },
+    { name = "google-cloud-core" },
+    { name = "google-crc32c" },
+    { name = "google-resumable-media" },
+    { name = "requests" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/google_cloud_storage-2.19.0-2-py2.py3-none-any.whl", hash = "sha256:ede161ad46a46f6a94f12f19f1794bef73a7600dcd4d68c1999511e277e8e6da" },
+]
+
+[[package]]
+name = "google-crc32c"
+version = "1.8.0"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/google_crc32c-1.8.0-2-py3-none-any.whl", hash = "sha256:3152fc17ef99180190f8e14a850fddc3ab8c3911b2d92d130e7219c79dfe7d7c" },
+]
+
+[[package]]
+name = "google-resumable-media"
+version = "2.10.0"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "google-crc32c" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/google_resumable_media-2.10.0-2-py3-none-any.whl", hash = "sha256:161f9c50277e40f8b161fd25f0a989ada00a9b6a52dab45eb4569df5d873d09d" },
+]
+
+[[package]]
+name = "googleapis-common-protos"
+version = "1.75.0"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "protobuf" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/googleapis_common_protos-1.75.0-2-py3-none-any.whl", hash = "sha256:371cd0ca347d6b331c0f70fbbf7aa5cbbba6092d91d27c9bbfab7701a1b6612d" },
+]
+
+[[package]]
+name = "greenlet"
+version = "3.5.3"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/greenlet-3.5.3-2-cp312-cp312-linux_aarch64.whl", hash = "sha256:e7bf99427ac4174c765563c6c8d5886d672d830237be3f7efab210919efc7cdc" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/greenlet-3.5.3-2-cp312-cp312-linux_ppc64le.whl", hash = "sha256:b58b912e1e66b8276e32a8e9e6437884537f9d9dae8a53cf4457aba31b073547" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/greenlet-3.5.3-2-cp312-cp312-linux_s390x.whl", hash = "sha256:46283f6597598ba627b555cf60e0aee4ee21c0a5870664c4366e85514ff8cb94" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/greenlet-3.5.3-2-cp312-cp312-linux_x86_64.whl", hash = "sha256:396eb576e8312ea7cc8c7691ea935f499fe440bf1b123936580ea672f7c11d6d" },
+]
+
+[[package]]
+name = "grpc-interceptor"
+version = "0.15.4"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "grpcio" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/grpc_interceptor-0.15.4-2-py3-none-any.whl", hash = "sha256:cea9af82bdf3eda84289369c447f8aef180b7dc6f26efd56625f0bbe9b908fcb" },
+]
+
+[[package]]
+name = "grpcio"
+version = "1.82.1"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "typing-extensions" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/grpcio-1.82.1-2-cp312-cp312-linux_aarch64.whl", hash = "sha256:3e4ac899ed92dade47b27e610e2244155785a133e805a2ca2f99bcc4be19c459" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/grpcio-1.82.1-2-cp312-cp312-linux_ppc64le.whl", hash = "sha256:d6f37aa3638a023da59605c564406ca7bac0577f525a12eeb71c1f9b9161377c" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/grpcio-1.82.1-2-cp312-cp312-linux_s390x.whl", hash = "sha256:7eb2fd6947a1db245bda06939c4b527a909b8b2f3154bd58ce5661953a0cb187" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/grpcio-1.82.1-2-cp312-cp312-linux_x86_64.whl", hash = "sha256:b36c17d2eea636176911879ce8fc7784609a9a5e90d53f6d91aa4498e003c24a" },
+]
+
+[[package]]
+name = "grpcio-tools"
+version = "1.81.1"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "grpcio" },
+    { name = "protobuf" },
+    { name = "setuptools" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/grpcio_tools-1.81.1-2-cp312-cp312-linux_aarch64.whl", hash = "sha256:c1b8ad9be5a12ec94b9099ba690d57c73dd508beccddf40b70d0b9533d66848c" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/grpcio_tools-1.81.1-2-cp312-cp312-linux_ppc64le.whl", hash = "sha256:104e18266ed6ab4267e8193c344aa9712601951ac45f6516e009eeb809f1358d" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/grpcio_tools-1.81.1-2-cp312-cp312-linux_s390x.whl", hash = "sha256:220869dc2e9219163dc2ecee52fd28b31dbebb4c0972dbf4f2387b44e704cb6a" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/grpcio_tools-1.81.1-2-cp312-cp312-linux_x86_64.whl", hash = "sha256:709c8ca34dfba7683727a1dca25d64dfe296b85ba7e51e9a81daef3bcb87bec5" },
+]
+
+[[package]]
+name = "h11"
+version = "0.16.0"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/h11-0.16.0-2-py3-none-any.whl", hash = "sha256:cdf040cf1a6fd5711975544a7931d24e41901fe6dceed7f7effda231389afff3" },
+]
+
+[[package]]
+name = "hf-xet"
+version = "1.5.1"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/hf_xet-1.5.1-2-cp37-abi3-linux_aarch64.whl", hash = "sha256:236938f6e7b607bba83e3c69f706a88c04ac98ae40185b7993d2252c27c31512" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/hf_xet-1.5.1-2-cp37-abi3-linux_ppc64le.whl", hash = "sha256:1c81a2bf52de7fce806473afeae8822ebabbb806cc45d6e7df906a8ebf25fcbc" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/hf_xet-1.5.1-2-cp37-abi3-linux_s390x.whl", hash = "sha256:5072f2dcc3fb7d66700b2b14af25f534623b2b71166f4a6566dac091da387936" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/hf_xet-1.5.1-2-cp37-abi3-linux_x86_64.whl", hash = "sha256:e0b14eda87d8109be4ca52aa5daef4897ed046ff2e558f363be65008c048149e" },
+]
+
+[[package]]
+name = "httpcore"
+version = "1.0.9"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "certifi" },
+    { name = "h11" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/httpcore-1.0.9-2-py3-none-any.whl", hash = "sha256:fc0ea63671089523efc6fe94ec49d0b10c9660460cbca6172fc972c1c5f9c0ac" },
+]
+
+[[package]]
+name = "httpcore2"
+version = "2.7.0"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "h11" },
+    { name = "truststore" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/httpcore2-2.7.0-2-py3-none-any.whl", hash = "sha256:586c0f25ee49a5a78bbe193a347cef7966bc72c51ab1f778dd8fe2e1ce4c0dce" },
+]
+
+[[package]]
+name = "httptools"
+version = "0.8.0"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/httptools-0.8.0-2-cp312-cp312-linux_aarch64.whl", hash = "sha256:5c728e329bedd3052f20f8bbecedbcea33a8907b7c9105625e16882ae61c1018" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/httptools-0.8.0-2-cp312-cp312-linux_ppc64le.whl", hash = "sha256:0d87c67fcf648e1b77acdd1eb0178be0a1252e3aeeec5985a9a7a87ae63dc05f" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/httptools-0.8.0-2-cp312-cp312-linux_s390x.whl", hash = "sha256:42821e410e51f0ee8e627bd56d016fa3851c44cd899e1cffc160422dfabf674e" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/httptools-0.8.0-2-cp312-cp312-linux_x86_64.whl", hash = "sha256:a4fb64be346ddc41001e720d80c7913fd8239a72a41f7e9e1eea3500eb0ed58b" },
+]
+
+[[package]]
+name = "httpx"
+version = "0.28.1"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "anyio" },
+    { name = "certifi" },
+    { name = "httpcore" },
+    { name = "idna" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/httpx-0.28.1-2-py3-none-any.whl", hash = "sha256:40b3fef8650d88ced417b05b236427596a6da9117b0f64ef5b0a5d548d20addb" },
+]
+
+[[package]]
+name = "httpx2"
+version = "2.7.0"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "anyio" },
+    { name = "httpcore2" },
+    { name = "idna" },
+    { name = "truststore" },
+    { name = "typing-extensions" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/httpx2-2.7.0-2-py3-none-any.whl", hash = "sha256:509c40d7ca223de952f6a62574fe103ea082c14617fc1cc0c0cadefd623f4f32" },
+]
+
+[[package]]
+name = "huggingface-hub"
+version = "1.23.0"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "click" },
+    { name = "filelock" },
+    { name = "fsspec" },
+    { name = "hf-xet", marker = "platform_machine == 'AMD64' or platform_machine == 'aarch64' or platform_machine == 'amd64' or platform_machine == 'arm64' or platform_machine == 'x86_64'" },
+    { name = "httpx" },
+    { name = "packaging" },
+    { name = "pyyaml" },
+    { name = "tqdm" },
+    { name = "typing-extensions" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/huggingface_hub-1.23.0-2-py3-none-any.whl", hash = "sha256:02a6f0907297162b84f172e438459418d4fa1fd282270941d40da74b73be55a0" },
+]
+
+[[package]]
+name = "idna"
+version = "3.18"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/idna-3.18-2-py3-none-any.whl", hash = "sha256:8a16d5d6db808e4640e6bad7349f52e09b10eba58914fb7d366902ec4fc226a8" },
+]
+
+[[package]]
+name = "isodate"
+version = "0.7.2"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/isodate-0.7.2-2-py3-none-any.whl", hash = "sha256:f96dfe71d29abf9fdcdb63184bad8e0081b20f46312a6a759cb4e13b6958738c" },
+]
+
+[[package]]
+name = "itsdangerous"
+version = "2.2.0"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/itsdangerous-2.2.0-2-py3-none-any.whl", hash = "sha256:d6f709c1a264254c2520d68019cfb282ac07c07ba7871cad79831df685d0a185" },
+]
+
+[[package]]
+name = "jinja2"
+version = "3.1.6"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "markupsafe" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/jinja2-3.1.6-2-py3-none-any.whl", hash = "sha256:500424e00f5a3b423f8657c8bb0bd846da38af583d9535629f9f93045865bd11" },
+]
+
+[[package]]
+name = "jmespath"
+version = "1.1.0"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/jmespath-1.1.0-2-py3-none-any.whl", hash = "sha256:c4b79578b9c4fb420b287be212eb0932c4d92219ecd32f19d32de47a27348a81" },
+]
+
+[[package]]
+name = "joblib"
+version = "1.5.3"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/joblib-1.5.3-2-py3-none-any.whl", hash = "sha256:5abb2344270cfda261f96ba20f11fb77c3fb1a36769063440ee2ae421b0cb524" },
+]
+
+[[package]]
+name = "jsonschema"
+version = "4.26.0"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "attrs" },
+    { name = "jsonschema-specifications" },
+    { name = "referencing" },
+    { name = "rpds-py" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/jsonschema-4.26.0-2-py3-none-any.whl", hash = "sha256:a0c500e520dfa787df50dad9daa55eae681fd98f6532bed2fea79583b7ba41ee" },
+]
+
+[[package]]
+name = "jsonschema-specifications"
+version = "2025.9.1"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "referencing" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/jsonschema_specifications-2025.9.1-2-py3-none-any.whl", hash = "sha256:186d1ac186ac3a66c9303cbac3c8cda992d48c0c5b495b1ec450abe415b00c35" },
+]
+
+[[package]]
+name = "kiwisolver"
+version = "1.5.0"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/kiwisolver-1.5.0-2-cp312-cp312-linux_aarch64.whl", hash = "sha256:cb2022c8033491fbbc318c49667f122732a4edd4744628f55034728ee54d2552" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/kiwisolver-1.5.0-2-cp312-cp312-linux_ppc64le.whl", hash = "sha256:2705fca1bb143e0a77fef6911df6a8a2d8846ee4daaf10146402c1a9f9fca53f" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/kiwisolver-1.5.0-2-cp312-cp312-linux_s390x.whl", hash = "sha256:b2a750282f35ba58b1069ccda30fd0e6001c3413e8dcaf62c24aa48f2cb7a62e" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/kiwisolver-1.5.0-2-cp312-cp312-linux_x86_64.whl", hash = "sha256:74893f425fb0a064d60306811015f257ecbad132fe740954dec5efeaa37f7e98" },
+]
+
+[[package]]
+name = "kserve"
+version = "0.20.0"
+source = { directory = "../kserve" }
+dependencies = [
+    { name = "aiohttp" },
+    { name = "cloudevents" },
+    { name = "cryptography" },
+    { name = "fastapi" },
+    { name = "grpc-interceptor" },
+    { name = "grpcio" },
+    { name = "grpcio-tools" },
+    { name = "h11" },
+    { name = "httpx" },
+    { name = "kubernetes" },
+    { name = "numpy" },
+    { name = "orjson" },
+    { name = "pandas" },
+    { name = "pillow" },
+    { name = "prometheus-client" },
+    { name = "protobuf" },
+    { name = "psutil" },
+    { name = "pyasn1" },
+    { name = "pydantic" },
+    { name = "pyjwt" },
+    { name = "python-dateutil" },
+    { name = "python-multipart" },
+    { name = "pyyaml" },
+    { name = "six" },
+    { name = "starlette" },
+    { name = "tabulate" },
+    { name = "timing-asgi" },
+    { name = "urllib3" },
+    { name = "uvicorn", extra = ["standard"] },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "aiohttp", specifier = ">=3.13.4" },
+    { name = "asgi-logger", marker = "extra == 'logging'", specifier = ">=0.1.0,<1.0.0" },
+    { name = "cloudevents", specifier = ">=1.6.2,<2.0.0" },
+    { name = "cryptography", specifier = ">=50.0.0" },
+    { name = "fastapi", specifier = ">=0.115.3,<1.0.0" },
+    { name = "grpc-interceptor", specifier = ">=0.15.4,<1.0.0" },
+    { name = "grpcio", specifier = ">=1.73.0,<2.0.0" },
+    { name = "grpcio-tools", specifier = ">=1.73.0,<2.0.0" },
+    { name = "h11", specifier = ">=0.16.0" },
+    { name = "httpx", specifier = ">=0.27.2,<1.0.0" },
+    { name = "kserve-storage", marker = "extra == 'storage'", editable = "../storage" },
+    { name = "kubernetes", specifier = ">=23.3.0" },
+    { name = "numpy", specifier = ">=1.26.0,<3.0.0" },
+    { name = "orjson", specifier = ">=3.11.6,<4.0.0" },
+    { name = "pandas", specifier = ">=2.2.0,<3.0.0" },
+    { name = "pillow", specifier = ">=12.3.0" },
+    { name = "prometheus-client", specifier = ">=0.20.0,<1.0.0" },
+    { name = "protobuf", specifier = ">=6.33.5,<7.0.0" },
+    { name = "psutil", specifier = ">=5.9.6,<6.0.0" },
+    { name = "pyasn1", specifier = ">=0.6.4" },
+    { name = "pydantic", specifier = ">=2.5.0,<3.0.0" },
+    { name = "pyjwt", specifier = ">=2.13.0" },
+    { name = "python-dateutil", specifier = ">=2.8.0,<3.0.0" },
+    { name = "python-multipart", specifier = ">=0.0.27" },
+    { name = "pyyaml", specifier = ">=6.0.0,<7.0.0" },
+    { name = "ray", extras = ["serve"], marker = "extra == 'ray'", specifier = ">=2.43.0" },
+    { name = "six", specifier = ">=1.16.0,<2.0.0" },
+    { name = "starlette", specifier = ">=1.0.1" },
+    { name = "tabulate", specifier = ">=0.9.0,<1.0.0" },
+    { name = "timing-asgi", specifier = ">=0.3.0,<1.0.0" },
+    { name = "urllib3", specifier = ">=2.7.0" },
+    { name = "uvicorn", extras = ["standard"], specifier = ">=0.30.6,<1.0.0" },
+    { name = "vllm", marker = "extra == 'llm'", specifier = "==0.24.0" },
+]
+provides-extras = ["storage", "logging", "ray", "llm"]
+
+[package.metadata.requires-dev]
+dev = [{ name = "black", extras = ["colorama"], specifier = ">=26.3.1,<27" }]
+test = [
+    { name = "avro", specifier = ">=1.11.0,<2.0.0" },
+    { name = "boto3", specifier = ">=1.35.0,<2.0.0" },
+    { name = "grpcio-testing", specifier = ">=1.73.0,<2.0.0" },
+    { name = "httpx-retries", specifier = ">=0.4.5,<1.0.0" },
+    { name = "jinja2", specifier = ">=3.1.4,<4.0.0" },
+    { name = "mypy", specifier = ">=0.991,<1.0" },
+    { name = "portforward", specifier = ">=0.7.4,<1.0.0" },
+    { name = "pyarrow", specifier = ">=18.0.0,<20.0.0" },
+    { name = "pytest", specifier = ">=7.4.4,<8.0.0" },
+    { name = "pytest-asyncio", specifier = ">=0.23.4,<1.0.0" },
+    { name = "pytest-cov", specifier = ">=5.0.0,<6.0.0" },
+    { name = "pytest-httpx", specifier = ">=0.30.0,<1.0.0" },
+    { name = "pytest-json-report", specifier = ">=1.5.0,<2.0.0" },
+    { name = "pytest-xdist", specifier = ">=3.0.2,<4.0.0" },
+    { name = "timeout-sampler", specifier = ">=1.0.0,<2.0.0" },
+    { name = "tomlkit", specifier = ">=0.12.0,<1.0.0" },
+]
+
+[[package]]
+name = "kserve-storage"
+version = "0.20.0"
+source = { virtual = "../storage" }
+dependencies = [
+    { name = "aiohttp" },
+    { name = "azure-core" },
+    { name = "azure-identity" },
+    { name = "azure-storage-blob" },
+    { name = "azure-storage-file-share" },
+    { name = "boto3" },
+    { name = "certifi" },
+    { name = "cryptography" },
+    { name = "dulwich" },
+    { name = "google-cloud-storage" },
+    { name = "hf-xet" },
+    { name = "huggingface-hub" },
+    { name = "modelscope-hub" },
+    { name = "oras" },
+    { name = "pyasn1" },
+    { name = "pyjwt" },
+    { name = "requests" },
+    { name = "urllib3" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "aiohttp", specifier = ">=3.13.3,<4.0.0" },
+    { name = "azure-core", specifier = ">=1.38.0" },
+    { name = "azure-identity", specifier = ">=1.15.0,<2.0.0" },
+    { name = "azure-storage-blob", specifier = ">=12.20.0,<13.0.0" },
+    { name = "azure-storage-file-share", specifier = ">=12.16.0,<13.0.0" },
+    { name = "boto3", specifier = ">=1.29.0,<2.0.0" },
+    { name = "certifi", specifier = ">=2024.7.4" },
+    { name = "cryptography", specifier = ">=48.0.1" },
+    { name = "dulwich", specifier = ">=1.2.5" },
+    { name = "google-cloud-storage", specifier = ">=2.14.0,<3.0.0" },
+    { name = "hf-xet", specifier = ">=1.5.0" },
+    { name = "huggingface-hub", specifier = ">=0.32.0" },
+    { name = "jwcrypto", marker = "extra == 'confidential'", specifier = ">=1.5.0" },
+    { name = "modelscope-hub", specifier = ">=0.1.4" },
+    { name = "oras", specifier = ">=0.2.42,<1.0.0" },
+    { name = "pyasn1", specifier = ">=0.6.4" },
+    { name = "pyjwt", specifier = ">=2.12.0" },
+    { name = "requests", specifier = ">=2.32.2,<3.0.0" },
+    { name = "urllib3", specifier = ">=2.6.3" },
+]
+provides-extras = ["confidential"]
+
+[[package]]
+name = "kubernetes"
+version = "35.0.0"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "certifi" },
+    { name = "durationpy" },
+    { name = "python-dateutil" },
+    { name = "pyyaml" },
+    { name = "requests" },
+    { name = "requests-oauthlib" },
+    { name = "six" },
+    { name = "urllib3" },
+    { name = "websocket-client" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/kubernetes-35.0.0-2-py3-none-any.whl", hash = "sha256:92968784d96be87c11ed242ac7bc0ca1c41f51dd6c6b4060259d928dfa717326" },
+]
+
+[[package]]
+name = "lightgbm"
+version = "4.6.0"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "numpy" },
+    { name = "scipy" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/lightgbm-4.6.0-2-py3-none-linux_aarch64.whl", hash = "sha256:9cc5d5df236798717d53d9386d09a44f62e68ac87f09e5acfd9927be8fe9feda" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/lightgbm-4.6.0-2-py3-none-linux_ppc64le.whl", hash = "sha256:524c629b677746af3862ea5c26cca6dd16f742591a00b13a0cdb26dc79f791e7" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/lightgbm-4.6.0-2-py3-none-linux_s390x.whl", hash = "sha256:3231a268fdd6584a41dc2ecdaf7f175e1556df1c6f79cbd4713ef67ca9a52588" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/lightgbm-4.6.0-2-py3-none-linux_x86_64.whl", hash = "sha256:8616dc6ee98fa9b4a4421777455481305d3372e8ea60664701abc4a53ced1980" },
+]
+
+[[package]]
+name = "lightning"
+version = "2.6.5"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "fsspec", extra = ["http"] },
+    { name = "lightning-utilities" },
+    { name = "packaging" },
+    { name = "pytorch-lightning" },
+    { name = "pyyaml" },
+    { name = "torch" },
+    { name = "torchmetrics" },
+    { name = "tqdm" },
+    { name = "typing-extensions" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/lightning-2.6.5-2-py3-none-any.whl", hash = "sha256:3e87b71574e87ccafa00e66f2707a45961d5133749c96710e77bcb8706f3f79f" },
+]
+
+[[package]]
+name = "lightning-utilities"
+version = "0.15.3"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "packaging" },
+    { name = "typing-extensions" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/lightning_utilities-0.15.3-2-py3-none-any.whl", hash = "sha256:483b81528e87b860f6f016e96d4e022f85e06e35dea487de854e109765541050" },
+]
+
+[[package]]
+name = "llvmlite"
+version = "0.46.0"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/llvmlite-0.46.0-4-cp312-cp312-linux_aarch64.whl", hash = "sha256:b6585b9fdf2867c967bf7263558a9762795d21fa8f5d510880d1485adb5aa9f4" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/llvmlite-0.46.0-4-cp312-cp312-linux_ppc64le.whl", hash = "sha256:cbd147fef4ada4abc760b23a5717db7a682ad76e4b34933019746b19d8d5006c" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/llvmlite-0.46.0-4-cp312-cp312-linux_s390x.whl", hash = "sha256:2e98ec7669c47e20b1f938bfcf3a58185b1678da57aad4d5999f7df3f79d61ca" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/llvmlite-0.46.0-4-cp312-cp312-linux_x86_64.whl", hash = "sha256:89cfaa62388eb5e29ecd7ccc27633221621bb47e00d5ec72bc6904574b6f8210" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/llvmlite-0.46.0-5-cp312-cp312-linux_aarch64.whl", hash = "sha256:c49a9cafffe941ba60fc3b6fa3afffde477c406f57761fe70c3da28971cf7e48" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/llvmlite-0.46.0-5-cp312-cp312-linux_ppc64le.whl", hash = "sha256:94fe8043bd80652412bf115e05041ae16c445bd8e15918843d952ed806cf1fcb" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/llvmlite-0.46.0-5-cp312-cp312-linux_s390x.whl", hash = "sha256:f9f61336dc1266e4d92a81d0212158dcd0d6c0f68cbb80dee66d2fee5e82e18f" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/llvmlite-0.46.0-5-cp312-cp312-linux_x86_64.whl", hash = "sha256:88ee1c271f070232b9ee5f5796c740db24e38d48b9eb043c9ec8a8f795047439" },
+]
+
+[[package]]
+name = "mako"
+version = "1.3.12"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "markupsafe" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/mako-1.3.12-2-py3-none-any.whl", hash = "sha256:39aa737c9633f559da1068b3791b5b20f5c25567b0c19f566bdfab82d7129705" },
+]
+
+[[package]]
+name = "markdown"
+version = "3.10.2"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/markdown-3.10.2-2-py3-none-any.whl", hash = "sha256:d03a9d8f09ae8a59d6ed69ca040b7aa7f693855c271708807ecae847b767d260" },
+]
+
+[[package]]
+name = "markdown-it-py"
+version = "4.2.0"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "mdurl" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/markdown_it_py-4.2.0-2-py3-none-any.whl", hash = "sha256:aec8d53b1472c56d47ce05b7da68fd354ffb406b38d4245567d368f130a9e628" },
+]
+
+[[package]]
+name = "markupsafe"
+version = "3.0.3"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/markupsafe-3.0.3-2-cp312-cp312-linux_aarch64.whl", hash = "sha256:e6c6055c4623ff263b359600373e42d2027521c5f7f453b535a5a05ea37b8537" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/markupsafe-3.0.3-2-cp312-cp312-linux_ppc64le.whl", hash = "sha256:df08b744fa599c9bd3bccd7d0b72a9f12c4bfb0a31a5ce3113f4b16289429e6f" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/markupsafe-3.0.3-2-cp312-cp312-linux_s390x.whl", hash = "sha256:69df84105cae0b20755395a4ef80a8a97a9993be2a6efe47bc91aef05e26fc51" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/markupsafe-3.0.3-2-cp312-cp312-linux_x86_64.whl", hash = "sha256:e0404961f3e45375f32cb6a8fec8821f4dbfabb62d6880ac0e7d316ba05bfafd" },
+]
+
+[[package]]
+name = "matplotlib"
+version = "3.10.9"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "contourpy" },
+    { name = "cycler" },
+    { name = "fonttools" },
+    { name = "kiwisolver" },
+    { name = "numpy" },
+    { name = "packaging" },
+    { name = "pillow" },
+    { name = "pyparsing" },
+    { name = "python-dateutil" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/matplotlib-3.10.9-2-cp312-cp312-linux_aarch64.whl", hash = "sha256:206a1bfcce6c6aff0af2a0cfad59234f33ac8ead0ba1f9cdf86a941b44781aa0" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/matplotlib-3.10.9-2-cp312-cp312-linux_ppc64le.whl", hash = "sha256:e75b0b211e1d110be98ef8b34afa10d7d23d14065ba831604b0ddc8c8cfc7811" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/matplotlib-3.10.9-2-cp312-cp312-linux_s390x.whl", hash = "sha256:8435191e897ab0ae448c81f5370b3282c21610b4a7715af62be1adbc64922c99" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/matplotlib-3.10.9-2-cp312-cp312-linux_x86_64.whl", hash = "sha256:aca4d6b1600faf935b1998f57171af86b9ab1aed36e8d3630f40368337a3170c" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/matplotlib-3.10.9-3-cp312-cp312-linux_aarch64.whl", hash = "sha256:895e57efd6fae038e25ae3f257f9282ee25e8720cc9036243047b816bbe86b7a" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/matplotlib-3.10.9-3-cp312-cp312-linux_ppc64le.whl", hash = "sha256:5c0224b62acbbb0ce91e62868bedb034168a3472242f3ea9770ed81f51d0cb36" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/matplotlib-3.10.9-3-cp312-cp312-linux_s390x.whl", hash = "sha256:f0b5b2055a45597ef48f5c9fcdd2f63fdabbcaf53931a13bbea14bcd188c6cf4" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/matplotlib-3.10.9-3-cp312-cp312-linux_x86_64.whl", hash = "sha256:0bbb8dd9f9dfa7748b399be015ba0eb97625e4d185dc235cccaf168d74ce3f49" },
+]
+
+[[package]]
+name = "mdurl"
+version = "0.1.2"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/mdurl-0.1.2-2-py3-none-any.whl", hash = "sha256:3b685cb48a3cde202b232cb167ea1d9c287724d240966f2f16d2f10732b78636" },
+]
+
+[[package]]
+name = "mlforecast"
+version = "0.14.0"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "cloudpickle" },
+    { name = "coreforecast" },
+    { name = "fsspec" },
+    { name = "numba" },
+    { name = "optuna" },
+    { name = "packaging" },
+    { name = "pandas" },
+    { name = "scikit-learn" },
+    { name = "utilsforecast" },
+    { name = "window-ops" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/mlforecast-0.14.0-2-py3-none-any.whl", hash = "sha256:4596c7a62ebcf6be805e2ec90fa7f3aadd59708c614d4e4251cfe1144ab8617d" },
+]
+
+[[package]]
+name = "modelscope-hub"
+version = "0.1.7"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "filelock" },
+    { name = "requests" },
+    { name = "tqdm" },
+    { name = "urllib3" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/modelscope_hub-0.1.7-2-py3-none-any.whl", hash = "sha256:b5dc7f188c15037f10dcce5a30804984711afb8d27370e3c094317c719238862" },
+]
+
+[[package]]
+name = "mpmath"
+version = "1.3.0"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/mpmath-1.3.0-2-py3-none-any.whl", hash = "sha256:3912d9c5c6877b3a3198b133dfe5b8a7c64c87566f7b16f460c12dc30fa77405" },
+]
+
+[[package]]
+name = "msal"
+version = "1.37.0"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "cryptography" },
+    { name = "pyjwt", extra = ["crypto"] },
+    { name = "requests" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/msal-1.37.0-2-py3-none-any.whl", hash = "sha256:8f6194bc42c2e427fdac23c1d82044bf65a99061a40d2aba3d7448a6281ac713" },
+]
+
+[[package]]
+name = "msal-extensions"
+version = "1.3.1"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "msal" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/msal_extensions-1.3.1-2-py3-none-any.whl", hash = "sha256:e0184f4918415efe8994ce27d27bc8132727c292bbf026f21b117d84112fb0af" },
+]
+
+[[package]]
+name = "multidict"
+version = "6.7.1"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/multidict-6.7.1-2-cp312-cp312-linux_aarch64.whl", hash = "sha256:e145db09d0ab2761780a43d8380a7d8f6faffac11966d8148375ab7175a0f249" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/multidict-6.7.1-2-cp312-cp312-linux_ppc64le.whl", hash = "sha256:b863786cc047cc648abc38b892a5575a0abcb5e1b9b348cd89f122ac4d7b304f" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/multidict-6.7.1-2-cp312-cp312-linux_s390x.whl", hash = "sha256:14a85a18a8d32c109c4886b8bfae4a66b55d275a86a19dd8a0b611887bde6c85" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/multidict-6.7.1-2-cp312-cp312-linux_x86_64.whl", hash = "sha256:4213730650f4d37161dfda5ec18ad17c62c7f2d9d36a3a2599afe58bd8a13af1" },
+]
+
+[[package]]
+name = "murmurhash"
+version = "1.0.15"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/murmurhash-1.0.15-2-cp312-cp312-linux_aarch64.whl", hash = "sha256:6372d5a0364b64656886382fce226ec4c00be392c920e216afe3fed0f0939999" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/murmurhash-1.0.15-2-cp312-cp312-linux_ppc64le.whl", hash = "sha256:64e5be8a79111f47d75228d85c80c827badb2674c25e0e0314e15b469aa0df6c" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/murmurhash-1.0.15-2-cp312-cp312-linux_s390x.whl", hash = "sha256:a7240323b48d24cca9d1ab25bc48b1dad5cdf2e7d529d773ed20d8642a0f709d" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/murmurhash-1.0.15-2-cp312-cp312-linux_x86_64.whl", hash = "sha256:3ee17e1759bcb9f2af36dbea51b7f7f21655cffca022e3bf7cf123b20b2ee34c" },
+]
+
+[[package]]
+name = "networkx"
+version = "3.6.1"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/networkx-3.6.1-2-py3-none-any.whl", hash = "sha256:56b687ad58bed743066f1b7d5e6f56a72d2f193c8eaf35064abaedda4fba3745" },
+]
+
+[[package]]
+name = "numba"
+version = "0.64.0"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "llvmlite" },
+    { name = "numpy" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/numba-0.64.0-2-cp312-cp312-linux_aarch64.whl", hash = "sha256:97da30494e31b68230b78a3f2d06457595ed5907903bf86b2977009fc37ac1d0" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/numba-0.64.0-2-cp312-cp312-linux_ppc64le.whl", hash = "sha256:9280e5929681aee57c62d5417bc99ee1b999d9c2cc483ffb905da1f67b4e017e" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/numba-0.64.0-2-cp312-cp312-linux_s390x.whl", hash = "sha256:578cf08b5bc34b2f28789a2354a05fbce8a43ce31181132d4d24e4fd316efb5f" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/numba-0.64.0-2-cp312-cp312-linux_x86_64.whl", hash = "sha256:b4c718620a3018d867f0c8cfc27ca388f6501999f59b1f1c163e7ca2629587e0" },
+]
+
+[[package]]
+name = "numpy"
+version = "2.1.3"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/numpy-2.1.3-2-cp312-cp312-linux_aarch64.whl", hash = "sha256:fac47448276d1d51048bc87d1a983cd8d1601af9e5aa9afc32aa9459ae1632ae" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/numpy-2.1.3-2-cp312-cp312-linux_ppc64le.whl", hash = "sha256:3a8a1a7b772d4e6d8f977109d235f31c6a1ecce82591f54035cec44387f3d3c0" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/numpy-2.1.3-2-cp312-cp312-linux_s390x.whl", hash = "sha256:134e2c7657bd3bd2f54ac156c3ac9618f8215a6a4fb93927b552251bc8a75fd7" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/numpy-2.1.3-2-cp312-cp312-linux_x86_64.whl", hash = "sha256:fc99c458bc8d644e5461ae5d900abce9f8576268d663bf3f2b2cb24724eb380b" },
+]
+
+[[package]]
+name = "oauthlib"
+version = "3.3.1"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/oauthlib-3.3.1-2-py3-none-any.whl", hash = "sha256:c6fbab4f1a77a539f01175e2ea74b9552806bd0a849c70e744fda4ab801031c0" },
+]
+
+[[package]]
+name = "optuna"
+version = "4.8.0"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "alembic" },
+    { name = "colorlog" },
+    { name = "numpy" },
+    { name = "packaging" },
+    { name = "pyyaml" },
+    { name = "sqlalchemy" },
+    { name = "tqdm" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/optuna-4.8.0-2-py3-none-any.whl", hash = "sha256:3bcde83ba91cac6770c6b935ab962f4bcc954d5c2926a8c6a185b8d7334522c8" },
+]
+
+[[package]]
+name = "oras"
+version = "0.2.42"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "jsonschema" },
+    { name = "requests" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/oras-0.2.42-2-py3-none-any.whl", hash = "sha256:a4fa9b706b22b8592d8eb6846a5404bebc8f7a17394b584f2b97fc5aaad0fc2c" },
+]
+
+[[package]]
+name = "orjson"
+version = "3.11.9"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/orjson-3.11.9-2-cp312-cp312-linux_aarch64.whl", hash = "sha256:5df08ec1c6e29ae7e91916b6e3428bd3ba3acb0170dbaaf3afd1c8ef87c2f78b" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/orjson-3.11.9-2-cp312-cp312-linux_ppc64le.whl", hash = "sha256:21ad5305e765b982e46b044165f8a37f2dfc29f2986a54b3ad5c4c7757b5480c" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/orjson-3.11.9-2-cp312-cp312-linux_s390x.whl", hash = "sha256:30f0e57e4aca5e2c8ce8b54877852560d2836e1f9c04c9b15a62f937e5e06f61" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/orjson-3.11.9-2-cp312-cp312-linux_x86_64.whl", hash = "sha256:23bc203b38b6427c02638f79274558c1a148875c94d80b9e3ee17bc931241e75" },
+]
+
+[[package]]
+name = "packaging"
+version = "26.0"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/packaging-26.0-2-py3-none-any.whl", hash = "sha256:bc63e159c7f7120596c4318a4de6c8288c34a1df98656b357c2d277739da4b30" },
+]
+
+[[package]]
+name = "pandas"
+version = "2.3.3"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "numpy" },
+    { name = "python-dateutil" },
+    { name = "pytz" },
+    { name = "tzdata" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/pandas-2.3.3-3-cp312-cp312-linux_aarch64.whl", hash = "sha256:0f8eb3443bc174c59021515e04bc5980607bedff085892591b8acd38593d62c6" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/pandas-2.3.3-3-cp312-cp312-linux_ppc64le.whl", hash = "sha256:130665e4f3ee91d60caa5563524728553bd8f930269c8bb95e9517fe0160b448" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/pandas-2.3.3-3-cp312-cp312-linux_s390x.whl", hash = "sha256:fc5d82648fb49837094317ca5c20ce3ad3abe4b2eecd0c3977ee8879b55b9fa3" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/pandas-2.3.3-3-cp312-cp312-linux_x86_64.whl", hash = "sha256:f792f3775b1c6bc55936654cd923cf1f5ad8b5b12da44daa152da0b8d1589739" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/pandas-2.3.3-4-cp312-cp312-linux_aarch64.whl", hash = "sha256:65224b68b10055b6f0032c9638c724b20a6288d7a091a957713ff2f8a37d6999" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/pandas-2.3.3-4-cp312-cp312-linux_ppc64le.whl", hash = "sha256:ac10e08a9c05e7cea994402668c64b859de6929d0841f75a56a052a4254fb7eb" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/pandas-2.3.3-4-cp312-cp312-linux_s390x.whl", hash = "sha256:18c0f606500ae8eb6010159ddfbf67382b5ee0d1fd96aeec9d7d658dd9925c25" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/pandas-2.3.3-4-cp312-cp312-linux_x86_64.whl", hash = "sha256:246256fbe7bc48bc6087274eca3ef50462db380e41fd2629c08864ecc6f71814" },
+]
+
+[[package]]
+name = "patsy"
+version = "1.0.2"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "numpy" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/patsy-1.0.2-2-py2.py3-none-any.whl", hash = "sha256:6b66345ff8483da43877a53d0329ae259839481128cb662e748d0908884f922b" },
+]
+
+[[package]]
+name = "peft"
+version = "0.19.1"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "accelerate" },
+    { name = "huggingface-hub" },
+    { name = "numpy" },
+    { name = "packaging" },
+    { name = "psutil" },
+    { name = "pyyaml" },
+    { name = "safetensors" },
+    { name = "torch" },
+    { name = "tqdm" },
+    { name = "transformers" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/peft-0.19.1-2-py3-none-any.whl", hash = "sha256:f535ba967638601280a0d00480242ff013e14b5f9d8596a2c3ffa353ae5f159d" },
+]
+
+[[package]]
+name = "pillow"
+version = "12.3.0"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/pillow-12.3.0-2-cp312-cp312-linux_aarch64.whl", hash = "sha256:4a904ef7f3765fc818c3a483529ff04147e97cc0390f9eec5edd30cae497fafe" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/pillow-12.3.0-2-cp312-cp312-linux_ppc64le.whl", hash = "sha256:5762ef56cdceff2319ac80ed92150106a0bf51ec2eea15226f44c9d983e7b916" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/pillow-12.3.0-2-cp312-cp312-linux_s390x.whl", hash = "sha256:bb4f92e67999c0820fd8a9f959f0dce3b0b0dcb8144d47aa7a1432183e7c4c98" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/pillow-12.3.0-2-cp312-cp312-linux_x86_64.whl", hash = "sha256:65a30ac6a91ac6d2d08c73441c8fe69653d0d818312b18d1dc86ee8932529cec" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/pillow-12.3.0-3-cp312-cp312-linux_aarch64.whl", hash = "sha256:e803d1800d5fb6ed2fbbb8d1aa4a42f1f9080ed98b6f929646b920330031f6b1" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/pillow-12.3.0-3-cp312-cp312-linux_ppc64le.whl", hash = "sha256:787b6ebb6a267bca4040c40296487e0428b7ba8fe3024b2863626ba09d566fc9" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/pillow-12.3.0-3-cp312-cp312-linux_s390x.whl", hash = "sha256:c7d40c6deb9bf0b847d4f027d55e2362d55fbee8876dbf728af0e2efe345128a" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/pillow-12.3.0-3-cp312-cp312-linux_x86_64.whl", hash = "sha256:292ad662c4a21daa5c557816bd36870c036fcb32f1863a474725c9a48db317f2" },
+]
+
+[[package]]
+name = "plum-dispatch"
+version = "2.9.0"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "beartype" },
+    { name = "rich" },
+    { name = "typing-extensions" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/plum_dispatch-2.9.0-2-py3-none-any.whl", hash = "sha256:35f1dc21a1acb65257b31a788ce8e4aab3fb171abffcda67c398db90a77ccc37" },
+]
+
+[[package]]
+name = "preshed"
+version = "3.0.13"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "cymem" },
+    { name = "murmurhash" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/preshed-3.0.13-2-cp312-cp312-linux_aarch64.whl", hash = "sha256:c1b826f63f68121b8057c31e0bc902c603b0ab8f2a8a81f6d93625434109a9af" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/preshed-3.0.13-2-cp312-cp312-linux_ppc64le.whl", hash = "sha256:3c2ecc4dc47b2ef27b8f7591293bc898f1c87f9f91d840386112fb676b98f60e" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/preshed-3.0.13-2-cp312-cp312-linux_s390x.whl", hash = "sha256:1011fa98d050f429acaa54ae5d08b279dba95bfe3e6d2d67d622280b7e88ed9d" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/preshed-3.0.13-2-cp312-cp312-linux_x86_64.whl", hash = "sha256:9451195da0682c8690e859939094cecd1b199baec2c8abfae74c2214af8fa274" },
+]
+
+[[package]]
+name = "prometheus-client"
+version = "0.24.1"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/prometheus_client-0.24.1-2-py3-none-any.whl", hash = "sha256:3cba6f12a41b9a65f307d8ee9685759fd58352d58088939b60c0a2618e699e18" },
+]
+
+[[package]]
+name = "propcache"
+version = "0.4.1"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/propcache-0.4.1-2-cp312-cp312-linux_aarch64.whl", hash = "sha256:592720ed230b7c5fd2137d6dfcd483e856c5ffba4f2ec65f119df696190e70c3" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/propcache-0.4.1-2-cp312-cp312-linux_ppc64le.whl", hash = "sha256:846626915d5125527d1aec396e74c3ff2644179752698453a63ee7b651f20b7b" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/propcache-0.4.1-2-cp312-cp312-linux_s390x.whl", hash = "sha256:d2dc9b0baa6aedb2b462dbea35040695b466101c073c125616dc19c6199d4bbb" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/propcache-0.4.1-2-cp312-cp312-linux_x86_64.whl", hash = "sha256:74d3401abe4e59fb9de6a2b1951f0a6e73321da05096a1e578a6e2311ab26204" },
+]
+
+[[package]]
+name = "proto-plus"
+version = "1.28.1"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "protobuf" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/proto_plus-1.28.1-2-py3-none-any.whl", hash = "sha256:01d18da3e804517b9225e384d596db5c1147f7e1a02778dd5048ac0f4130b324" },
+]
+
+[[package]]
+name = "protobuf"
+version = "6.33.5"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/protobuf-6.33.5-2-cp312-cp312-linux_aarch64.whl", hash = "sha256:8082790b279da277dbdd8f624764c2076cddb84ac9cc30cde2369f6e667063ae" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/protobuf-6.33.5-2-cp312-cp312-linux_ppc64le.whl", hash = "sha256:cc358141ab2986dcb676f0d5ddbafd8fd7f5bbcb071e21be307bd2ac998bf1d6" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/protobuf-6.33.5-2-cp312-cp312-linux_s390x.whl", hash = "sha256:fb4bbd534874cace05dfed5e071a0fd3dcda3cff0f1c01e99dcc78740a573856" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/protobuf-6.33.5-2-cp312-cp312-linux_x86_64.whl", hash = "sha256:b626bcaaf1809381ca18ac7fbbc2a87270a5a502f75f636799361cc6537b4b6a" },
+]
+
+[[package]]
+name = "psutil"
+version = "5.9.8"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/psutil-5.9.8-2-cp312-abi3-linux_aarch64.whl", hash = "sha256:30a39323c2147530523d0dd3592579818063580f87e5f52d64d4d01eb71c5018" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/psutil-5.9.8-2-cp312-abi3-linux_ppc64le.whl", hash = "sha256:e78d1ee15b70934cc6f808f1e418b4f83b0c4b190be2906c02635e5f8af12ee0" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/psutil-5.9.8-2-cp312-abi3-linux_s390x.whl", hash = "sha256:2437cb32b603f79b2d0aaf89f01bbcf0fead19b6878c76b2888f353e339d026b" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/psutil-5.9.8-2-cp312-abi3-linux_x86_64.whl", hash = "sha256:6aeffd1fec42a44de1b7a5175694a59b0374615fbd2f6e3ff9de0f8fd5809bba" },
+]
+
+[[package]]
+name = "pyarrow"
+version = "20.0.0"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/pyarrow-20.0.0-11-cp312-cp312-linux_aarch64.whl", hash = "sha256:bc99efb37c030541e3ae3e22ec3c0551ac30683c3641dcd0f3b60bde6ea709a0" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/pyarrow-20.0.0-11-cp312-cp312-linux_ppc64le.whl", hash = "sha256:57c6cdb1e7cb257e54efc631e15f1bd975e1340d5987be006dc0da9737035b03" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/pyarrow-20.0.0-11-cp312-cp312-linux_s390x.whl", hash = "sha256:21eaca6c60bfec2e572bfeed6ed9269467373d61b694d3bdbe0fcdef2ea70047" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/pyarrow-20.0.0-11-cp312-cp312-linux_x86_64.whl", hash = "sha256:2791da6218232e6a3c12814d41501c20eb035d8031ddc3c5e53d576ccd98fd09" },
+]
+
+[[package]]
+name = "pyasn1"
+version = "0.6.4"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/pyasn1-0.6.4-2-py3-none-any.whl", hash = "sha256:aa4baf3e3b2b894b21127fc4769773650d15543dec5a3756daaa19c0f3763b7f" },
+]
+
+[[package]]
+name = "pyasn1-modules"
+version = "0.4.2"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "pyasn1" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/pyasn1_modules-0.4.2-2-py3-none-any.whl", hash = "sha256:6b1010138365a6fc22f4efd32edd504ec3f538e1ac3d1947ba9f7821ef15ef6c" },
+]
+
+[[package]]
+name = "pycparser"
+version = "3.0"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/pycparser-3.0-2-py3-none-any.whl", hash = "sha256:c2e6198bf8dc97ba19b5f42d9d0e08d5842ffb775e0e208b150080dcf423396e" },
+]
+
+[[package]]
+name = "pydantic"
+version = "2.12.5"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "annotated-types" },
+    { name = "pydantic-core" },
+    { name = "typing-extensions" },
+    { name = "typing-inspection" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/pydantic-2.12.5-2-py3-none-any.whl", hash = "sha256:b64a2f86c66e61a4a8f3e3cb405cc87fe12469a1c4557ce1fe74f26e96e47088" },
+]
+
+[[package]]
+name = "pydantic-core"
+version = "2.41.5"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "typing-extensions" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/pydantic_core-2.41.5-2-cp312-cp312-linux_aarch64.whl", hash = "sha256:b43916e6a561935162448b3ab0c3b87f177a22625da2d467f5546ccd21c5badc" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/pydantic_core-2.41.5-2-cp312-cp312-linux_ppc64le.whl", hash = "sha256:62c65c46fa3fcf4290e3273e19e3fb762dd3135af4bd4aa59dbbf8715ca5807a" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/pydantic_core-2.41.5-2-cp312-cp312-linux_s390x.whl", hash = "sha256:29a675b8ca3ccf804cce3a91095110d1741b6c62bf6690b0df5cc8a9ef08b056" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/pydantic_core-2.41.5-2-cp312-cp312-linux_x86_64.whl", hash = "sha256:e76ab570fb017182f2fa1fc527926233b9c2e75a60471aa4506004c843983f0c" },
+]
+
+[[package]]
+name = "pygments"
+version = "2.20.0"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/pygments-2.20.0-2-py3-none-any.whl", hash = "sha256:14c06510dc5a2dbf9d83a85463d229907d0456e167a3752d361e6cd1cbfd1152" },
+]
+
+[[package]]
+name = "pyjwt"
+version = "2.13.0"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/pyjwt-2.13.0-2-py3-none-any.whl", hash = "sha256:2d0ec124d9f710af8e14c3b2576bcef5a977e607ef38e97e9fbbc8efe47cfbf6" },
+]
+
+[package.optional-dependencies]
+crypto = [
+    { name = "cryptography" },
+]
+
+[[package]]
+name = "pyparsing"
+version = "3.3.2"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/pyparsing-3.3.2-2-py3-none-any.whl", hash = "sha256:5af50c60b51bfaa0aab55dd9284e22a4857cf9d2244b4ecc7da1cb4a9a2b9564" },
+]
+
+[[package]]
+name = "python-dateutil"
+version = "2.9.0.post0"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "six" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/python_dateutil-2.9.0.post0-2-py2.py3-none-any.whl", hash = "sha256:48d0381d3876a6f959d2731ffddb508ea44e2f55212e48c3eea2c9b187c15712" },
+]
+
+[[package]]
+name = "python-dotenv"
+version = "1.2.1"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/python_dotenv-1.2.1-2-py3-none-any.whl", hash = "sha256:9a61d5ab192d9d8f9de53162fca3bbed25aa42b994d0fdd47caa59f784793887" },
+]
+
+[[package]]
+name = "python-fasthtml"
+version = "0.14.5"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "beautifulsoup4" },
+    { name = "fastcore" },
+    { name = "fastlite" },
+    { name = "httpx2" },
+    { name = "itsdangerous" },
+    { name = "oauthlib" },
+    { name = "python-dateutil" },
+    { name = "python-multipart" },
+    { name = "starlette" },
+    { name = "uvicorn", extra = ["standard"] },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/python_fasthtml-0.14.5-2-py3-none-any.whl", hash = "sha256:94a8a5642b8cf17eb21d71990cfd33fe354ae60849773793fbe493dfc0734fc3" },
+]
+
+[[package]]
+name = "python-multipart"
+version = "0.0.32"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/python_multipart-0.0.32-2-py3-none-any.whl", hash = "sha256:61e4a190f7cd947a7aebc96a97976e628210851d66f7a25a6ddc3dab2305e6b4" },
+]
+
+[[package]]
+name = "pytorch-lightning"
+version = "2.6.5"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "fsspec", extra = ["http"] },
+    { name = "lightning-utilities" },
+    { name = "packaging" },
+    { name = "pyyaml" },
+    { name = "torch" },
+    { name = "torchmetrics" },
+    { name = "tqdm" },
+    { name = "typing-extensions" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/pytorch_lightning-2.6.5-2-py3-none-any.whl", hash = "sha256:529a0f325664afcf0ff1769fbf38ff45d90381bad8147b3113059d495fd5bfd8" },
+]
+
+[[package]]
+name = "pytz"
+version = "2026.2"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/pytz-2026.2-2-py3-none-any.whl", hash = "sha256:23d753f564045149edade757f9302e7a88d7d99012e9b7b1c52ef603ee68beae" },
+]
+
+[[package]]
+name = "pyyaml"
+version = "6.0.3"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/pyyaml-6.0.3-2-cp312-cp312-linux_aarch64.whl", hash = "sha256:726ba29089425e37e0a54208804a621cbeed0cba6c1156d817226bc6cdc26d4a" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/pyyaml-6.0.3-2-cp312-cp312-linux_ppc64le.whl", hash = "sha256:2bd6846091e45ed85468748b300a374d5b3724bf49b59a2773d15b72fd25cf09" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/pyyaml-6.0.3-2-cp312-cp312-linux_s390x.whl", hash = "sha256:2e1123ff9917c251043614409b1660a891837de28b9d2c1210dbca78c52822e5" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/pyyaml-6.0.3-2-cp312-cp312-linux_x86_64.whl", hash = "sha256:d76fd28238122285a5a5790b3fba7ccfce6006e19eb2c8fbd6700d723c3f674b" },
+]
+
+[[package]]
+name = "referencing"
+version = "0.37.0"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "attrs" },
+    { name = "rpds-py" },
+    { name = "typing-extensions" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/referencing-0.37.0-2-py3-none-any.whl", hash = "sha256:b290b587a835bb688b817f9b73927f6fc273bbad723690754c815912da2bc845" },
+]
+
+[[package]]
+name = "regex"
+version = "2026.7.10"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/regex-2026.7.10-2-cp312-cp312-linux_aarch64.whl", hash = "sha256:228df7d37b129645868b12b6761f4a04fdccfa64110d5c4ec030ea40f3ece3b5" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/regex-2026.7.10-2-cp312-cp312-linux_ppc64le.whl", hash = "sha256:7aace66aba0972be9268979cfa5364a3b5d48ae020569f395d0bbd0b762051f9" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/regex-2026.7.10-2-cp312-cp312-linux_s390x.whl", hash = "sha256:2137bb9688fd4e0c24b4dfba4aa53ed14516259e858840aa3fd79e3f9c144241" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/regex-2026.7.10-2-cp312-cp312-linux_x86_64.whl", hash = "sha256:08953ce98a4d4651720eb1f9eab1b6e1420e794949707fa50b99b6a8a0db74a3" },
+]
+
+[[package]]
+name = "requests"
+version = "2.32.5"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "certifi" },
+    { name = "charset-normalizer" },
+    { name = "idna" },
+    { name = "urllib3" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/requests-2.32.5-2-py3-none-any.whl", hash = "sha256:d183c52a0977268ea84b092f747d88f7b914a87ecbac34b8d40dd6dbe65d835e" },
+]
+
+[[package]]
+name = "requests-oauthlib"
+version = "2.0.0"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "oauthlib" },
+    { name = "requests" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/requests_oauthlib-2.0.0-2-py2.py3-none-any.whl", hash = "sha256:a97b432a279e3353fc512189927bfd2a2ff168b05d66a7600966e39b24efdcbe" },
+]
+
+[[package]]
+name = "rich"
+version = "15.0.0"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "markdown-it-py" },
+    { name = "pygments" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/rich-15.0.0-2-py3-none-any.whl", hash = "sha256:b78831156a60d0f5cb5d008f7f9285c48ffdbe315164c9cd396ca3b65fe8130a" },
+]
+
+[[package]]
+name = "rpds-py"
+version = "2026.6.3"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/rpds_py-2026.6.3-2-cp312-cp312-linux_aarch64.whl", hash = "sha256:bf9210733450bc06ffa42008cae33734ebe4e69505707feedfb0518c6d83fa70" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/rpds_py-2026.6.3-2-cp312-cp312-linux_ppc64le.whl", hash = "sha256:0d6f70f6d85d7bc4060354d68b5a8c5dfb23779a544ded172477fce6a112fae0" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/rpds_py-2026.6.3-2-cp312-cp312-linux_s390x.whl", hash = "sha256:cd846c9ef4996927c8af50c2fa001addd6f7ad7d9a5dbf8d169941b95f3c6130" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/rpds_py-2026.6.3-2-cp312-cp312-linux_x86_64.whl", hash = "sha256:316b43e27975b1cc162fda822f299167ee89576ef4857469d6d64ead73704327" },
+]
+
+[[package]]
+name = "rsa"
+version = "4.9.1"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "pyasn1" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/rsa-4.9.1-2-py3-none-any.whl", hash = "sha256:99096f0bef0cf6e77bb7433f4f8333a91e6740d4cb4bed468bb68dc20c7ad2a9" },
+]
+
+[[package]]
+name = "s3transfer"
+version = "0.19.1"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "botocore" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/s3transfer-0.19.1-2-py3-none-any.whl", hash = "sha256:3514b610ae555d9b8948879d13da86f116dc5fec2f93ef4e11f11234d639a7a4" },
+]
+
+[[package]]
+name = "safetensors"
+version = "0.8.0"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/safetensors-0.8.0-2-cp310-abi3-linux_aarch64.whl", hash = "sha256:b903354cbf8d3db3818b1942f9d39b0e713b5a93bd3790502412d2b01ebc217e" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/safetensors-0.8.0-2-cp310-abi3-linux_ppc64le.whl", hash = "sha256:23e3a3c88c19ad1a2d282a4eb04a84433aa406daeaa4e1d8f49b0123cafc9e62" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/safetensors-0.8.0-2-cp310-abi3-linux_s390x.whl", hash = "sha256:800d4a5cf3320f0c0b49dfb7b4ec6cfe9a5e735b33b8254a74d5a2e452dc4408" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/safetensors-0.8.0-2-cp310-abi3-linux_x86_64.whl", hash = "sha256:ae8e482791a7348f972072ac995368904d8fe58ee62c7e410ec2b6b03cc76cab" },
+]
+
+[[package]]
+name = "scikit-learn"
+version = "1.7.2"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "joblib" },
+    { name = "numpy" },
+    { name = "scipy" },
+    { name = "threadpoolctl" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/scikit_learn-1.7.2-2-cp312-cp312-linux_aarch64.whl", hash = "sha256:e4ab870538de2cb3ba514f64347095fae2436164deda51ec84a25aec46ad39e2" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/scikit_learn-1.7.2-2-cp312-cp312-linux_ppc64le.whl", hash = "sha256:16cd9df1e5c2c2c232b993a5fbcfb33d7ddaae9abaef3246a1d540c9837131cf" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/scikit_learn-1.7.2-2-cp312-cp312-linux_s390x.whl", hash = "sha256:ff9da84ab43b135cb6d67bef8a22887a14a1c30e9d1605361bd329f7e672beb4" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/scikit_learn-1.7.2-2-cp312-cp312-linux_x86_64.whl", hash = "sha256:9cb4dc94ba9d3ff8ad2dac234fe20b77832ac146b9d25c752a63f669e30b67cb" },
+]
+
+[[package]]
+name = "scipy"
+version = "1.16.3"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "numpy" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/scipy-1.16.3-2-cp312-cp312-linux_aarch64.whl", hash = "sha256:21ddfaed811b688cf78205212b36b96d966ec5b5e113b3c16afdff069419dee3" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/scipy-1.16.3-2-cp312-cp312-linux_ppc64le.whl", hash = "sha256:20b79e45e07e7e7ea6dd2011724c8465f8bf3544803372672d5670fd7242123f" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/scipy-1.16.3-2-cp312-cp312-linux_s390x.whl", hash = "sha256:7f57058794ba7a4237f5eccabfdd287625ffd72cf8bcf3c36c952c5b76ecabc2" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/scipy-1.16.3-2-cp312-cp312-linux_x86_64.whl", hash = "sha256:0646512426668d1c462135a9c32ae095cce1d29435dee6a4e175691f26ac2eef" },
+]
+
+[[package]]
+name = "sentencepiece"
+version = "0.2.1"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/sentencepiece-0.2.1-2-cp312-cp312-linux_aarch64.whl", hash = "sha256:6a3de0ea0b5ea0f8993511780d4dd964b3e93875bedb5d6e225102742ed05922" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/sentencepiece-0.2.1-2-cp312-cp312-linux_ppc64le.whl", hash = "sha256:6a9124f3be94bb4fd56d6ea4e775762525131f0b11944e6f738abdde33d73c5f" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/sentencepiece-0.2.1-2-cp312-cp312-linux_s390x.whl", hash = "sha256:c8e3671034d2f4a094584963b2e30ab3a3065449066746a33e35df624be02c76" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/sentencepiece-0.2.1-2-cp312-cp312-linux_x86_64.whl", hash = "sha256:126d4f0311685be7f651ce08aa549fdd69a8a8cae70ed8dff587eb0a42f4359e" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/sentencepiece-0.2.1-3-cp312-cp312-linux_aarch64.whl", hash = "sha256:f216017b6226a9818664d2ad1fd978e839d7d91a7638e8ab63b7ef3c40cfee3e" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/sentencepiece-0.2.1-3-cp312-cp312-linux_ppc64le.whl", hash = "sha256:ad4bc1137cd0a7e29a9579e2c7a36909f54bf7c4be1f41197704baae07bfe959" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/sentencepiece-0.2.1-3-cp312-cp312-linux_x86_64.whl", hash = "sha256:8beb232ba99364598e1dc53dfd9456e67c78862756b209b0df2820d50b236b01" },
+]
+
+[[package]]
+name = "setuptools"
+version = "81.0.0"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/setuptools-81.0.0-2-py3-none-any.whl", hash = "sha256:f6e4d2e589c5fa14b5bbda3d170eac0db8852c7fe7a357f708d172726353778e" },
+]
+
+[[package]]
+name = "shellingham"
+version = "1.5.4"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/shellingham-1.5.4-2-py2.py3-none-any.whl", hash = "sha256:c62d421a942ec6b2400acb0091f31f7bd860d133dfcc8e7c5a252afedba20f8f" },
+]
+
+[[package]]
+name = "six"
+version = "1.17.0"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/six-1.17.0-2-py2.py3-none-any.whl", hash = "sha256:6388b9db719664e1ccea84c166718ff3d2bbf56490cbf14fb7478b3b782eb0e5" },
+]
+
+[[package]]
+name = "smart-open"
+version = "8.0.1"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "wrapt" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/smart_open-8.0.1-2-py3-none-any.whl", hash = "sha256:b665424be35ae03117e3a242c6d0d50fd5f47b94cf29e275204a5e437618ed87" },
+]
+
+[[package]]
+name = "soupsieve"
+version = "2.8.4"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/soupsieve-2.8.4-2-py3-none-any.whl", hash = "sha256:44c0800eab5e3d194c01a74a9758a71ea555698bf13a13163ced21a69626d8f9" },
+]
+
+[[package]]
+name = "spacy"
+version = "3.8.13"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "catalogue" },
+    { name = "confection" },
+    { name = "cymem" },
+    { name = "jinja2" },
+    { name = "murmurhash" },
+    { name = "numpy" },
+    { name = "packaging" },
+    { name = "preshed" },
+    { name = "pydantic" },
+    { name = "requests" },
+    { name = "setuptools" },
+    { name = "spacy-legacy" },
+    { name = "spacy-loggers" },
+    { name = "srsly" },
+    { name = "thinc" },
+    { name = "tqdm" },
+    { name = "typer" },
+    { name = "wasabi" },
+    { name = "weasel" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/spacy-3.8.13-2-cp312-cp312-linux_aarch64.whl", hash = "sha256:ac7fed251388b4eafbc9c3b87add7bffaabc182982cb813a5b7e0315f9fb7adc" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/spacy-3.8.13-2-cp312-cp312-linux_ppc64le.whl", hash = "sha256:cbf427fbd4535825466afdbd7c71d6ebd3af94a60d0564278be0eafaffa7eaba" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/spacy-3.8.13-2-cp312-cp312-linux_s390x.whl", hash = "sha256:ce209ce45b7e7a29e94284b7facd0c7219bbea56103f56c35c607aef47849f08" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/spacy-3.8.13-2-cp312-cp312-linux_x86_64.whl", hash = "sha256:6b5ef29ad85299d0fa910ff4f79e812e78c2e5979f1048c9eef4136252734406" },
+]
+
+[[package]]
+name = "spacy-legacy"
+version = "3.0.12"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/spacy_legacy-3.0.12-2-py2.py3-none-any.whl", hash = "sha256:ed57c60885ee1e8e1c445ce6782a5ac6ff934e46c1735575386eddbd7e3156b9" },
+]
+
+[[package]]
+name = "spacy-loggers"
+version = "1.0.5"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/spacy_loggers-1.0.5-2-py3-none-any.whl", hash = "sha256:fcf4bcaf82a068bb8f9198b92fc8c55d21e5844b6e8a8323485275927a59a1f5" },
+]
+
+[[package]]
+name = "sqlalchemy"
+version = "2.0.51"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "greenlet", marker = "platform_machine == 'AMD64' or platform_machine == 'WIN32' or platform_machine == 'aarch64' or platform_machine == 'amd64' or platform_machine == 'ppc64le' or platform_machine == 'win32' or platform_machine == 'x86_64'" },
+    { name = "typing-extensions" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/sqlalchemy-2.0.51-2-cp312-cp312-linux_aarch64.whl", hash = "sha256:f6d363e5e680206a80583b051c85c9cf150cc2ab5f3fa828201396df8cccabf8" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/sqlalchemy-2.0.51-2-cp312-cp312-linux_ppc64le.whl", hash = "sha256:5bc39f9098643ed4a382a0f34cb2563cffc7a3111c798d6434f0d5b694403637" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/sqlalchemy-2.0.51-2-cp312-cp312-linux_s390x.whl", hash = "sha256:e5733b219f32c801f714ef9b782378fcffc22c64f1e6e2b29cb7c5d177c9a240" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/sqlalchemy-2.0.51-2-cp312-cp312-linux_x86_64.whl", hash = "sha256:711c004bd0b9da0a37c28b5e0c480fbf9efbad4d30daf21c974724acf7e1a4bf" },
+]
+
+[[package]]
+name = "srsly"
+version = "2.5.3"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "catalogue" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/srsly-2.5.3-2-cp312-cp312-linux_aarch64.whl", hash = "sha256:bfb40d5b40e112aa5890a49040227bb03e6d1813f255c41a1471f100e4eec047" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/srsly-2.5.3-2-cp312-cp312-linux_ppc64le.whl", hash = "sha256:1f6a33b2dd8d1427720f8f26991461730cc4f0dffbb5ade50eb5c10a335d6a08" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/srsly-2.5.3-2-cp312-cp312-linux_s390x.whl", hash = "sha256:ed438c0537b83b931fb3f62bb505da361fdfef77ed2629841efa74deb854c488" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/srsly-2.5.3-2-cp312-cp312-linux_x86_64.whl", hash = "sha256:f965387962495a3ed7d5be3885767c61357d682d61392694254da42dae7c6193" },
+]
+
+[[package]]
+name = "starlette"
+version = "1.3.1"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "anyio" },
+    { name = "typing-extensions" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/starlette-1.3.1-2-py3-none-any.whl", hash = "sha256:19acd5bfb037734bb027cb753f36379bca5f72da9b79fa7fb3ef4639b1999f6b" },
+]
+
+[[package]]
+name = "statsforecast"
+version = "2.0.1"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "cloudpickle" },
+    { name = "coreforecast" },
+    { name = "fugue" },
+    { name = "numba" },
+    { name = "numpy" },
+    { name = "pandas" },
+    { name = "scipy" },
+    { name = "statsmodels" },
+    { name = "threadpoolctl" },
+    { name = "tqdm" },
+    { name = "utilsforecast" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/statsforecast-2.0.1-2-cp312-cp312-linux_aarch64.whl", hash = "sha256:821c706e6768c638dd65dfb4c5c016a331f1a8e256f95a3d592e3405da23e178" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/statsforecast-2.0.1-2-cp312-cp312-linux_ppc64le.whl", hash = "sha256:75c20899818991287a50528ac09e35a98f6fa076b8e52a629a8175b6c8cc01b2" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/statsforecast-2.0.1-2-cp312-cp312-linux_s390x.whl", hash = "sha256:a60570f89f8bf474422e8e25da89f7dce9bb2a7b7057ac44a4236768443ba8a4" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/statsforecast-2.0.1-2-cp312-cp312-linux_x86_64.whl", hash = "sha256:ba79db6bed614462e7ea781d505796ae7b4625a5417d7d98244b1ad36cfa7c49" },
+]
+
+[[package]]
+name = "statsmodels"
+version = "0.14.6"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "numpy" },
+    { name = "packaging" },
+    { name = "pandas" },
+    { name = "patsy" },
+    { name = "scipy" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/statsmodels-0.14.6-2-cp312-cp312-linux_aarch64.whl", hash = "sha256:73dfb2ea44006294248dca6ec806bd8facd8b35d7bfa4c7a5c9f3ab65835becc" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/statsmodels-0.14.6-2-cp312-cp312-linux_ppc64le.whl", hash = "sha256:4b1653f22a37b99c98d873d5ef1107b931acd7e36971e51c95d394a55f27688a" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/statsmodels-0.14.6-2-cp312-cp312-linux_s390x.whl", hash = "sha256:76c5fbc9f888b1f78c4c7c54dff13c2cc9f7a9013a658eae262c4185ace2c0b0" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/statsmodels-0.14.6-2-cp312-cp312-linux_x86_64.whl", hash = "sha256:b51b64a19f6dc77bfdf2c11815a9a8723d64e9948016a0d19c4e813f7191cd37" },
+]
+
+[[package]]
+name = "sympy"
+version = "1.14.0"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "mpmath" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/sympy-1.14.0-2-py3-none-any.whl", hash = "sha256:6cf6a1e379dbba75ca560e2cbd4394144f9e7e7335ee1be872c224f004eeb172" },
+]
+
+[[package]]
+name = "tabulate"
+version = "0.9.0"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/tabulate-0.9.0-2-py3-none-any.whl", hash = "sha256:ef9bca44af03c29dcd9dc0c10671af4062fb3a3aa83f16119bd7a1e98139a228" },
+]
+
+[[package]]
+name = "tensorboard"
+version = "2.20.0"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "absl-py" },
+    { name = "grpcio" },
+    { name = "markdown" },
+    { name = "numpy" },
+    { name = "packaging" },
+    { name = "pillow" },
+    { name = "protobuf" },
+    { name = "setuptools" },
+    { name = "tensorboard-data-server" },
+    { name = "werkzeug" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/tensorboard-2.20.0-4-py3-none-any.whl", hash = "sha256:8af05733701866addd2c258d20fce95a1d3b14736ee22bf3b2af81ec32ef7e9c" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/tensorboard-2.20.0-py3-none-any.whl", hash = "sha256:9dc9f978cb84c0723acf9a345d96c184f0293d18f166bb8d59ee098e6cfaaba6" },
+]
+
+[[package]]
+name = "tensorboard-data-server"
+version = "0.7.2"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/tensorboard_data_server-0.7.2-py3-none-any.whl", hash = "sha256:7e0610d205889588983836ec05dc098e80f97b7e7bbff7e994ebb78f578d0ddb" },
+]
+
+[[package]]
+name = "thinc"
+version = "8.3.13"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "blis" },
+    { name = "catalogue" },
+    { name = "confection" },
+    { name = "cymem" },
+    { name = "murmurhash" },
+    { name = "numpy" },
+    { name = "packaging" },
+    { name = "preshed" },
+    { name = "pydantic" },
+    { name = "setuptools" },
+    { name = "srsly" },
+    { name = "wasabi" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/thinc-8.3.13-3-cp312-cp312-linux_aarch64.whl", hash = "sha256:f06a4cb1f7d627e1d1a4d3ebf301b45e6ac4db0beb792572560816431d8eb5a5" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/thinc-8.3.13-3-cp312-cp312-linux_ppc64le.whl", hash = "sha256:006895dca2e213a187891843603f7f73c852046c1fd08e00124b83aa859c7a12" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/thinc-8.3.13-3-cp312-cp312-linux_s390x.whl", hash = "sha256:fd0ce02dfd8f342cd08624a764aac2241618e1d6356c7d1f2d35aa444c256516" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/thinc-8.3.13-3-cp312-cp312-linux_x86_64.whl", hash = "sha256:dc8ff2f3b31c8984d7a3f016df64c7542a8146ef8f7ef55c1c683f3dcabff8c1" },
+]
+
+[[package]]
+name = "threadpoolctl"
+version = "3.6.0"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/threadpoolctl-3.6.0-2-py3-none-any.whl", hash = "sha256:583c55d12dfac4ba91b2d41e1a334cba51d2c5fbab1e4cd4b918cf88dbff6184" },
+]
+
+[[package]]
+name = "timing-asgi"
+version = "0.3.2"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/timing_asgi-0.3.2-2-py3-none-any.whl", hash = "sha256:767447f31067f142abc6e49c159cf789679732eba6d5376df3b9b0df4dc5e121" },
+]
+
+[[package]]
+name = "tokenizers"
+version = "0.22.2"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "huggingface-hub" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/tokenizers-0.22.2-2-cp39-abi3-linux_aarch64.whl", hash = "sha256:48eb9560e0e190853b056a9b31055989b36d1ca480f26d67873dd79e9431fbd8" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/tokenizers-0.22.2-2-cp39-abi3-linux_ppc64le.whl", hash = "sha256:dfe8f5ac54094113be1d091cdcfd6f43b8b6b5d91a53e63ecefceb0c7043c8e8" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/tokenizers-0.22.2-2-cp39-abi3-linux_s390x.whl", hash = "sha256:4004617b00a81bab27af6ae5380a45e4477e0aa544715ddb6548e0f112c5ca23" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/tokenizers-0.22.2-2-cp39-abi3-linux_x86_64.whl", hash = "sha256:19a5651dc0f6d0dbcb98030c43d7da01d9e9069159fde96100105b9ae9ee1762" },
+]
+
+[[package]]
+name = "toolz"
+version = "0.12.1"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/toolz-0.12.1-2-py3-none-any.whl", hash = "sha256:b9c10de6c58f7ba5b1dbdbf8d0e41a02414b38b36e788b6bbc70ea7ef01056b6" },
+]
+
+[[package]]
+name = "torch"
+version = "2.11.0"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "filelock" },
+    { name = "fsspec" },
+    { name = "jinja2" },
+    { name = "networkx" },
+    { name = "setuptools" },
+    { name = "sympy" },
+    { name = "triton", marker = "platform_machine != 's390x'" },
+    { name = "typing-extensions" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/torch-2.11.0-4-cp312-cp312-linux_aarch64.whl", hash = "sha256:4a952ae1aac7c6e29887b95e85bf42a684d26b1cb15454eb0dfb2fdc0661ec03" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/torch-2.11.0-4-cp312-cp312-linux_s390x.whl", hash = "sha256:6b40f508c63fd697a5db30b500f672546a80b90245734c952b7e299a95fa82f3" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/torch-2.11.0-4-cp312-cp312-linux_x86_64.whl", hash = "sha256:8868279107548716a4fff5285592010e52a2f863527260e75e8581676b151e3e" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/torch-2.11.0-6-cp312-cp312-linux_aarch64.whl", hash = "sha256:cae92e5cb6b1441eb6e1def8dbaef7f1d719dd551d6e956fdfee0790e0975ffd" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/torch-2.11.0-6-cp312-cp312-linux_ppc64le.whl", hash = "sha256:511b340c8a5b380ce2ea5a2b7facb288dd86fe96f7bd8135013b235123dce68f" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/torch-2.11.0-6-cp312-cp312-linux_s390x.whl", hash = "sha256:295792d7e9bc15de90102b759af7c9f992a79e63237cbc4533a3fc22a35a341b" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/torch-2.11.0-6-cp312-cp312-linux_x86_64.whl", hash = "sha256:e2fdbbbd77a87f448677fbfc7ea1c94d987e64b0d16e8850d50b682e836b2aeb" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/torch-2.11.0-7-cp312-cp312-linux_aarch64.whl", hash = "sha256:163f4e9c4b0343bb77d50676450aa911df677985bcc8dd7396f08bf82f150368" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/torch-2.11.0-7-cp312-cp312-linux_ppc64le.whl", hash = "sha256:a3a2b44e5026163bd71578bca9fa2bb39ac44e08d2b530e8ceb8f1737d373ca9" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/torch-2.11.0-7-cp312-cp312-linux_s390x.whl", hash = "sha256:92bf12ddbbc3f4ca61212f33c4dc020522a3d7c70ceecb7e56aa4f5fe1195e6c" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/torch-2.11.0-7-cp312-cp312-linux_x86_64.whl", hash = "sha256:2d4bdff625895d89ef136b804824b3a1830aea24088968cf8a952bf99baf7196" },
+]
+
+[[package]]
+name = "torchmetrics"
+version = "1.9.0"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "lightning-utilities" },
+    { name = "numpy" },
+    { name = "packaging" },
+    { name = "torch" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/torchmetrics-1.9.0-2-py3-none-any.whl", hash = "sha256:8c09e70a4f7a085539d60d1e64c94db025e4b9d1ac935960f1d8037ee50b51b6" },
+]
+
+[[package]]
+name = "torchvision"
+version = "0.26.0"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "numpy" },
+    { name = "pillow" },
+    { name = "torch" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/torchvision-0.26.0-2-cp312-cp312-linux_aarch64.whl", hash = "sha256:d979cf1e7f240fbeca6cc112f7b81682dcfadb9377e80a46b3f0de7150f1b740" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/torchvision-0.26.0-2-cp312-cp312-linux_s390x.whl", hash = "sha256:c1ebea831dcfb5470c859bc6bd5f3545df73f5a4210a04762e2aa3a288703005" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/torchvision-0.26.0-2-cp312-cp312-linux_x86_64.whl", hash = "sha256:0709b722e8e99f52d902bff3a7532457d93efbf6a9f037bd976887a651079997" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/torchvision-0.26.0-3-cp312-cp312-linux_aarch64.whl", hash = "sha256:506c34f14de44bb6a7811875dd9155ef2ebc01e2a2b4c5bd2b041bb32e6fe4c7" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/torchvision-0.26.0-3-cp312-cp312-linux_ppc64le.whl", hash = "sha256:9a53ba27f82831caca3020f15f648f4c7fdd0514aa18e7df5e4c66189a8898a1" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/torchvision-0.26.0-3-cp312-cp312-linux_s390x.whl", hash = "sha256:fa92f98a32083ef5b1a5671aec3b59b2061d8827c830438baf6fe1b020d6c782" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/torchvision-0.26.0-3-cp312-cp312-linux_x86_64.whl", hash = "sha256:4796cf31f004e4965950497d8cc2f783d87844666a70a10e1857217c6e598270" },
+]
+
+[[package]]
+name = "tqdm"
+version = "4.67.3"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "colorama", marker = "sys_platform == 'win32'" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/tqdm-4.67.3-2-py3-none-any.whl", hash = "sha256:9cdaa3ef8944e8a64e15f580ac86aa264affc2da130173fa2f1893468a4befb7" },
+]
+
+[[package]]
+name = "transformers"
+version = "5.14.1"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "huggingface-hub" },
+    { name = "numpy" },
+    { name = "packaging" },
+    { name = "pyyaml" },
+    { name = "regex" },
+    { name = "safetensors" },
+    { name = "tokenizers" },
+    { name = "tqdm" },
+    { name = "typer" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/transformers-5.14.1-2-py3-none-any.whl", hash = "sha256:3e917182ca1be0140cac8411afb52e0df0999e106c4eea2e81a052b6b5015a8d" },
+]
+
+[package.optional-dependencies]
+sentencepiece = [
+    { name = "protobuf" },
+    { name = "sentencepiece" },
+]
+
+[[package]]
+name = "triad"
+version = "1.0.2"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "fsspec" },
+    { name = "numpy" },
+    { name = "pandas" },
+    { name = "pyarrow" },
+    { name = "six" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/triad-1.0.2-2-py3-none-any.whl", hash = "sha256:beb96b541b60529299def9d05f5da1f9d4d1a634ba968fc5893f51a307296965" },
+]
+
+[[package]]
+name = "triton"
+version = "3.6.0"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/triton-3.6.0-4-cp312-cp312-linux_aarch64.whl", hash = "sha256:a64f6de7b2d45d0426474a980776161e626ccdcbb35e8b540686411fe204e0c9" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/triton-3.6.0-4-cp312-cp312-linux_ppc64le.whl", hash = "sha256:669850f373cd9bd588b5a4d86c6849f16be98b3e8087130ad945082842ae631b" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/triton-3.6.0-4-cp312-cp312-linux_x86_64.whl", hash = "sha256:1fd543ee4b888f749e186f87fb4c669894fd2f74849b820ffee3014a54e99d05" },
+]
+
+[[package]]
+name = "truststore"
+version = "0.10.4"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/truststore-0.10.4-2-py3-none-any.whl", hash = "sha256:873c111fcf91e02855554f33a85495fd731951d9ee2a19ed3869082d389b2c81" },
+]
+
+[[package]]
+name = "typer"
+version = "0.27.0"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "annotated-doc" },
+    { name = "colorama", marker = "sys_platform == 'win32'" },
+    { name = "rich" },
+    { name = "shellingham" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/typer-0.27.0-2-py3-none-any.whl", hash = "sha256:113ce519fc083f858ebeae5a7b93bd5e0641ef7a86355125e571741187c29b0f" },
+]
+
+[[package]]
+name = "typing-extensions"
+version = "4.15.0"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/typing_extensions-4.15.0-2-py3-none-any.whl", hash = "sha256:d4c36b823c1249a191f9eb39ce8f15787da425fdf7a0029315c99a9e5338260a" },
+]
+
+[[package]]
+name = "typing-inspection"
+version = "0.4.2"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "typing-extensions" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/typing_inspection-0.4.2-2-py3-none-any.whl", hash = "sha256:85a10e16fc7005753b83d70ef286b14e193c23152775de9df8a384a397da44f0" },
+]
+
+[[package]]
+name = "tzdata"
+version = "2026.3"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/tzdata-2026.3-2-py2.py3-none-any.whl", hash = "sha256:c785829cf72ef723f0788ee27618a0143532630f9e301ecc09f73990c7b212be" },
+]
+
+[[package]]
+name = "urllib3"
+version = "2.7.0"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/urllib3-2.7.0-2-py3-none-any.whl", hash = "sha256:8c0d942cee38135eb54435268fa34bceed0d0a7dff31d8aaee06c06ef8637942" },
+]
+
+[[package]]
+name = "utilsforecast"
+version = "0.2.11"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "numpy" },
+    { name = "packaging" },
+    { name = "pandas" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/utilsforecast-0.2.11-2-py3-none-any.whl", hash = "sha256:807d510ded5c9320ec8c6680925b89fa2832c9e2a61a4e9f0c4356e981f918bf" },
+]
+
+[[package]]
+name = "uvicorn"
+version = "0.51.0"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "click" },
+    { name = "h11" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/uvicorn-0.51.0-2-py3-none-any.whl", hash = "sha256:e510a18c6896c39d758bd41eeddb9f736034fe2fcb19c55d0b601762e34ac193" },
+]
+
+[package.optional-dependencies]
+standard = [
+    { name = "httptools" },
+    { name = "python-dotenv" },
+    { name = "pyyaml" },
+    { name = "uvloop", marker = "platform_python_implementation != 'PyPy' and sys_platform != 'cygwin' and sys_platform != 'win32'" },
+    { name = "watchfiles" },
+    { name = "websockets" },
+]
+
+[[package]]
+name = "uvloop"
+version = "0.22.1"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/uvloop-0.22.1-2-cp312-cp312-linux_aarch64.whl", hash = "sha256:789f4abf232fbf0f38b9ba91670eafc7c04b5e9ef884fa969f6d136d6d81cc3a" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/uvloop-0.22.1-2-cp312-cp312-linux_ppc64le.whl", hash = "sha256:254ff5e93df4be2515508ce370f8d92b2f03648fb20b6ba692f996a0886a0122" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/uvloop-0.22.1-2-cp312-cp312-linux_s390x.whl", hash = "sha256:5a8c98596cab2e7183608fa2ad2b4751d77255fc48caf8ce28633e75f14f3845" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/uvloop-0.22.1-2-cp312-cp312-linux_x86_64.whl", hash = "sha256:c361c0859bc2ea896649d5b99c9662acdfc0c916749fd11925d96e781b4eea24" },
+]
+
+[[package]]
+name = "wasabi"
+version = "1.1.3"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "colorama", marker = "sys_platform == 'win32'" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/wasabi-1.1.3-2-py3-none-any.whl", hash = "sha256:999983422dcbeeea83f94d1dd268f788477645e9face0deb7743b630ef5f8dbf" },
+]
+
+[[package]]
+name = "watchfiles"
+version = "1.2.0"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "anyio" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/watchfiles-1.2.0-2-cp312-cp312-linux_aarch64.whl", hash = "sha256:ab6f89628ab931cceb95551921a4ea4ae9c47c3b93734c6e8976516f0b57809a" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/watchfiles-1.2.0-2-cp312-cp312-linux_ppc64le.whl", hash = "sha256:c7c1aae9f235803c3eaa8745cfe82b4b71b1093bed7202321d0f725fac009d77" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/watchfiles-1.2.0-2-cp312-cp312-linux_s390x.whl", hash = "sha256:0a4a391f19e4d185344fbb14e1d43117c50e34aac765d9f7a0c39fa2768c636e" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/watchfiles-1.2.0-2-cp312-cp312-linux_x86_64.whl", hash = "sha256:6c0846d1942f141a94494b7d7df3bdfd506ca47f915d881239f259429ebd479e" },
+]
+
+[[package]]
+name = "weasel"
+version = "1.0.0"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "cloudpathlib" },
+    { name = "confection" },
+    { name = "httpx" },
+    { name = "packaging" },
+    { name = "pydantic" },
+    { name = "smart-open" },
+    { name = "srsly" },
+    { name = "typer" },
+    { name = "wasabi" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/weasel-1.0.0-2-py3-none-any.whl", hash = "sha256:31172dae6ae2e1a0d4c9ac72717900003899abb4dfb3f4d293bd703025e79be4" },
+]
+
+[[package]]
+name = "websocket-client"
+version = "1.9.0"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/websocket_client-1.9.0-2-py3-none-any.whl", hash = "sha256:5edaafdaa419fd1e24bf182d0ac731c2ddc8d3ab7c3fe1f21237a62ea6cb3bc7" },
+]
+
+[[package]]
+name = "websockets"
+version = "16.0"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/websockets-16.0-2-cp312-cp312-linux_aarch64.whl", hash = "sha256:c9f7d2dcf0a5eeadce610e5fe578cb7c57c0d6e743205e167ef607f4fa055641" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/websockets-16.0-2-cp312-cp312-linux_ppc64le.whl", hash = "sha256:b323ac337655e52b3a9557fa36b7f8e8f418b23f63b95f44de599907f7d80774" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/websockets-16.0-2-cp312-cp312-linux_s390x.whl", hash = "sha256:372b24576e770a55319b342c17f4f49c8c92556a497e6a1469e38f1e34ffd2e6" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/websockets-16.0-2-cp312-cp312-linux_x86_64.whl", hash = "sha256:f62ee020be41a6a2c879f7fb9e6529d70f307e8bd1d5fb430a03e76db50fede4" },
+]
+
+[[package]]
+name = "werkzeug"
+version = "3.1.8"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "markupsafe" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/werkzeug-3.1.8-2-py3-none-any.whl", hash = "sha256:17363e893f7d20489db1e80182d5b2feb841cdd07b1c5e8f68a0f44a2651518a" },
+]
+
+[[package]]
+name = "wheel"
+version = "0.47.0"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "packaging" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/wheel-0.47.0-2-py3-none-any.whl", hash = "sha256:4d257e492750accebd41145b357afd5d5799dac67883bd6b8a2a5de8131da9fd" },
+]
+
+[[package]]
+name = "window-ops"
+version = "0.0.15"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "numba" },
+    { name = "numpy" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/window_ops-0.0.15-2-py3-none-any.whl", hash = "sha256:0ab646365c05c643b22e39eacd9009c2e79e4083db560fdec1ef9f2004e07052" },
+]
+
+[[package]]
+name = "wrapt"
+version = "2.2.2"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/wrapt-2.2.2-2-cp312-cp312-linux_aarch64.whl", hash = "sha256:fe22871052b38da0f29509f09fd136767bdeae3cf9e37261b977af139dbd9be2" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/wrapt-2.2.2-2-cp312-cp312-linux_ppc64le.whl", hash = "sha256:bf894552e1d68d5a2b694271eb86bc353b48fbcd6db78b54c9e248abdd7f257e" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/wrapt-2.2.2-2-cp312-cp312-linux_s390x.whl", hash = "sha256:698a80dd35c7080737798b222fa96624b02e33043ff92bc43b0bddb964f0d746" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/wrapt-2.2.2-2-cp312-cp312-linux_x86_64.whl", hash = "sha256:f1b572d87d9d2b325525a5ea4467361345124f3b6aecdb123fe30b33eed0bbfe" },
+]
+
+[[package]]
+name = "xgboost"
+version = "3.1.3"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "numpy" },
+    { name = "scipy" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/xgboost-3.1.3-2-py3-none-manylinux_2_34_aarch64.whl", hash = "sha256:a6d655fae566d30ada1632a1ba56b5c34c5c4d1896ca1699d02d3edacdcf8a2f" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/xgboost-3.1.3-2-py3-none-manylinux_2_34_ppc64le.whl", hash = "sha256:d27b0d83a1c1b62a9e8b211fc7bb97b2cc3a7f65ad01bc001a47ceb8caeba705" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/xgboost-3.1.3-2-py3-none-manylinux_2_34_s390x.whl", hash = "sha256:4f6fe49d654071ac53ea4b111ef75bdfe8ceaeab47a9da6278a0f906faa75ef9" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/xgboost-3.1.3-2-py3-none-manylinux_2_34_x86_64.whl", hash = "sha256:30c47ec8de81e1696267917e6386d018e16dc4752c6bf33fe71142e9c03a37a0" },
+]
+
+[[package]]
+name = "yarl"
+version = "1.24.2"
+source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
+dependencies = [
+    { name = "idna" },
+    { name = "multidict" },
+    { name = "propcache" },
+]
+wheels = [
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/yarl-1.24.2-3-cp312-cp312-linux_aarch64.whl", hash = "sha256:b60a3ea96299c776f65c02e3714c4a34a608fdd95831d3861ee3ab0797eff0b0" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/yarl-1.24.2-3-cp312-cp312-linux_ppc64le.whl", hash = "sha256:31f672aadd67c499c13777c60cce25b75f1c1f3c8006fed3b2fdcbb474ae410d" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/yarl-1.24.2-3-cp312-cp312-linux_s390x.whl", hash = "sha256:fcf4442656e2947f3a7e7d3cc85c8030a92570c133df0c9a3ab576a8be8e55fd" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/yarl-1.24.2-3-cp312-cp312-linux_x86_64.whl", hash = "sha256:3af19c86bfd747dd5324eda948c4e93c9fd57a47bf89f0fa9f51a019529b7081" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/yarl-1.24.2-4-cp312-cp312-linux_aarch64.whl", hash = "sha256:0c25026803293aa01955606c53270f4306b4196169570198a3a29b3a054f3d86" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/yarl-1.24.2-4-cp312-cp312-linux_ppc64le.whl", hash = "sha256:c2cc773c104456911cfd309315909b4c0a90918d4883b2e9f025729a504a3e6e" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/yarl-1.24.2-4-cp312-cp312-linux_s390x.whl", hash = "sha256:16ecb00a9b23f75686d3cdcd098105dd71f4e4ce21ffe13c181be7af349adc61" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/yarl-1.24.2-4-cp312-cp312-linux_x86_64.whl", hash = "sha256:c72aabbf544bceb3fa895376a188a90b7152efd47045b589fd358505ad8a85d4" },
+]

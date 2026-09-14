@@ -4,17 +4,15 @@ authors = [
     {name = "Dorota Laczak", email = "dlaczak@redhat.com"}
 ]
 license = {text = "Apache-2.0"}
-requires-python = "<3.14,>=3.10"
+requires-python = ">=3.11,<3.13"
 dependencies = [
     "kserve",
     "kserve-storage",
-    "catboost==1.2.8",
-    "lightgbm==4.6.0",
-    "xgboost==3.1.3",
-    "torch==2.9.1",
-    "fastai==2.8.5",
-    "autogluon.tabular==1.5.0",
-    "autogluon.timeseries==1.5.0",
+    "autogluon.common==1.5.0+rhaiv.5",
+    "autogluon.core==1.5.0+rhaiv.5",
+    "autogluon.features==1.5.0+rhaiv.5",
+    "autogluon.tabular[lightgbm,xgboost,tabm,fastai]==1.5.0+rhaiv.5",
+    "autogluon.timeseries==1.5.0+rhaiv.5",
 ]
 name = "autogluonserver"
 version = "0.1.0"
@@ -22,23 +20,24 @@ description = "Model Server implementation for AutoGluon TabularPredictor and Ti
 readme = "README.md"
 
 [dependency-groups]
-test = [
-    "pytest<8.0.0,>=7.2.0",
-    "pytest-cov<5.0.0,>=4.0.0",
-    "mypy<1.0,>=0.991",
-    "pytest-asyncio<1.0.0,>=0.23.4",
-]
-dev = [
-    "black[colorama]>=26.3.1,<27",
-]
+rhoai-build = ["setuptools>=61.0", "wheel"]
 
 [tool.uv.sources]
 kserve = { path = "../kserve", editable = false }
 kserve-storage = { path = "../storage", editable = false }
+"autogluon.common" = { index = "aipcc" }
+"autogluon.core" = { index = "aipcc" }
+"autogluon.features" = { index = "aipcc" }
+"autogluon.tabular" = { index = "aipcc" }
+"autogluon.timeseries" = { index = "aipcc" }
 
+[[tool.uv.index]]
+name = "aipcc"
+url = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/"
+default = true
 [build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

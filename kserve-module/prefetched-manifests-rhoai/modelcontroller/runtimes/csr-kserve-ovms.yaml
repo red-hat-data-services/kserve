@@ -1,7 +1,7 @@
 apiVersion: serving.kserve.io/v1alpha1
 kind: ClusterServingRuntime
 metadata:
-  name: csr-kserve-ovms-v1
+  name: csr-kserve-ovms
   labels:
     opendatahub.io/managed: "true"
   annotations:

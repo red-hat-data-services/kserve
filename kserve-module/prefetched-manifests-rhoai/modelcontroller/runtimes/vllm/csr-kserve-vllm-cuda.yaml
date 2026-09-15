@@ -1,14 +1,15 @@
 apiVersion: serving.kserve.io/v1alpha1
 kind: ClusterServingRuntime
 metadata:
-  name: csr-kserve-vllm-cpu-v1
+  name: csr-kserve-vllm-cuda
   labels:
     opendatahub.io/managed: "true"
   annotations:
     opendatahub.io/version: "1.0.0"
     opendatahub.io/template-display-name: "vLLM"
     opendatahub.io/runtime-version: "v0.21.0"
-    openshift.io/display-name: vLLM CPU (ppc64le/s390x) ServingRuntime for KServe
+    opendatahub.io/recommended-accelerators: '["nvidia.com/gpu"]'
+    openshift.io/display-name: vLLM NVIDIA GPU ServingRuntime for KServe
 spec:
   annotations:
     opendatahub.io/kserve-runtime: "vllm"
@@ -20,7 +21,7 @@ spec:
       name: vLLM
   containers:
     - name: kserve-container
-      image: $(vllm-cpu-image)
+      image: $(vllm-cuda-image)
       command:
         - python
         - -m

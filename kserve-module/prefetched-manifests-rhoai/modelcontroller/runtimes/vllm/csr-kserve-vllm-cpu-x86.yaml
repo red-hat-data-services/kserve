@@ -1,7 +1,7 @@
 apiVersion: serving.kserve.io/v1alpha1
 kind: ClusterServingRuntime
 metadata:
-  name: csr-kserve-vllm-cpu-x86-v1
+  name: csr-kserve-vllm-cpu-x86
   labels:
     opendatahub.io/managed: "true"
   annotations:

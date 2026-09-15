@@ -41,7 +41,7 @@ replacements:
           - objects.0.spec.containers.0.image
       - select:
           kind: ClusterServingRuntime
-          name: csr-kserve-ovms-v1
+          name: csr-kserve-ovms
         fieldPaths:
           - spec.containers.0.image
   - source:
@@ -68,7 +68,7 @@ replacements:
           - objects.0.spec.containers.0.image
       - select:
           kind: ClusterServingRuntime
-          name: csr-kserve-mlserver-v1
+          name: csr-kserve-mlserver
         fieldPaths:
           - spec.containers.0.image
   - source:
@@ -84,7 +84,7 @@ replacements:
           - objects.0.spec.containers.0.image
       - select:
           kind: ClusterServingRuntime
-          name: csr-kserve-mlserver-cuda-v1
+          name: csr-kserve-mlserver-cuda
         fieldPaths:
           - spec.containers.0.image
   - source:
@@ -106,7 +106,7 @@ replacements:
           - objects.0.spec.workerSpec.containers.0.image
       - select:
           kind: ClusterServingRuntime
-          name: csr-kserve-vllm-cuda-v1
+          name: csr-kserve-vllm-cuda
         fieldPaths:
           - spec.containers.0.image
   - source:
@@ -122,7 +122,7 @@ replacements:
           - objects.0.spec.containers.0.image
       - select:
           kind: ClusterServingRuntime
-          name: csr-kserve-vllm-rocm-v1
+          name: csr-kserve-vllm-rocm
         fieldPaths:
           - spec.containers.0.image
   - source:
@@ -138,7 +138,7 @@ replacements:
           - objects.0.spec.containers.0.image
       - select:
           kind: ClusterServingRuntime
-          name: csr-kserve-vllm-gaudi-v1
+          name: csr-kserve-vllm-gaudi
         fieldPaths:
           - spec.containers.0.image
   - source:
@@ -154,7 +154,7 @@ replacements:
           - objects.0.spec.containers.0.image
       - select:
           kind: ClusterServingRuntime
-          name: csr-kserve-vllm-cpu-v1
+          name: csr-kserve-vllm-cpu
         fieldPaths:
           - spec.containers.0.image
   - source:
@@ -170,7 +170,7 @@ replacements:
           - objects.0.spec.containers.0.image
       - select:
           kind: ClusterServingRuntime
-          name: csr-kserve-vllm-cpu-x86-v1
+          name: csr-kserve-vllm-cpu-x86
         fieldPaths:
           - spec.containers.0.image
   - source:
@@ -186,7 +186,7 @@ replacements:
           - objects.0.spec.containers.0.image
       - select:
           kind: ClusterServingRuntime
-          name: csr-kserve-vllm-spyre-x86-v1
+          name: csr-kserve-vllm-spyre-x86
         fieldPaths:
           - spec.containers.0.image
   - source:
@@ -202,7 +202,7 @@ replacements:
           - objects.0.spec.containers.0.image
       - select:
           kind: ClusterServingRuntime
-          name: csr-kserve-vllm-spyre-s390x-v1
+          name: csr-kserve-vllm-spyre-s390x
         fieldPaths:
           - spec.containers.0.image
   - source:
@@ -218,7 +218,7 @@ replacements:
           - objects.0.spec.containers.0.image
       - select:
           kind: ClusterServingRuntime
-          name: csr-kserve-vllm-spyre-ppc64le-v1
+          name: csr-kserve-vllm-spyre-ppc64le
         fieldPaths:
           - spec.containers.0.image
   - source:

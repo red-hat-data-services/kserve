@@ -1,7 +1,7 @@
 apiVersion: serving.kserve.io/v1alpha1
 kind: ClusterServingRuntime
 metadata:
-  name: csr-kserve-mlserver-cuda-v1
+  name: csr-kserve-mlserver-cuda
   labels:
     opendatahub.io/managed: "true"
   annotations:

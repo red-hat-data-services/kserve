@@ -90,7 +90,7 @@ jobs:
           fetch-depth: 0
           ref: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.merge_commit_sha || github.sha }}
           token: ${{ steps.app-token.outputs.token }}
-          persist-credentials: false
+          persist-credentials: true
 
       - name: Prepare local target branch
         run: git switch --force-create "$TARGET_BRANCH" "$CHECKOUT_REF"
@@ -113,7 +113,7 @@ jobs:
           MAX_RETRIES=5
           for attempt in $(seq 1 "$MAX_RETRIES"); do
             if [ "$attempt" -gt 1 ]; then
-              git -c "http.extraheader=AUTHORIZATION: bearer ${{ steps.app-token.outputs.token }}" fetch origin "$TARGET_BRANCH"
+              git fetch origin "$TARGET_BRANCH"
               git reset --hard "origin/$TARGET_BRANCH"
             fi
 
@@ -130,7 +130,7 @@ jobs:
             fi
 
             git commit -m "chore(autogluon): regenerate RHOAI artifacts"
-            if git -c "http.extraheader=AUTHORIZATION: bearer ${{ steps.app-token.outputs.token }}" push origin "HEAD:refs/heads/$TARGET_BRANCH"; then
+            if git push origin "HEAD:refs/heads/$TARGET_BRANCH"; then
               echo "Generated artifact push succeeded (attempt ${attempt})"
               exit 0
             fi

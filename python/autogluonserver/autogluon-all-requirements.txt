@@ -15,11 +15,11 @@ adagio==0.2.6 \
 aiohappyeyeballs==2.7.1 \
     --hash=sha256:148c42ea64254eff51702e3643744a5d29e19f1cc7f1adcfb2289d7ac711ae80
     # via aiohttp
-aiohttp==3.14.1 \
-    --hash=sha256:bd49302b6aa79db20905429d539a0a328adf440c0a75508892ae9700d6318857 \
-    --hash=sha256:c958019fc4a4a4536be8308b5efdebb7b31b51dbcf9cc651e16d782ec404d372 \
-    --hash=sha256:dc7528950c7a168f8f70cfba05e112f4a857d658c9f0dfc854d6d4e9b17ecc23 \
-    --hash=sha256:f3c686257c0297a912e82e2582f6587b922f1e7b1e3ff0a2d3d3fb7093db545e
+aiohttp==3.14.3 \
+    --hash=sha256:2b3edde0b0404f61d8a54d224824afe396e2315f6fb448063d0139e5c151e9e4 \
+    --hash=sha256:32c568a8f0b3d4f89f5ab9e355540627b00d48baf8116dde56e419661886b524 \
+    --hash=sha256:6301f6e7863cd0a7893c8cb629e1f1e9673bc5807e29f331b95499a359628113 \
+    --hash=sha256:c6ff96f50c667f18a9a7fcbb91449943658e37a04658acf44885d295ae2b158c
     # via
     #   fsspec
     #   kserve
@@ -54,6 +54,9 @@ apsw==3.53.3.1 \
 apswutils==0.1.2 \
     --hash=sha256:93c25816cc520a6c6017e4b74ea2087298acc955bcc31b6646edfe6687a14a65
     # via fastlite
+asgiref==3.12.1 \
+    --hash=sha256:233bd61516ca8097eae99494cd606f57660d2fd5963b1a88d1a4dfaf7c051697
+    # via opentelemetry-instrumentation-asgi
 attrs==26.1.0 \
     --hash=sha256:72a7cd6c5cd0ba459eec87d0cff40ba06839196b8355a01450ea1db9f6ab6a3d
     # via
@@ -336,7 +339,10 @@ google-resumable-media==2.10.0 \
     # via google-cloud-storage
 googleapis-common-protos==1.75.0 \
     --hash=sha256:371cd0ca347d6b331c0f70fbbf7aa5cbbba6092d91d27c9bbfab7701a1b6612d
-    # via google-api-core
+    # via
+    #   google-api-core
+    #   opentelemetry-exporter-otlp-proto-grpc
+    #   opentelemetry-exporter-otlp-proto-http
 greenlet==3.5.3 ; platform_machine == 'AMD64' or platform_machine == 'WIN32' or platform_machine == 'aarch64' or platform_machine == 'amd64' or platform_machine == 'ppc64le' or platform_machine == 'win32' or platform_machine == 'x86_64' \
     --hash=sha256:396eb576e8312ea7cc8c7691ea935f499fe440bf1b123936580ea672f7c11d6d \
     --hash=sha256:46283f6597598ba627b555cf60e0aee4ee21c0a5870664c4366e85514ff8cb94 \
@@ -355,6 +361,7 @@ grpcio==1.82.1 \
     #   grpc-interceptor
     #   grpcio-tools
     #   kserve
+    #   opentelemetry-exporter-otlp-proto-grpc
     #   tensorboard
 grpcio-tools==1.81.1 \
     --hash=sha256:104e18266ed6ab4267e8193c344aa9712601951ac45f6516e009eeb809f1358d \
@@ -605,6 +612,78 @@ oauthlib==3.3.1 \
     # via
     #   python-fasthtml
     #   requests-oauthlib
+opentelemetry-api==1.44.0 \
+    --hash=sha256:f43837b558a6ca8d83b0525bcdce06fe8ac35bf54c3954fce5d048e912b9dc7c
+    # via
+    #   kserve
+    #   opentelemetry-exporter-otlp-proto-grpc
+    #   opentelemetry-exporter-otlp-proto-http
+    #   opentelemetry-instrumentation
+    #   opentelemetry-instrumentation-asgi
+    #   opentelemetry-instrumentation-fastapi
+    #   opentelemetry-instrumentation-grpc
+    #   opentelemetry-instrumentation-logging
+    #   opentelemetry-sdk
+    #   opentelemetry-semantic-conventions
+opentelemetry-exporter-otlp==1.44.0 \
+    --hash=sha256:29b2e64334724987e8f0e493e3691547fad15534b3ffd025ab60960b55e1e773
+    # via kserve
+opentelemetry-exporter-otlp-proto-common==1.44.0 \
+    --hash=sha256:db3cb73dd9ba52e8705a1fc7195a70d98798a6674089f08fdc4583b14372f7f1
+    # via
+    #   opentelemetry-exporter-otlp-proto-grpc
+    #   opentelemetry-exporter-otlp-proto-http
+opentelemetry-exporter-otlp-proto-grpc==1.44.0 \
+    --hash=sha256:ecc9ac901cd39ba52eb117d92b6359043923d9436b391ca5c23bc735b2c03621
+    # via opentelemetry-exporter-otlp
+opentelemetry-exporter-otlp-proto-http==1.44.0 \
+    --hash=sha256:dce126f45e8d4dd30767146e25c4680c1e1480fbc8f2534be565186af323db1d
+    # via opentelemetry-exporter-otlp
+opentelemetry-instrumentation==0.65b0 \
+    --hash=sha256:aee95b8aa59e85f76d224ff594102dc203cd90006e76c280e6256606d7206321
+    # via
+    #   opentelemetry-instrumentation-asgi
+    #   opentelemetry-instrumentation-fastapi
+    #   opentelemetry-instrumentation-grpc
+    #   opentelemetry-instrumentation-logging
+opentelemetry-instrumentation-asgi==0.65b0 \
+    --hash=sha256:c69d637e50f4ecb4373df7b069a2400ae457f4d7826d4333edb98b4b1cac80a7
+    # via opentelemetry-instrumentation-fastapi
+opentelemetry-instrumentation-fastapi==0.65b0 \
+    --hash=sha256:f0dd7fb54999583953a0b2071ba5c5ff6fe5aa0c917ac4ea399d24f8db7ce53e
+    # via kserve
+opentelemetry-instrumentation-grpc==0.65b0 \
+    --hash=sha256:7b4f4ad1fb8781d5b9fc6b5ec6c4379b5a5cf9cbe6a858435af90b3d9324520e
+    # via kserve
+opentelemetry-instrumentation-logging==0.65b0 \
+    --hash=sha256:bbda33587deae8742834c1bd7b8ee21718ec3a6d605617f019ad73952c110200
+    # via kserve
+opentelemetry-proto==1.44.0 \
+    --hash=sha256:200229f9ff013f7147cf8e598c539a0b15cb8413358c2e7cfe0af6b8d9fd6ed3
+    # via
+    #   opentelemetry-exporter-otlp-proto-common
+    #   opentelemetry-exporter-otlp-proto-grpc
+    #   opentelemetry-exporter-otlp-proto-http
+opentelemetry-sdk==1.44.0 \
+    --hash=sha256:5716ba7552bbc3898a93d167a0b3c40b910fbea5d107a6327a808f4a97749307
+    # via
+    #   kserve
+    #   opentelemetry-exporter-otlp-proto-grpc
+    #   opentelemetry-exporter-otlp-proto-http
+opentelemetry-semantic-conventions==0.65b0 \
+    --hash=sha256:e03f36b9fa30e8ae088db0b8e583d626468b0131ea7d26fb84a12de687a97730
+    # via
+    #   opentelemetry-instrumentation
+    #   opentelemetry-instrumentation-asgi
+    #   opentelemetry-instrumentation-fastapi
+    #   opentelemetry-instrumentation-grpc
+    #   opentelemetry-instrumentation-logging
+    #   opentelemetry-sdk
+opentelemetry-util-http==0.65b0 \
+    --hash=sha256:0adee4a1ecd91fc365a501b82c3bcaed5c960afc6c073476d11b12c05c100004
+    # via
+    #   opentelemetry-instrumentation-asgi
+    #   opentelemetry-instrumentation-fastapi
 optuna==4.8.0 \
     --hash=sha256:3bcde83ba91cac6770c6b935ab962f4bcc954d5c2926a8c6a185b8d7334522c8
     # via mlforecast
@@ -630,6 +709,7 @@ packaging==26.0 \
     #   lightning-utilities
     #   matplotlib
     #   mlforecast
+    #   opentelemetry-instrumentation
     #   optuna
     #   peft
     #   pytorch-lightning
@@ -725,6 +805,7 @@ protobuf==6.33.5 \
     #   googleapis-common-protos
     #   grpcio-tools
     #   kserve
+    #   opentelemetry-proto
     #   proto-plus
     #   tensorboard
     #   transformers
@@ -854,6 +935,7 @@ requests==2.32.5 \
     #   kubernetes
     #   modelscope-hub
     #   msal
+    #   opentelemetry-exporter-otlp-proto-http
     #   oras
     #   requests-oauthlib
     #   spacy
@@ -1132,6 +1214,11 @@ typing-extensions==4.15.0 \
     #   huggingface-hub
     #   lightning
     #   lightning-utilities
+    #   opentelemetry-api
+    #   opentelemetry-exporter-otlp-proto-grpc
+    #   opentelemetry-exporter-otlp-proto-http
+    #   opentelemetry-sdk
+    #   opentelemetry-semantic-conventions
     #   plum-dispatch
     #   pydantic
     #   pydantic-core
@@ -1187,7 +1274,9 @@ watchfiles==1.2.0 \
     --hash=sha256:6c0846d1942f141a94494b7d7df3bdfd506ca47f915d881239f259429ebd479e \
     --hash=sha256:ab6f89628ab931cceb95551921a4ea4ae9c47c3b93734c6e8976516f0b57809a \
     --hash=sha256:c7c1aae9f235803c3eaa8745cfe82b4b71b1093bed7202321d0f725fac009d77
-    # via uvicorn
+    # via
+    #   kserve
+    #   uvicorn
 weasel==1.0.0 \
     --hash=sha256:31172dae6ae2e1a0d4c9ac72717900003899abb4dfb3f4d293bd703025e79be4
     # via spacy
@@ -1213,7 +1302,10 @@ wrapt==2.2.2 \
     --hash=sha256:bf894552e1d68d5a2b694271eb86bc353b48fbcd6db78b54c9e248abdd7f257e \
     --hash=sha256:f1b572d87d9d2b325525a5ea4467361345124f3b6aecdb123fe30b33eed0bbfe \
     --hash=sha256:fe22871052b38da0f29509f09fd136767bdeae3cf9e37261b977af139dbd9be2
-    # via smart-open
+    # via
+    #   opentelemetry-instrumentation
+    #   opentelemetry-instrumentation-grpc
+    #   smart-open
 xgboost==3.1.3 \
     --hash=sha256:30c47ec8de81e1696267917e6386d018e16dc4752c6bf33fe71142e9c03a37a0 \
     --hash=sha256:4f6fe49d654071ac53ea4b111ef75bdfe8ceaeab47a9da6278a0f906faa75ef9 \

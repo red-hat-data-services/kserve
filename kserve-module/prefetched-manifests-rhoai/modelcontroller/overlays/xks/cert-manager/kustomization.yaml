@@ -3,3 +3,4 @@ kind: Kustomization
 
 resources:
 - webhook-certificate.yaml
+- model-serving-api-certificate.yaml

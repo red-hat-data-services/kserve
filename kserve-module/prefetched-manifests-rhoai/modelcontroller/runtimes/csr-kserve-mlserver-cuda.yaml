@@ -4,6 +4,8 @@ metadata:
   name: csr-kserve-mlserver-cuda
   labels:
     opendatahub.io/managed: "true"
+    opendatahub.io/dashboard: "true"
+    opendatahub.io/ootb: "true"
   annotations:
     opendatahub.io/version: "1.0.0"
     opendatahub.io/template-display-name: "MLServer NVIDIA GPU"

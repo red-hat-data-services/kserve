@@ -9,6 +9,15 @@ nameSuffix: -fast-2
 
 patches:
   - target:
+      kind: ClusterServingRuntime
+    patch: |-
+      - op: add
+        path: /metadata/annotations/opendatahub.io~1support-status
+        value: "unsupported"
+      - op: add
+        path: /metadata/annotations/opendatahub.io~1fast-version
+        value: "2"
+  - target:
       kind: Template
     patch: |-
       - op: add

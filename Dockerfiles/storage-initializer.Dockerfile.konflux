@@ -1,6 +1,6 @@
 ARG VENV_PATH=/prod_venv
 
-FROM registry.access.redhat.com/ubi9/ubi-minimal:latest AS builder
+FROM registry.access.redhat.com/ubi9/ubi-minimal@sha256:8ebe2ad8fdf3cab3e5a53c1edc69194c98209cfadab24b884f4ad9ebcf7bbbfc AS builder
 
 # Install Python. No compilers/dev headers are needed: every dependency is
 # installed from prefetched cp312/abi3/py3 wheels (AIPCC index), and the local
@@ -39,7 +39,7 @@ RUN pip3.12 install --no-cache-dir \
 
 ########################################################################
 # Runtime
-FROM registry.redhat.io/ubi9/ubi-minimal-pqc@sha256:8a842ac769de709143e4edeace516f2008dfdc431b64670ad3353fa323b44736 AS prod
+FROM registry.redhat.io/ubi9/ubi-minimal-pqc@sha256:b280df203f9ec5d03439ae79cc3f26a01dc04f01c9259853398be438a334ade2 AS prod
 
 # Activate virtual env
 ARG VENV_PATH

@@ -1,6 +1,6 @@
 ARG VENV_PATH=/prod_venv
 
-FROM registry.access.redhat.com/ubi9/ubi-minimal:latest AS builder
+FROM registry.access.redhat.com/ubi9/ubi-minimal@sha256:8ebe2ad8fdf3cab3e5a53c1edc69194c98209cfadab24b884f4ad9ebcf7bbbfc AS builder
 
 # Install Python and dependencies
 RUN microdnf install -y \
@@ -63,7 +63,7 @@ RUN pip uninstall pip -y
 
 ########################################################################
 # Runtime
-FROM registry.access.redhat.com/ubi9/ubi-minimal:latest AS prod
+FROM registry.access.redhat.com/ubi9/ubi-minimal@sha256:8ebe2ad8fdf3cab3e5a53c1edc69194c98209cfadab24b884f4ad9ebcf7bbbfc AS prod
 
 COPY third_party third_party
 

@@ -1,5 +1,5 @@
 # Build the manager binary
-FROM registry.redhat.io/ubi9/go-toolset@sha256:d637b9dfccb16623f19b95c43fe5a65b20b722e62753c4445c5d02f9e40b807d AS deps
+FROM registry.redhat.io/ubi9/go-toolset@sha256:90a36bc2013b3fcb28e2a4b082c9b895d7c2c679e58b95aed9721970f3339d0e AS deps
 # distro: UBI go-toolset does not add GOPATH/bin to PATH
 ENV PATH="$PATH:/opt/app-root/src/go/bin"
 
@@ -24,7 +24,7 @@ RUN --mount=type=cache,target=/go/pkg/mod \
     CGO_ENABLED=1 GOOS=linux GOFLAGS=-mod=readonly GOEXPERIMENT=strictfipsruntime go build -tags "${GOTAGS},strictfipsruntime" -a -o localmodelnode-agent ./cmd/${CMD}
 
 # Copy the controller-manager into a thin image
-FROM registry.redhat.io/ubi9/ubi-minimal@sha256:175bafd5bc7893540ed6234bb979acfe3574fd6570e6762bbc527c757f854cea
+FROM registry.redhat.io/ubi9/ubi-minimal@sha256:8ebe2ad8fdf3cab3e5a53c1edc69194c98209cfadab24b884f4ad9ebcf7bbbfc
 
 RUN microdnf install -y shadow-utils && \
     microdnf clean all && \

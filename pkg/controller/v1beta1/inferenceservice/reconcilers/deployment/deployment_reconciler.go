@@ -24,20 +24,19 @@ import (
 	"strconv"
 	"strings"
 
-	"google.golang.org/protobuf/proto"
-	"k8s.io/apimachinery/pkg/api/resource"
-	"k8s.io/client-go/kubernetes"
-
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
+	"google.golang.org/protobuf/proto"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	apierr "k8s.io/apimachinery/pkg/api/errors"
+	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/apimachinery/pkg/util/intstr"
 	"k8s.io/apimachinery/pkg/util/strategicpatch"
+	"k8s.io/client-go/kubernetes"
 	"k8s.io/utils/ptr"
 	"knative.dev/pkg/apis"
 	"knative.dev/pkg/kmp"
@@ -56,6 +55,7 @@ var log = logf.Log.WithName("DeploymentReconciler")
 // DeploymentReconciler reconciles the raw kubernetes deployment resource
 type DeploymentReconciler struct {
 	client         kclient.Client
+	clientset      kubernetes.Interface
 	scheme         *runtime.Scheme
 	DeploymentList []*appsv1.Deployment
 	componentExt   *v1beta1.ComponentExtensionSpec
@@ -85,16 +85,21 @@ func NewDeploymentReconciler(ctx context.Context,
 		return nil, err
 	}
 
-	reconciler := &DeploymentReconciler{
+	r := &DeploymentReconciler{
 		client:         client,
+		clientset:      clientset,
 		scheme:         scheme,
 		DeploymentList: deploymentList,
 		componentExt:   componentExt,
 	}
 
+	if err := r.customizeDeployments(ctx, componentMeta, podSpec); err != nil {
+		return nil, err
+	}
+
 	if authProxyPreserved {
-		reconciler.conditionType = v1beta1.LatestDeploymentReady
-		reconciler.condition = &apis.Condition{
+		r.conditionType = v1beta1.LatestDeploymentReady
+		r.condition = &apis.Condition{
 			Type:    v1beta1.LatestDeploymentReady,
 			Status:  corev1.ConditionFalse,
 			Reason:  "AuthProxyPreserved",
@@ -102,7 +107,7 @@ func NewDeploymentReconciler(ctx context.Context,
 		}
 	}
 
-	return reconciler, nil
+	return r, nil
 }
 
 // sarVolumeNameForDeployment returns the volume name to use for the SAR ConfigMap.

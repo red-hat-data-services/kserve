@@ -19,7 +19,10 @@ limitations under the License.
 package deployment
 
 import (
+	"context"
+
 	appsv1 "k8s.io/api/apps/v1"
+	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	"github.com/kserve/kserve/pkg/constants"
@@ -38,4 +41,11 @@ func customizeAuthProxyArgs(_ constants.AuditLoggingProfile, _ bool, _ metav1.Ob
 // platformAuthProxyNeedsUpdate is always false when distro extensions are not built.
 func platformAuthProxyNeedsUpdate(_ constants.AuditLoggingProfile, _ bool, _ *appsv1.Deployment, _ metav1.ObjectMeta, _ string) bool {
 	return false
+}
+
+// customizeDeployments is the default (upstream) no-op hook for platform-specific
+// customization of the desired Deployments in r.DeploymentList. It runs once the
+// Deployments are built, before they are reconciled against the cluster.
+func (r *DeploymentReconciler) customizeDeployments(_ context.Context, _ metav1.ObjectMeta, _ *corev1.PodSpec) error {
+	return nil
 }

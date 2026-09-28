@@ -1490,8 +1490,7 @@ func TestNewDeploymentReconciler(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := NewDeploymentReconciler(
-				t.Context(),
+			got, err := NewDeploymentReconciler(t.Context(),
 				tt.fields.client,
 				tt.fields.clientset,
 				tt.fields.scheme,

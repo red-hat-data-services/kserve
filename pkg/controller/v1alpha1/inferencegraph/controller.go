@@ -156,10 +156,9 @@ func (r *InferenceGraphReconciler) Reconcile(ctx context.Context, req ctrl.Reque
 
 	forceStopRuntime := utils.GetForceStopRuntime(graph)
 
-	configMap, err := r.Clientset.CoreV1().ConfigMaps(constants.KServeNamespace).Get(ctx, constants.InferenceServiceConfigMapName, metav1.GetOptions{})
+	configMap, err := v1beta1.GetInferenceServiceConfigMap(ctx, r.Clientset)
 	if err != nil {
-		r.Log.Error(err, "Failed to find config map", "name", constants.InferenceServiceConfigMapName)
-		return reconcile.Result{}, err
+		return reconcile.Result{}, errors.Wrapf(err, "fails to get InferenceService config map")
 	}
 
 	// examine DeletionTimestamp to determine if object is under deletion
@@ -228,11 +227,7 @@ func (r *InferenceGraphReconciler) Reconcile(ctx context.Context, req ctrl.Reque
 		}
 	}
 
-	isvcConfigMap, err := v1beta1.GetInferenceServiceConfigMap(ctx, r.Clientset)
-	if err != nil {
-		return reconcile.Result{}, errors.Wrapf(err, "fails to get InferenceService config map")
-	}
-	deployConfig, err := v1beta1.NewDeployConfig(isvcConfigMap)
+	deployConfig, err := v1beta1.NewDeployConfig(configMap)
 	if err != nil {
 		return reconcile.Result{}, errors.Wrapf(err, "fails to create DeployConfig")
 	}

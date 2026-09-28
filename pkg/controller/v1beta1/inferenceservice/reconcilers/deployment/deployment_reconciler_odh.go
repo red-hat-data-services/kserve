@@ -19,6 +19,7 @@ limitations under the License.
 package deployment
 
 import (
+	"context"
 	"fmt"
 	"strconv"
 	"strings"
@@ -31,6 +32,13 @@ import (
 	"github.com/kserve/kserve/pkg/apis/serving/v1beta1"
 	"github.com/kserve/kserve/pkg/constants"
 )
+
+// customizeDeployments keeps the upstream customization hook paired in distro
+// builds. ODH deployment changes are applied while createRawDeploymentODH
+// constructs the desired deployments.
+func (r *DeploymentReconciler) customizeDeployments(_ context.Context, _ metav1.ObjectMeta, _ *corev1.PodSpec) error {
+	return nil
+}
 
 // mountTransformerTLSInfrastructure injects TLS volumes and env vars into the
 // transformer deployment's kserve-container. It adds:

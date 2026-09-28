@@ -59,8 +59,18 @@ spec:
     params:
     - name: url
       value: https://github.com/red-hat-data-services/konflux-central.git
+    # Pinned rather than '{{ target_branch }}'.
+    #
+    # The template assumes every branch that takes PRs has a same-named branch
+    # in konflux-central, which holds for rhoai-X.Y and fails for anything
+    # else.  test-gap has no counterpart there, so the resolver 404s and the
+    # PipelineRun never starts - the build does not fail, it never exists, and
+    # PaC reports nothing at all.
+    #
+    # test-gap is a copy of rhoai-3.6 (identical commit), so rhoai-3.6 is the
+    # pipeline this branch would have resolved to anyway.
     - name: revision
-      value: '{{ target_branch }}'
+      value: 'rhoai-3.6'
     - name: pathInRepo
       value: pipelines/multi-arch-container-build.yaml
   taskRunTemplate:

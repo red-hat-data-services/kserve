@@ -57352,17 +57352,9 @@ rules:
   - ""
   resources:
   - secrets
-  verbs:
-  - get
-- apiGroups:
-  - ""
-  resources:
   - serviceaccounts
   verbs:
-  - create
-  - delete
   - get
-  - patch
 - apiGroups:
   - apps
   resources:
@@ -57474,35 +57466,6 @@ rules:
   - get
   - patch
   - update
-- apiGroups:
-  - rbac.authorization.k8s.io
-  resourceNames:
-  - kserve-inferencegraph-auth-verifiers
-  resources:
-  - clusterrolebindings
-  verbs:
-  - create
-  - get
-  - patch
-  - update
-- apiGroups:
-  - route.openshift.io
-  resources:
-  - routes
-  verbs:
-  - create
-  - delete
-  - get
-  - list
-  - patch
-  - update
-  - watch
-- apiGroups:
-  - route.openshift.io
-  resources:
-  - routes/status
-  verbs:
-  - get
 - apiGroups:
   - serving.knative.dev
   resources:

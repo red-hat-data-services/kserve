@@ -20,6 +20,9 @@ metadata:
   name: odh-kserve-controller-v3-6-on-push
   namespace: rhoai-tenant
 spec:
+  timeouts:
+    pipeline: 3h
+    tasks: 3h
   params:
   - name: git-url
     value: '{{source_url}}'

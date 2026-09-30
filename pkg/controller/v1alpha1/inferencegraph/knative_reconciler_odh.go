@@ -1,4 +1,4 @@
-//go:build !distro
+//go:build distro
 
 /*
 Copyright 2026 The KServe Authors.
@@ -16,10 +16,19 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package inferenceservice
+package inferencegraph
 
-import "sigs.k8s.io/controller-runtime/pkg/builder"
+import (
+	knservingv1 "knative.dev/serving/pkg/apis/serving/v1"
 
-func (r *InferenceServiceReconciler) setupTLSSecurityProfileWatch(ctrlBuilder *builder.Builder) (*builder.Builder, error) {
-	return ctrlBuilder, nil
+	"github.com/kserve/kserve/pkg/apis/serving/v1alpha1"
+)
+
+// customizeRouterKnativeService makes the Knative router trust the OpenShift service CA.
+func customizeRouterKnativeService(_ *v1alpha1.InferenceGraph, ksvc *knservingv1.Service) {
+	if ksvc == nil {
+		return
+	}
+
+	addServiceCaBundle(&ksvc.Spec.Template.Spec.PodSpec)
 }

@@ -16,8 +16,16 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package inferenceservice
+package inferencegraph
 
-import corev1 "k8s.io/api/core/v1"
+import (
+	"sigs.k8s.io/controller-runtime/pkg/builder"
+	"sigs.k8s.io/controller-runtime/pkg/manager"
+)
 
-func addExpectedTLSSecurityProfile(_ *corev1.PodSpec) {}
+// extendControllerSetup is a hook for distribution-specific controller setup such as
+// adding ownership watches for platform-specific resources. Distribution-specific builds
+// (compiled with -tags distro) can provide their own implementation; the default does nothing.
+func (r *InferenceGraphReconciler) extendControllerSetup(_ manager.Manager, _ *builder.Builder) error {
+	return nil
+}

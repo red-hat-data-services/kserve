@@ -49,11 +49,12 @@ def worker_namespace_name(worker_id: str) -> str:
 
 def get_core_api() -> client.CoreV1Api:
     try:
-        config.load_incluster_config()
-    except config.ConfigException:
         config.load_kube_config(
             config_file=os.environ.get("KUBECONFIG", "~/.kube/config")
         )
+    except Exception as e:
+        logger.warning("Failed to load kube config: %s", e)
+        config.load_incluster_config()
     return client.CoreV1Api()
 
 

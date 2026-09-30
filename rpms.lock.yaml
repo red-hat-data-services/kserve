@@ -1,0 +1,48 @@
+---
+lockfileVersion: 1
+lockfileVendor: redhat
+arches:
+- arch: aarch64
+  packages:
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/baseos/os/Packages/s/shadow-utils-4.9-16.el9.aarch64.rpm
+    repoid: ubi-9-baseos-rpms
+    size: 1244527
+    checksum: sha256:ccc46a8ea5f30d071e075ad53b5d39d191cfca4614090435528f2d2f944f88a2
+    name: shadow-utils
+    evr: 2:4.9-16.el9
+    sourcerpm: shadow-utils-4.9-16.el9.src.rpm
+  source: []
+  module_metadata: []
+- arch: ppc64le
+  packages:
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/baseos/os/Packages/s/shadow-utils-4.9-16.el9.ppc64le.rpm
+    repoid: ubi-9-baseos-rpms
+    size: 1272229
+    checksum: sha256:819ad6d1fc2127bc867b0c0bb569b62fc2894bde75e304d90e3145c7b05a810c
+    name: shadow-utils
+    evr: 2:4.9-16.el9
+    sourcerpm: shadow-utils-4.9-16.el9.src.rpm
+  source: []
+  module_metadata: []
+- arch: s390x
+  packages:
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/baseos/os/Packages/s/shadow-utils-4.9-16.el9.s390x.rpm
+    repoid: ubi-9-baseos-rpms
+    size: 1242705
+    checksum: sha256:9e7bed9b9581ee639d57f0eb48644aed6834c70120ffc0c5e7308ebd0c1c93e1
+    name: shadow-utils
+    evr: 2:4.9-16.el9
+    sourcerpm: shadow-utils-4.9-16.el9.src.rpm
+  source: []
+  module_metadata: []
+- arch: x86_64
+  packages:
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/baseos/os/Packages/s/shadow-utils-4.9-16.el9.x86_64.rpm
+    repoid: ubi-9-baseos-rpms
+    size: 1250179
+    checksum: sha256:17294ee3fbc09c1b5cfc4114d3815cbd92584d6d70a6288e1dce2fda0a62dc59
+    name: shadow-utils
+    evr: 2:4.9-16.el9
+    sourcerpm: shadow-utils-4.9-16.el9.src.rpm
+  source: []
+  module_metadata: []

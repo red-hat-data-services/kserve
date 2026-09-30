@@ -17,6 +17,8 @@ limitations under the License.
 package llmisvc
 
 import (
+	"slices"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -25,6 +27,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/utils/ptr"
 	"knative.dev/pkg/apis"
+	duckv1 "knative.dev/pkg/apis/duck/v1"
 	gwapiv1 "sigs.k8s.io/gateway-api/apis/v1"
 
 	v1alpha2 "github.com/kserve/kserve/pkg/apis/serving/v1alpha2"
@@ -757,4 +760,224 @@ func memberSvc(name, group string, weight int32, stopped bool, ts metav1.Time) v
 		}
 	}
 	return svc
+}
+
+func TestResolvedModelNames(t *testing.T) {
+	pathURL := apis.HTTP("gateway.example.com")
+	pathURL.Path = "/ns/svc"
+	modelRoutingURL := apis.HTTP("gateway.example.com")
+	address := func(url *apis.URL, models ...string) v1alpha2.SourcedAddress {
+		addr := v1alpha2.SourcedAddress{Addressable: duckv1.Addressable{URL: url}}
+		for _, m := range models {
+			addr.Models = append(addr.Models, v1alpha2.ModelSourcedAddressStatus{Name: m})
+		}
+		return addr
+	}
+	member := func(namespace, specModel string, addresses ...v1alpha2.SourcedAddress) *v1alpha2.LLMInferenceService {
+		m := &v1alpha2.LLMInferenceService{
+			ObjectMeta: metav1.ObjectMeta{Name: "svc", Namespace: namespace},
+			Spec:       v1alpha2.LLMInferenceServiceSpec{Model: v1alpha2.LLMModelSpec{Name: ptr.To(specModel)}},
+		}
+		m.Status.Addresses = addresses
+		return m
+	}
+	// A path-based address lists the plain and the publisher-qualified name, a
+	// model-routing address only the qualified one.
+	pathAddress := address(pathURL, "publishers/ns/models/org/m", "org/m", "publishers/ns/models/a1", "a1")
+	modelRoutingAddress := address(modelRoutingURL, "publishers/ns/models/org/m", "publishers/ns/models/a1")
+
+	tests := []struct {
+		name   string
+		member *v1alpha2.LLMInferenceService
+		want   []string
+	}{
+		{
+			name:   "path and model-routing addresses",
+			member: member("ns", "org/m", pathAddress, modelRoutingAddress),
+			want:   []string{"a1", "org/m"},
+		},
+		{
+			name:   "model-routing addresses only, as with model-based-routing-only",
+			member: member("ns", "org/m", modelRoutingAddress),
+			want:   []string{"a1", "org/m"},
+		},
+		{
+			name:   "a qualified name from another namespace is kept as is",
+			member: member("ns", "org/m", address(modelRoutingURL, "publishers/other/models/org/m")),
+			want:   []string{"publishers/other/models/org/m"},
+		},
+		{
+			name:   "no addresses falls back to the spec",
+			member: member("ns", "org/m"),
+			want:   []string{"org/m"},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equal(t, tt.want, resolvedModelNames(tt.member))
+		})
+	}
+}
+
+// Real SourcedAddress output: a member with path URLs and one with only the
+// model-routing URL, as with model-based-routing-only, serve the same models.
+func TestResolvedModelNamesAcrossAddressTypes(t *testing.T) {
+	pathURL := apis.HTTP("gateway.example.com")
+	pathURL.Path = "/ns/svc"
+	modelRoutingURL := apis.HTTP("gateway.example.com")
+
+	tests := []struct {
+		name     string
+		model    string
+		adapters []string
+		want     []string
+	}{
+		{
+			name:     "plain names",
+			model:    "org/m",
+			adapters: []string{"a1"},
+			want:     []string{"a1", "org/m"},
+		},
+		{
+			name:     "names already starting with the member's publisher prefix",
+			model:    "publishers/ns/models/m",
+			adapters: []string{"publishers/ns/models/a1"},
+			want:     []string{"publishers/ns/models/a1", "publishers/ns/models/m"},
+		},
+		{
+			name:  "name starting with another namespace's publisher prefix",
+			model: "publishers/other/models/m",
+			want:  []string{"publishers/other/models/m"},
+		},
+		{
+			name:     "adapter named after the base model's qualified name",
+			model:    "m",
+			adapters: []string{"publishers/ns/models/m"},
+			want:     []string{"m", "publishers/ns/models/m"},
+		},
+		{
+			name:     "adapter name with a repeated publisher prefix",
+			model:    "m",
+			adapters: []string{"publishers/ns/models/publishers/ns/models/m"},
+			want:     []string{"m", "publishers/ns/models/publishers/ns/models/m"},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			member := func(urls ...*apis.URL) *v1alpha2.LLMInferenceService {
+				m := &v1alpha2.LLMInferenceService{
+					ObjectMeta: metav1.ObjectMeta{Name: "svc", Namespace: "ns"},
+					Spec:       v1alpha2.LLMInferenceServiceSpec{Model: v1alpha2.LLMModelSpec{Name: ptr.To(tt.model)}},
+				}
+				if len(tt.adapters) > 0 {
+					m.Spec.Model.LoRA = &v1alpha2.LoRASpec{}
+					for _, a := range tt.adapters {
+						m.Spec.Model.LoRA.Adapters = append(m.Spec.Model.LoRA.Adapters, v1alpha2.LLMModelSpec{Name: ptr.To(a)})
+					}
+				}
+				for _, u := range urls {
+					m.Status.Addresses = append(m.Status.Addresses, SourcedAddress(t.Context(), DiscoveredURL{URL: u}, m))
+				}
+				return m
+			}
+			assert.Equal(t, tt.want, resolvedModelNames(member(pathURL, modelRoutingURL)), "path and model-routing URLs")
+			assert.Equal(t, tt.want, resolvedModelNames(member(modelRoutingURL)), "model-routing URL only")
+
+			// Model declarations supplied by presets need not be in the stored spec.
+			pathMember := member(pathURL)
+			pathMember.Spec.Model.Name = ptr.To("unresolved-model")
+			pathMember.Spec.Model.LoRA = nil
+			assert.Equal(t, tt.want, resolvedModelNames(pathMember), "path URL only")
+			slices.Reverse(pathMember.Status.Addresses[0].Models)
+			assert.Equal(t, tt.want, resolvedModelNames(pathMember), "reversed address models")
+			slices.SortFunc(pathMember.Status.Addresses[0].Models, func(a, b v1alpha2.ModelSourcedAddressStatus) int {
+				return strings.Compare(a.Name, b.Name)
+			})
+			assert.Equal(t, tt.want, resolvedModelNames(pathMember), "sorted address models")
+		})
+	}
+}
+
+// Group members are weighted peers only when their resolved model names are
+// equal, whether or not one of them serves through the model-routing URL only.
+func TestResolvedModelNamesGroupPeers(t *testing.T) {
+	pathURL := apis.HTTP("gateway.example.com")
+	pathURL.Path = "/ns/svc"
+	modelRoutingURL := apis.HTTP("gateway.example.com")
+
+	type member struct {
+		model    string
+		adapters []string
+		urls     []*apis.URL
+	}
+	resolve := func(t *testing.T, mb member) []string {
+		t.Helper()
+		m := &v1alpha2.LLMInferenceService{
+			ObjectMeta: metav1.ObjectMeta{Name: "svc", Namespace: "ns"},
+			Spec:       v1alpha2.LLMInferenceServiceSpec{Model: v1alpha2.LLMModelSpec{Name: ptr.To(mb.model)}},
+		}
+		if len(mb.adapters) > 0 {
+			m.Spec.Model.LoRA = &v1alpha2.LoRASpec{}
+			for _, a := range mb.adapters {
+				m.Spec.Model.LoRA.Adapters = append(m.Spec.Model.LoRA.Adapters, v1alpha2.LLMModelSpec{Name: ptr.To(a)})
+			}
+		}
+		for _, u := range mb.urls {
+			m.Status.Addresses = append(m.Status.Addresses, SourcedAddress(t.Context(), DiscoveredURL{URL: u}, m))
+		}
+		return resolvedModelNames(m)
+	}
+
+	tests := []struct {
+		name  string
+		a, b  member
+		peers bool
+	}{
+		{
+			name:  "same model, one member with the model-routing URL only",
+			a:     member{model: "org/m", urls: []*apis.URL{pathURL, modelRoutingURL}},
+			b:     member{model: "org/m", urls: []*apis.URL{modelRoutingURL}},
+			peers: true,
+		},
+		{
+			name:  "same prefixed model, one member with the model-routing URL only",
+			a:     member{model: "publishers/ns/models/m", urls: []*apis.URL{pathURL, modelRoutingURL}},
+			b:     member{model: "publishers/ns/models/m", urls: []*apis.URL{modelRoutingURL}},
+			peers: true,
+		},
+		{
+			name:  "same base and adapter named after its qualified name, one member with the model-routing URL only",
+			a:     member{model: "m", adapters: []string{"publishers/ns/models/m"}, urls: []*apis.URL{pathURL, modelRoutingURL}},
+			b:     member{model: "m", adapters: []string{"publishers/ns/models/m"}, urls: []*apis.URL{modelRoutingURL}},
+			peers: true,
+		},
+		{
+			name:  "same base and repeatedly prefixed adapter, one member with the model-routing URL only",
+			a:     member{model: "m", adapters: []string{"publishers/ns/models/publishers/ns/models/m"}, urls: []*apis.URL{pathURL, modelRoutingURL}},
+			b:     member{model: "m", adapters: []string{"publishers/ns/models/publishers/ns/models/m"}, urls: []*apis.URL{modelRoutingURL}},
+			peers: true,
+		},
+		{
+			name:  "peer with an additional adapter is not a peer",
+			a:     member{model: "m", adapters: []string{"publishers/ns/models/publishers/ns/models/m"}, urls: []*apis.URL{pathURL, modelRoutingURL}},
+			b:     member{model: "m", adapters: []string{"publishers/ns/models/m", "publishers/ns/models/publishers/ns/models/m"}, urls: []*apis.URL{modelRoutingURL}},
+			peers: false,
+		},
+		{
+			name:  "peer serving only the adapter's name is not a peer",
+			a:     member{model: "m", adapters: []string{"publishers/ns/models/m"}, urls: []*apis.URL{pathURL, modelRoutingURL}},
+			b:     member{model: "publishers/ns/models/m", urls: []*apis.URL{modelRoutingURL}},
+			peers: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			a, b := resolve(t, tt.a), resolve(t, tt.b)
+			if tt.peers {
+				assert.Equal(t, a, b)
+			} else {
+				assert.NotEqual(t, a, b)
+			}
+		})
+	}
 }

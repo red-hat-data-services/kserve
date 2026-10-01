@@ -14,7 +14,7 @@ resources:
 - ../rbac/kernelcache
 - manager.yaml
 - ../localmodelnodes
-- ../kernelcachenodes
+# - ../kernelcachenodes
 - ../webhook/localmodel
 
 patches:

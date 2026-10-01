@@ -300,6 +300,7 @@ rules:
   - kserve-inferencegraph-distro-role
   - kserve-inferenceservice-distro-role
   - kserve-kernelcache-nodegroup-manager
+  - kserve-kernelcache-token-requester
   - kserve-llmisvc-distro-role
   - kserve-llmisvc-manager-role
   - kserve-localmodel-distro-role

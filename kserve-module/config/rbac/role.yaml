@@ -299,6 +299,7 @@ rules:
   - kserve-edit
   - kserve-inferencegraph-distro-role
   - kserve-inferenceservice-distro-role
+  - kserve-kernelcache-nodegroup-manager
   - kserve-llmisvc-distro-role
   - kserve-llmisvc-manager-role
   - kserve-localmodel-distro-role

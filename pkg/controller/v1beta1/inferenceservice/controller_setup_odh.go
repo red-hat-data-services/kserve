@@ -1,4 +1,4 @@
-//go:build !distro
+//go:build distro
 
 /*
 Copyright 2026 The KServe Authors.
@@ -16,19 +16,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package deployment
+package inferenceservice
 
 import (
-	"context"
-
-	corev1 "k8s.io/api/core/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"sigs.k8s.io/controller-runtime/pkg/builder"
+	"sigs.k8s.io/controller-runtime/pkg/manager"
 )
 
-// customizeDeployments is the default (upstream) no-op hook for platform-specific
-// customization of the desired Deployments in r.DeploymentList. It runs once the
-// Deployments are built, before they are reconciled against the cluster. Conditions it
-// records in r.platformConditions are exposed through PlatformConditions.
-func (r *DeploymentReconciler) customizeDeployments(_ context.Context, _ metav1.ObjectMeta, _ *corev1.PodSpec) error {
+// extendControllerSetup registers no additional watches in ODH builds.
+func (r *InferenceServiceReconciler) extendControllerSetup(_ manager.Manager, _ *builder.Builder) error {
 	return nil
 }

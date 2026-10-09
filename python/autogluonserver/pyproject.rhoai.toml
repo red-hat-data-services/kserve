@@ -8,11 +8,11 @@ requires-python = ">=3.12,<3.13"
 dependencies = [
     "kserve",
     "kserve-storage",
-    "autogluon.common==1.6.3+rhaiv.1",
-    "autogluon.core==1.6.3+rhaiv.1",
-    "autogluon.features==1.6.3+rhaiv.1",
-    "autogluon.tabular[lightgbm,xgboost,tabm,fastai]==1.6.3+rhaiv.1",
-    "autogluon.timeseries==1.6.3+rhaiv.1",
+    "autogluon.common==1.6.3+rhaiv.2",
+    "autogluon.core==1.6.3+rhaiv.2",
+    "autogluon.features==1.6.3+rhaiv.2",
+    "autogluon.tabular[lightgbm,xgboost,tabm,fastai]==1.6.3+rhaiv.2",
+    "autogluon.timeseries==1.6.3+rhaiv.2",
 ]
 name = "autogluonserver"
 version = "0.1.0"

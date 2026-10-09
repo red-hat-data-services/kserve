@@ -1,8 +1,5 @@
 --index-url https://packages.redhat.com/api/pypi/public-rhai/cpu-torch2.13-el9.8-test/simple
 
-absl-py==2.5.0 \
-    --hash=sha256:847f3effd3404211bde6f501e357f01ebf6e92a45e57db60bd719cf10d453079
-    # via tensorboard
 accelerate==1.15.0 \
     --hash=sha256:403a7d6f851e7f05e80840d3cc65f793cb9c397d073be7ce8a7e1dc0d3776494
     # via
@@ -54,33 +51,33 @@ attrs==26.1.0 \
     #   aiohttp
     #   jsonschema
     #   referencing
-autogluon-common==1.6.3+rhaiv.1 \
-    --hash=sha256:2f33b61d19661dcf9a6eb86ed9bed1e15cfc89b9b045010aa59e87d334ff4776
+autogluon-common==1.6.3+rhaiv.2 \
+    --hash=sha256:ab6760870c23a7e11646e4475c71f2deddfec880b9a4bee7d32db07d5485ed5f
     # via
     #   autogluon-core
     #   autogluon-features
     #   autogluon-timeseries
     #   autogluonserver
-autogluon-core==1.6.3+rhaiv.1 \
-    --hash=sha256:4ad143a0b7d556a9c15f02597d42f97b21405d890ddf8ba1de0a6bf2ce08f22f
+autogluon-core==1.6.3+rhaiv.2 \
+    --hash=sha256:8ac9a88999d908cad388c3291e9090cfab450189a5a7973bef543a8df7949ffb
     # via
     #   autogluon-tabular
     #   autogluon-timeseries
     #   autogluonserver
-autogluon-features==1.6.3+rhaiv.1 \
-    --hash=sha256:87113b4d558050336aecc790185b9842f6d7c13d89672699fa51c9002369d789
+autogluon-features==1.6.3+rhaiv.2 \
+    --hash=sha256:156ddbf1b94c845287b1f18bd2f21ff210efa1ea19e6fdf856a289cd8f03de38
     # via
     #   autogluon-core
     #   autogluon-tabular
     #   autogluon-timeseries
     #   autogluonserver
-autogluon-tabular==1.6.3+rhaiv.1 \
-    --hash=sha256:cc2afe56f9da95e6c8ce392736d60d48120d7e280262c59f95551156d4786a2d
+autogluon-tabular==1.6.3+rhaiv.2 \
+    --hash=sha256:cfd65292f480c1324050e9a55510851994c80f85eb02c79a6cd8d8579f222994
     # via
     #   autogluon-timeseries
     #   autogluonserver
-autogluon-timeseries==1.6.3+rhaiv.1 \
-    --hash=sha256:3fa0cfb0761611e43ea72d1d9eb24bcc8374235846b8fce5ecae68d11db7f443
+autogluon-timeseries==1.6.3+rhaiv.2 \
+    --hash=sha256:008786055e7e33d0984af577760e569d3f96acc844b725d6c79fe6762f120c27
     # via autogluonserver
 azure-core==1.41.0 \
     --hash=sha256:43e760578d3c48bdc3d15ac399e5d1cb390c50be48a0ceaacac074c93a21db1d
@@ -340,7 +337,6 @@ grpcio==1.84.0 \
     #   grpcio-tools
     #   kserve
     #   opentelemetry-exporter-otlp-proto-grpc
-    #   tensorboard
 grpcio-tools==1.81.1 \
     --hash=sha256:7a51ed159eea960aa835c7c7b29c7d1ff3d59f4022ed1034783131d34d047bd3 \
     --hash=sha256:935d8d15a21b22164f9a18ebcc0e0bc599bae431656bc50c28921e51cc41b992 \
@@ -466,9 +462,6 @@ llvmlite==0.50.0 \
 mako==1.4.3 \
     --hash=sha256:5f578c5644c4ff5435ff9539d36d6cb67c0d0330447cf651e98f66a39c67296f
     # via alembic
-markdown==3.11 \
-    --hash=sha256:278ecefb037f319ed363a23b921604f7c03529816c3a20f9403c2e8d15407ead
-    # via tensorboard
 markdown-it-py==4.2.0 \
     --hash=sha256:1534e7fddd5e71cbeaa7daf3650abf8922447e96aea60b1485eb7a088b73bd02
     # via rich
@@ -480,7 +473,6 @@ markupsafe==3.0.4 \
     # via
     #   jinja2
     #   mako
-    #   werkzeug
 matplotlib==3.11.2 \
     --hash=sha256:03cbb7e70c3f1eac00710a43458161866c140395e7cc13d82fa648eebeeac7c5 \
     --hash=sha256:18fa02c0cde8c23144c0e388949b592e3060a79b745770319c2033f7d62cc9a8 \
@@ -580,7 +572,6 @@ numpy==2.5.3 \
     #   spacy
     #   statsforecast
     #   statsmodels
-    #   tensorboard
     #   thinc
     #   torchmetrics
     #   torchvision
@@ -588,7 +579,7 @@ numpy==2.5.3 \
     #   triad
     #   utilsforecast
     #   window-ops
-    #   xgboost-cpu
+    #   xgboost
 oauthlib==4.0.0 \
     --hash=sha256:f2c8de845577d608844a0b282946e04acbd8a89a9e96cf756dab31226a3c2a45
     # via
@@ -711,7 +702,6 @@ packaging==26.3 \
     #   pytorch-lightning
     #   spacy
     #   statsmodels
-    #   tensorboard
     #   thinc
     #   torchmetrics
     #   transformers
@@ -755,7 +745,6 @@ pillow==12.3.0 \
     #   fastai
     #   kserve
     #   matplotlib
-    #   tensorboard
     #   torchvision
 plum-dispatch==2.9.0 \
     --hash=sha256:d6686ecb896e318fd1b3fa235419646319c23f4082ec8edb0a5048471fa74ed5
@@ -796,7 +785,6 @@ protobuf==6.33.6 \
     #   kserve
     #   opentelemetry-proto
     #   proto-plus
-    #   tensorboard
     #   transformers
 psutil==5.9.8 \
     --hash=sha256:1a52c23e9c37c059da4cd161c099b76bed5b9c380cfc28931c9648f45ce7e64a \
@@ -983,7 +971,7 @@ scipy==1.18.1 \
     #   scikit-learn
     #   statsforecast
     #   statsmodels
-    #   xgboost-cpu
+    #   xgboost
 sentencepiece==0.2.2 \
     --hash=sha256:4c9df052933e2d7ab1ff2446282857195a09fa8123ef1ae990d88947e10755fc \
     --hash=sha256:8690a68f9dac3e4a71502447a82810bd02f1b812dcf9bf577270c16f44c60ac0 \
@@ -995,7 +983,6 @@ setuptools==84.0.0 \
     # via
     #   grpcio-tools
     #   spacy
-    #   tensorboard
     #   thinc
     #   torch
 shellingham==1.5.4 \
@@ -1069,13 +1056,6 @@ sympy==1.14.0 \
 tabulate==0.10.0 \
     --hash=sha256:22ebd5d78937d9212287603eb3ba77a5f76e915a11d62b7131cc86be6d1c2788
     # via kserve
-tensorboard==2.20.0 \
-    --hash=sha256:c92ce27d81f25b750f2d164487dcd0546224d43405a1d73fa5924e3a36501231
-    # via autogluon-timeseries
-tensorboard-data-server==0.7.2 \
-    --hash=sha256:5b5ca067ff01fb0fd9bc849ec755e01e357fb12fd277b31ff5e5563efea343ec \
-    --hash=sha256:5dcd5f1d0e8fade78cef00360d18b6ab45db329d63ffc420c747d1879da5d4c0
-    # via tensorboard
 thinc==8.3.13 \
     --hash=sha256:0c4f9bb9d0c22cb122a2a6629128157e54d35537d79bf6ccbcaadcd83e8eb6b5 \
     --hash=sha256:5e998127ad326d2e102d51424703685d104f4695eb01acf3582a8187004c6e62 \
@@ -1267,9 +1247,6 @@ websockets==17.2 \
     --hash=sha256:b71cf4870f89427f27ca7d0db123bfc01f5b81cc1d638f17f60ea0b3091c4626 \
     --hash=sha256:d64498e2096afee969e9c04b692fa1f7bb97afc3e168dc9339a2099caf11d229
     # via uvicorn
-werkzeug==3.1.9 \
-    --hash=sha256:0bf774d67d14253b74e241376228453750036d1a298167029d959286547cebf7
-    # via tensorboard
 wheel==0.48.0 \
     --hash=sha256:c6d4bd2d0224ddba5b3b3d773566bffe64b9be5cf956be3e5223757ffa6e16f1
 window-ops==0.0.15 \
@@ -1285,9 +1262,11 @@ wrapt==2.5.0 \
     #   opentelemetry-instrumentation
     #   opentelemetry-instrumentation-grpc
     #   smart-open
-xgboost-cpu==3.3.0 \
-    --hash=sha256:14e4cd0266ff857380d00a312027bc401ebd2653ee01340cf093bb4a787f50a1 \
-    --hash=sha256:d3c38ebf29184e98ec1ada20d6b58c6052b15a92cf31cb0e37b5584c78b9150a
+xgboost==3.1.3 \
+    --hash=sha256:0a60967ae0a4c66b40ef90d6b563851809c0bd97e942e7fd69ef4bead0bde41e \
+    --hash=sha256:0dfde1663edd5d32fb0614795f653e1708ee3ad884582a559cd921f40ab12767 \
+    --hash=sha256:7d3a2b9689571d4a63ee14d85904922b6499ad8a49627eed7d19c7e86b4dd010 \
+    --hash=sha256:9f7dc9dcd3d41acf413b9951f99ee889fb6e94f3831d0607c8a8a32281ba78ec
     # via autogluon-tabular
 yarl==1.25.1 \
     --hash=sha256:069576fa26443978d5d7744f48a5ae0a192945f00f75cc8941a631d98f7de0c3 \

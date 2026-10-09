@@ -9,14 +9,6 @@ supported-markers = [
 ]
 
 [[package]]
-name = "absl-py"
-version = "2.5.0"
-source = { registry = "https://packages.redhat.com/api/pypi/public-rhai/cpu-torch2.13-el9.8-test/simple" }
-wheels = [
-    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/cpu-torch2.13-el9.8-test/absl_py-2.5.0-1-py3-none-any.whl", hash = "sha256:847f3effd3404211bde6f501e357f01ebf6e92a45e57db60bd719cf10d453079", size = 139042, upload-time = "2026-09-25T16:56:37.986Z" },
-]
-
-[[package]]
 name = "accelerate"
 version = "1.15.0"
 source = { registry = "https://packages.redhat.com/api/pypi/public-rhai/cpu-torch2.13-el9.8-test/simple" }
@@ -144,7 +136,7 @@ wheels = [
 
 [[package]]
 name = "autogluon-common"
-version = "1.6.3+rhaiv.1"
+version = "1.6.3+rhaiv.2"
 source = { registry = "https://packages.redhat.com/api/pypi/public-rhai/cpu-torch2.13-el9.8-test/simple" }
 dependencies = [
     { name = "boto3", marker = "sys_platform == 'linux'" },
@@ -160,12 +152,12 @@ dependencies = [
     { name = "tqdm", marker = "sys_platform == 'linux'" },
 ]
 wheels = [
-    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/cpu-torch2.13-el9.8-test/autogluon_common-1.6.3+rhaiv.1-1-py3-none-any.whl", hash = "sha256:2f33b61d19661dcf9a6eb86ed9bed1e15cfc89b9b045010aa59e87d334ff4776", size = 93017, upload-time = "2026-10-06T00:43:11.523Z" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/cpu-torch2.13-el9.8-test/autogluon_common-1.6.3+rhaiv.2-1-py3-none-any.whl", hash = "sha256:ab6760870c23a7e11646e4475c71f2deddfec880b9a4bee7d32db07d5485ed5f", size = 93018, upload-time = "2026-10-09T00:45:25.832Z" },
 ]
 
 [[package]]
 name = "autogluon-core"
-version = "1.6.3+rhaiv.1"
+version = "1.6.3+rhaiv.2"
 source = { registry = "https://packages.redhat.com/api/pypi/public-rhai/cpu-torch2.13-el9.8-test/simple" }
 dependencies = [
     { name = "autogluon-common", marker = "sys_platform == 'linux'" },
@@ -182,12 +174,12 @@ dependencies = [
     { name = "typing-extensions", marker = "sys_platform == 'linux'" },
 ]
 wheels = [
-    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/cpu-torch2.13-el9.8-test/autogluon_core-1.6.3+rhaiv.1-1-py3-none-any.whl", hash = "sha256:4ad143a0b7d556a9c15f02597d42f97b21405d890ddf8ba1de0a6bf2ce08f22f", size = 250675, upload-time = "2026-10-06T00:38:02.276Z" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/cpu-torch2.13-el9.8-test/autogluon_core-1.6.3+rhaiv.2-1-py3-none-any.whl", hash = "sha256:8ac9a88999d908cad388c3291e9090cfab450189a5a7973bef543a8df7949ffb", size = 250670, upload-time = "2026-10-09T00:40:13.789Z" },
 ]
 
 [[package]]
 name = "autogluon-features"
-version = "1.6.3+rhaiv.1"
+version = "1.6.3+rhaiv.2"
 source = { registry = "https://packages.redhat.com/api/pypi/public-rhai/cpu-torch2.13-el9.8-test/simple" }
 dependencies = [
     { name = "autogluon-common", marker = "sys_platform == 'linux'" },
@@ -196,12 +188,12 @@ dependencies = [
     { name = "scikit-learn", marker = "sys_platform == 'linux'" },
 ]
 wheels = [
-    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/cpu-torch2.13-el9.8-test/autogluon_features-1.6.3+rhaiv.1-1-py3-none-any.whl", hash = "sha256:87113b4d558050336aecc790185b9842f6d7c13d89672699fa51c9002369d789", size = 114608, upload-time = "2026-10-06T00:38:03.045Z" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/cpu-torch2.13-el9.8-test/autogluon_features-1.6.3+rhaiv.2-1-py3-none-any.whl", hash = "sha256:156ddbf1b94c845287b1f18bd2f21ff210efa1ea19e6fdf856a289cd8f03de38", size = 114607, upload-time = "2026-10-09T00:42:12.262Z" },
 ]
 
 [[package]]
 name = "autogluon-tabular"
-version = "1.6.3+rhaiv.1"
+version = "1.6.3+rhaiv.2"
 source = { registry = "https://packages.redhat.com/api/pypi/public-rhai/cpu-torch2.13-el9.8-test/simple" }
 dependencies = [
     { name = "autogluon-core", marker = "sys_platform == 'linux'" },
@@ -213,7 +205,7 @@ dependencies = [
     { name = "scipy", marker = "sys_platform == 'linux'" },
 ]
 wheels = [
-    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/cpu-torch2.13-el9.8-test/autogluon_tabular-1.6.3+rhaiv.1-1-py3-none-any.whl", hash = "sha256:cc2afe56f9da95e6c8ce392736d60d48120d7e280262c59f95551156d4786a2d", size = 517115, upload-time = "2026-10-06T00:38:03.793Z" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/cpu-torch2.13-el9.8-test/autogluon_tabular-1.6.3+rhaiv.2-1-py3-none-any.whl", hash = "sha256:cfd65292f480c1324050e9a55510851994c80f85eb02c79a6cd8d8579f222994", size = 517086, upload-time = "2026-10-09T00:40:14.623Z" },
 ]
 
 [package.optional-dependencies]
@@ -229,12 +221,12 @@ tabm = [
     { name = "torch", marker = "sys_platform == 'linux'" },
 ]
 xgboost = [
-    { name = "xgboost-cpu", marker = "sys_platform == 'linux'" },
+    { name = "xgboost", marker = "sys_platform == 'linux'" },
 ]
 
 [[package]]
 name = "autogluon-timeseries"
-version = "1.6.3+rhaiv.1"
+version = "1.6.3+rhaiv.2"
 source = { registry = "https://packages.redhat.com/api/pypi/public-rhai/cpu-torch2.13-el9.8-test/simple" }
 dependencies = [
     { name = "accelerate", marker = "sys_platform == 'linux'" },
@@ -259,14 +251,13 @@ dependencies = [
     { name = "safetensors", marker = "sys_platform == 'linux'" },
     { name = "scipy", marker = "sys_platform == 'linux'" },
     { name = "statsforecast", marker = "sys_platform == 'linux'" },
-    { name = "tensorboard", marker = "sys_platform == 'linux'" },
     { name = "torch", marker = "sys_platform == 'linux'" },
     { name = "tqdm", marker = "sys_platform == 'linux'" },
     { name = "transformers", extra = ["sentencepiece"], marker = "sys_platform == 'linux'" },
     { name = "utilsforecast", marker = "sys_platform == 'linux'" },
 ]
 wheels = [
-    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/cpu-torch2.13-el9.8-test/autogluon_timeseries-1.6.3+rhaiv.1-1-py3-none-any.whl", hash = "sha256:3fa0cfb0761611e43ea72d1d9eb24bcc8374235846b8fce5ecae68d11db7f443", size = 277315, upload-time = "2026-10-06T01:33:48.554Z" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/cpu-torch2.13-el9.8-test/autogluon_timeseries-1.6.3+rhaiv.2-1-py3-none-any.whl", hash = "sha256:008786055e7e33d0984af577760e569d3f96acc844b725d6c79fe6762f120c27", size = 277303, upload-time = "2026-10-09T01:34:46.89Z" },
 ]
 
 [[package]]
@@ -291,11 +282,11 @@ rhoai-build = [
 
 [package.metadata]
 requires-dist = [
-    { name = "autogluon-common", specifier = "==1.6.3+rhaiv.1", index = "https://packages.redhat.com/api/pypi/public-rhai/cpu-torch2.13-el9.8-test/simple" },
-    { name = "autogluon-core", specifier = "==1.6.3+rhaiv.1", index = "https://packages.redhat.com/api/pypi/public-rhai/cpu-torch2.13-el9.8-test/simple" },
-    { name = "autogluon-features", specifier = "==1.6.3+rhaiv.1", index = "https://packages.redhat.com/api/pypi/public-rhai/cpu-torch2.13-el9.8-test/simple" },
-    { name = "autogluon-tabular", extras = ["lightgbm", "xgboost", "tabm", "fastai"], specifier = "==1.6.3+rhaiv.1", index = "https://packages.redhat.com/api/pypi/public-rhai/cpu-torch2.13-el9.8-test/simple" },
-    { name = "autogluon-timeseries", specifier = "==1.6.3+rhaiv.1", index = "https://packages.redhat.com/api/pypi/public-rhai/cpu-torch2.13-el9.8-test/simple" },
+    { name = "autogluon-common", specifier = "==1.6.3+rhaiv.2", index = "https://packages.redhat.com/api/pypi/public-rhai/cpu-torch2.13-el9.8-test/simple" },
+    { name = "autogluon-core", specifier = "==1.6.3+rhaiv.2", index = "https://packages.redhat.com/api/pypi/public-rhai/cpu-torch2.13-el9.8-test/simple" },
+    { name = "autogluon-features", specifier = "==1.6.3+rhaiv.2", index = "https://packages.redhat.com/api/pypi/public-rhai/cpu-torch2.13-el9.8-test/simple" },
+    { name = "autogluon-tabular", extras = ["lightgbm", "xgboost", "tabm", "fastai"], specifier = "==1.6.3+rhaiv.2", index = "https://packages.redhat.com/api/pypi/public-rhai/cpu-torch2.13-el9.8-test/simple" },
+    { name = "autogluon-timeseries", specifier = "==1.6.3+rhaiv.2", index = "https://packages.redhat.com/api/pypi/public-rhai/cpu-torch2.13-el9.8-test/simple" },
     { name = "kserve", directory = "../kserve" },
     { name = "kserve-storage", virtual = "../storage" },
 ]
@@ -1378,14 +1369,6 @@ dependencies = [
 ]
 wheels = [
     { url = "https://packages.redhat.com/api/pulp-content/public-rhai/cpu-torch2.13-el9.8-test/mako-1.4.3-1-py3-none-any.whl", hash = "sha256:5f578c5644c4ff5435ff9539d36d6cb67c0d0330447cf651e98f66a39c67296f", size = 107592, upload-time = "2026-09-26T19:52:03.942Z" },
-]
-
-[[package]]
-name = "markdown"
-version = "3.11"
-source = { registry = "https://packages.redhat.com/api/pypi/public-rhai/cpu-torch2.13-el9.8-test/simple" }
-wheels = [
-    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/cpu-torch2.13-el9.8-test/markdown-3.11-1-py3-none-any.whl", hash = "sha256:278ecefb037f319ed363a23b921604f7c03529816c3a20f9403c2e8d15407ead", size = 112959, upload-time = "2026-09-28T22:11:40.051Z" },
 ]
 
 [[package]]
@@ -2496,35 +2479,6 @@ wheels = [
 ]
 
 [[package]]
-name = "tensorboard"
-version = "2.20.0"
-source = { registry = "https://packages.redhat.com/api/pypi/public-rhai/cpu-torch2.13-el9.8-test/simple" }
-dependencies = [
-    { name = "absl-py", marker = "sys_platform == 'linux'" },
-    { name = "grpcio", marker = "sys_platform == 'linux'" },
-    { name = "markdown", marker = "sys_platform == 'linux'" },
-    { name = "numpy", marker = "sys_platform == 'linux'" },
-    { name = "packaging", marker = "sys_platform == 'linux'" },
-    { name = "pillow", marker = "sys_platform == 'linux'" },
-    { name = "protobuf", marker = "sys_platform == 'linux'" },
-    { name = "setuptools", marker = "sys_platform == 'linux'" },
-    { name = "tensorboard-data-server", marker = "sys_platform == 'linux'" },
-    { name = "werkzeug", marker = "sys_platform == 'linux'" },
-]
-wheels = [
-    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/cpu-torch2.13-el9.8-test/tensorboard-2.20.0-4-py3-none-any.whl", hash = "sha256:c92ce27d81f25b750f2d164487dcd0546224d43405a1d73fa5924e3a36501231", size = 5527782, upload-time = "2026-09-28T23:04:10.726Z" },
-]
-
-[[package]]
-name = "tensorboard-data-server"
-version = "0.7.2"
-source = { registry = "https://packages.redhat.com/api/pypi/public-rhai/cpu-torch2.13-el9.8-test/simple" }
-wheels = [
-    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/cpu-torch2.13-el9.8-test/tensorboard_data_server-0.7.2-3-cp312-cp312-linux_aarch64.whl", hash = "sha256:5b5ca067ff01fb0fd9bc849ec755e01e357fb12fd277b31ff5e5563efea343ec", size = 4778518, upload-time = "2026-09-28T22:33:15.553Z" },
-    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/cpu-torch2.13-el9.8-test/tensorboard_data_server-0.7.2-3-cp312-cp312-linux_x86_64.whl", hash = "sha256:5dcd5f1d0e8fade78cef00360d18b6ab45db329d63ffc420c747d1879da5d4c0", size = 4873724, upload-time = "2026-09-28T22:29:32.64Z" },
-]
-
-[[package]]
 name = "thinc"
 version = "8.3.13"
 source = { registry = "https://packages.redhat.com/api/pypi/public-rhai/cpu-torch2.13-el9.8-test/simple" }
@@ -2852,17 +2806,6 @@ wheels = [
 ]
 
 [[package]]
-name = "werkzeug"
-version = "3.1.9"
-source = { registry = "https://packages.redhat.com/api/pypi/public-rhai/cpu-torch2.13-el9.8-test/simple" }
-dependencies = [
-    { name = "markupsafe", marker = "sys_platform == 'linux'" },
-]
-wheels = [
-    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/cpu-torch2.13-el9.8-test/werkzeug-3.1.9-1-py3-none-any.whl", hash = "sha256:0bf774d67d14253b74e241376228453750036d1a298167029d959286547cebf7", size = 230340, upload-time = "2026-09-30T21:42:01.313Z" },
-]
-
-[[package]]
 name = "wheel"
 version = "0.48.0"
 source = { registry = "https://packages.redhat.com/api/pypi/public-rhai/cpu-torch2.13-el9.8-test/simple" }
@@ -2897,16 +2840,18 @@ wheels = [
 ]
 
 [[package]]
-name = "xgboost-cpu"
-version = "3.3.0"
+name = "xgboost"
+version = "3.1.3"
 source = { registry = "https://packages.redhat.com/api/pypi/public-rhai/cpu-torch2.13-el9.8-test/simple" }
 dependencies = [
     { name = "numpy", marker = "sys_platform == 'linux'" },
     { name = "scipy", marker = "sys_platform == 'linux'" },
 ]
 wheels = [
-    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/cpu-torch2.13-el9.8-test/xgboost_cpu-3.3.0-1-py3-none-linux_aarch64.whl", hash = "sha256:d3c38ebf29184e98ec1ada20d6b58c6052b15a92cf31cb0e37b5584c78b9150a", size = 4887840, upload-time = "2026-10-06T02:12:15.265Z" },
-    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/cpu-torch2.13-el9.8-test/xgboost_cpu-3.3.0-1-py3-none-linux_x86_64.whl", hash = "sha256:14e4cd0266ff857380d00a312027bc401ebd2653ee01340cf093bb4a787f50a1", size = 5495103, upload-time = "2026-10-06T02:03:27.314Z" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/cpu-torch2.13-el9.8-test/xgboost-3.1.3-1-py3-none-linux_aarch64.whl", hash = "sha256:9f7dc9dcd3d41acf413b9951f99ee889fb6e94f3831d0607c8a8a32281ba78ec", size = 4508944, upload-time = "2026-09-29T02:01:11.604Z" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/cpu-torch2.13-el9.8-test/xgboost-3.1.3-1-py3-none-linux_ppc64le.whl", hash = "sha256:7d3a2b9689571d4a63ee14d85904922b6499ad8a49627eed7d19c7e86b4dd010", size = 4941363, upload-time = "2026-10-07T19:15:27.405Z" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/cpu-torch2.13-el9.8-test/xgboost-3.1.3-1-py3-none-linux_s390x.whl", hash = "sha256:0a60967ae0a4c66b40ef90d6b563851809c0bd97e942e7fd69ef4bead0bde41e", size = 5499305, upload-time = "2026-10-07T20:05:40.258Z" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/cpu-torch2.13-el9.8-test/xgboost-3.1.3-1-py3-none-linux_x86_64.whl", hash = "sha256:0dfde1663edd5d32fb0614795f653e1708ee3ad884582a559cd921f40ab12767", size = 5082862, upload-time = "2026-09-29T02:11:10.854Z" },
 ]
 
 [[package]]

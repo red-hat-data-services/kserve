@@ -49,6 +49,9 @@ ENV PATH="${VIRTUAL_ENV}/bin:$PATH"
 
 COPY --from=builder --chown=1001 /opt/app-root/ /opt/app-root/
 
+# uv and uvx are only needed while building the image.
+RUN rm -f /opt/app-root/bin/uv /opt/app-root/bin/uvx
+
 USER 1001
 ENV PYTHONPATH=/opt/app-root/autogluonserver
 ENTRYPOINT ["python", "-m", "autogluonserver"]

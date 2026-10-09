@@ -12,11 +12,11 @@ adagio==0.2.6 \
 aiohappyeyeballs==2.7.1 \
     --hash=sha256:6c06961fde24f3f847939e288b8e6398973752c358a58cdc067115f8fe87a35d
     # via aiohttp
-aiohttp==3.14.3 \
-    --hash=sha256:06ec28a1d9f5823ac39f11dfe4fdea83fe7f227d78453d781db31779b2cb077f \
-    --hash=sha256:27901378905a4304a7c20d13696dc2ddd54d2b052e357c027077436d3a753330 \
-    --hash=sha256:ef298d6ad215a6b01d21f2c68cfd291dcfe7ddeb99f608529eb71b101083e297 \
-    --hash=sha256:fb4d75b223840f152dacd97e5a366695be3507d3a4f77aa3b8a53ce49e9e6e36
+aiohttp==3.14.4 \
+    --hash=sha256:22bb1a903db1c56f44f9c8e8bc675fdd2df33042ca4f001f5629118d58e221ac \
+    --hash=sha256:98368adfcab79625260a80c36c5a6c650772e66243a53d88e46d355250d4021b \
+    --hash=sha256:e584ffb347f67fe5b8d8ae761dd86e2ba149e1b6f8dde4b00d78922bb336b5f7 \
+    --hash=sha256:eb7ca987b87517c968877bc78e72c131077798fbeb029bcf3fbb8f73b8c4e765
     # via
     #   fsspec
     #   kserve
@@ -256,8 +256,8 @@ fastprogress==1.1.6 \
 fasttransform==0.0.5 \
     --hash=sha256:1da1d88d60943160278a902d7ca4293709847b8094bcd365e571105ce2b22b2b
     # via fastai
-filelock==4.0.11 \
-    --hash=sha256:d4dc8fe1ddabcf52dd3e7b0f8d5a0e7dc5c9cd62e518cee213444ea6c8ea1c59
+filelock==4.0.12 \
+    --hash=sha256:cb994f9254db6ac0479671eaaad6a74a0fff151cf79910ec73789a1b17a4234b
     # via
     #   huggingface-hub
     #   modelscope-hub
@@ -293,13 +293,13 @@ fugue==0.9.7 \
 gluonts==0.17.0 \
     --hash=sha256:f2a954e5606841951df9b22b9e01ba3778d73656ca38358d8f8a4aca8d88ab36
     # via autogluon-timeseries
-google-api-core==2.40.0 \
-    --hash=sha256:f1ecad875e165582ffc83cfe3f77132a50a6169d461e1d0fa2e5337283e5b8ab
+google-api-core==2.41.0 \
+    --hash=sha256:97a7c4909da90a2d4ed42ec84725603858eea15402aaa876b157b757a966aa14
     # via
     #   google-cloud-core
     #   google-cloud-storage
-google-auth==2.59.1 \
-    --hash=sha256:ca30deb10f89cca7dc86285530cfdd33144284b5999df59c642d2d0342cb42d9
+google-auth==2.60.0 \
+    --hash=sha256:fc6f286fb84c0bd1700f7e5196083fa6dd3a819ddedd174ee077c0cf148e2e7d
     # via
     #   google-api-core
     #   google-cloud-core
@@ -1103,14 +1103,15 @@ torchmetrics==1.9.0 \
     # via
     #   lightning
     #   pytorch-lightning
-torchvision==0.26.0 \
-    --hash=sha256:0709b722e8e99f52d902bff3a7532457d93efbf6a9f037bd976887a651079997 \
-    --hash=sha256:4796cf31f004e4965950497d8cc2f783d87844666a70a10e1857217c6e598270 \
-    --hash=sha256:506c34f14de44bb6a7811875dd9155ef2ebc01e2a2b4c5bd2b041bb32e6fe4c7 \
-    --hash=sha256:9a53ba27f82831caca3020f15f648f4c7fdd0514aa18e7df5e4c66189a8898a1 \
-    --hash=sha256:c1ebea831dcfb5470c859bc6bd5f3545df73f5a4210a04762e2aa3a288703005 \
-    --hash=sha256:d979cf1e7f240fbeca6cc112f7b81682dcfadb9377e80a46b3f0de7150f1b740 \
-    --hash=sha256:fa92f98a32083ef5b1a5671aec3b59b2061d8827c830438baf6fe1b020d6c782
+torchvision==0.28.0 \
+    --hash=sha256:2aaaf47f8e9fdf33991dd0b12fc596562b8dede1317097fb222a8a4c5c4e9c9e \
+    --hash=sha256:4b48fa6c05da2c5c42e64a9f43bdf6163b73da2ba05cff9ea68ae85e39c1d7ce \
+    --hash=sha256:5b753a89e7cad2de0253b59f3acdb9223dd877e8055834205c51cdac060875f2 \
+    --hash=sha256:a09e67612963a65a7eb2b532b8186c4b253be63771c990a179d585e5f99e70fd \
+    --hash=sha256:c1fa36519b32334af4507372f577765152c010b71f1a961ddd60818e6801a9b9 \
+    --hash=sha256:c66b473a333ce10c97efb1fee8efd0247f2ad246b10c9892447d2f139b06f3e6 \
+    --hash=sha256:d155debc1ddc9633a8ebeb361ee5c75badc36bf78b45978b3dbc164155447e4a \
+    --hash=sha256:f5bfe8874f2f669b07458e4bed34f0a84968a685ab7b5591ca059efe2b1ff63a
     # via fastai
 tqdm==4.70.1 \
     --hash=sha256:3a5758ef148f07ea4a5f62214371fd035c44d0ddf4e2403555003aaeb2499370

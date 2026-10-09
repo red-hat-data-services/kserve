@@ -15,7 +15,7 @@ dependencies = [
     "autogluon.timeseries==1.6.3+rhaiv.2",
 ]
 name = "autogluonserver"
-version = "0.1.0"
+version = "0.2.0"
 description = "Model Server implementation for AutoGluon TabularPredictor and TimeSeriesPredictor. Not intended for use outside KServe Frameworks Images."
 readme = "README.md"
 

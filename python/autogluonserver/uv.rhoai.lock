@@ -582,6 +582,10 @@ wheels = [
     { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/coreforecast-0.0.16-2-cp312-cp312-linux_ppc64le.whl", hash = "sha256:c5e807a13794a14c84809be772715d904565113dca24d8def269337908980924", size = 351381, upload-time = "2026-06-09T22:24:41.237Z" },
     { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/coreforecast-0.0.16-2-cp312-cp312-linux_s390x.whl", hash = "sha256:89c946cf1fa5c8ef6e128507b78054df13036b4c66ab747550d56d1060cc06e6", size = 410617, upload-time = "2026-06-10T04:52:55.414Z" },
     { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/coreforecast-0.0.16-2-cp312-cp312-linux_x86_64.whl", hash = "sha256:7eeaee3eac5e53f916fb55c1cb0972190b5aeb1e06cee0b00838e2c508cdbc05", size = 291238, upload-time = "2026-06-09T07:54:32.389Z" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/coreforecast-0.0.16-3-cp312-cp312-linux_aarch64.whl", hash = "sha256:2c370c1a6178781ed6cd4d259be1aa18f8c066b831cb3089dbb40b6f06edd08f", size = 267012, upload-time = "2026-09-22T17:27:51.82Z" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/coreforecast-0.0.16-3-cp312-cp312-linux_ppc64le.whl", hash = "sha256:d6dbe23fbef53b74ef8762dd6fde8b43a69f40eb3f3a6b0a8be60647181df7e7", size = 351573, upload-time = "2026-09-22T17:53:43.509Z" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/coreforecast-0.0.16-3-cp312-cp312-linux_s390x.whl", hash = "sha256:a7cefc5341ec23f6082dfefedab182296ac0c47457234c78aff5e910c64d5eef", size = 410837, upload-time = "2026-09-22T19:54:25.197Z" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/coreforecast-0.0.16-3-cp312-cp312-linux_x86_64.whl", hash = "sha256:7295fff4481c6ba263db51200dcd4c5a295f41536a31444f9cd9d49a5a535219", size = 291432, upload-time = "2026-09-22T17:26:02.046Z" },
 ]
 
 [[package]]
@@ -1155,7 +1159,7 @@ wheels = [
 
 [[package]]
 name = "kserve"
-version = "0.21.0rc1"
+version = "0.21.0"
 source = { directory = "../kserve" }
 dependencies = [
     { name = "aiohttp" },
@@ -1264,7 +1268,7 @@ test = [
 
 [[package]]
 name = "kserve-storage"
-version = "0.21.0rc1"
+version = "0.21.0"
 source = { virtual = "../storage" }
 dependencies = [
     { name = "aiohttp" },
@@ -2633,7 +2637,7 @@ wheels = [
 
 [[package]]
 name = "torchvision"
-version = "0.26.0"
+version = "0.26.0+rhaiv.1"
 source = { registry = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/" }
 dependencies = [
     { name = "numpy" },
@@ -2641,13 +2645,10 @@ dependencies = [
     { name = "torch" },
 ]
 wheels = [
-    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/torchvision-0.26.0-2-cp312-cp312-linux_aarch64.whl", hash = "sha256:d979cf1e7f240fbeca6cc112f7b81682dcfadb9377e80a46b3f0de7150f1b740", size = 1121090, upload-time = "2026-06-08T11:29:42.213Z" },
-    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/torchvision-0.26.0-2-cp312-cp312-linux_s390x.whl", hash = "sha256:c1ebea831dcfb5470c859bc6bd5f3545df73f5a4210a04762e2aa3a288703005", size = 1498594, upload-time = "2026-06-08T11:29:42.201Z" },
-    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/torchvision-0.26.0-2-cp312-cp312-linux_x86_64.whl", hash = "sha256:0709b722e8e99f52d902bff3a7532457d93efbf6a9f037bd976887a651079997", size = 1180888, upload-time = "2026-06-08T11:29:42.215Z" },
-    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/torchvision-0.26.0-3-cp312-cp312-linux_aarch64.whl", hash = "sha256:506c34f14de44bb6a7811875dd9155ef2ebc01e2a2b4c5bd2b041bb32e6fe4c7", size = 1121113, upload-time = "2026-06-08T11:29:42.198Z" },
-    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/torchvision-0.26.0-3-cp312-cp312-linux_ppc64le.whl", hash = "sha256:9a53ba27f82831caca3020f15f648f4c7fdd0514aa18e7df5e4c66189a8898a1", size = 1226186, upload-time = "2026-06-08T11:29:42.206Z" },
-    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/torchvision-0.26.0-3-cp312-cp312-linux_s390x.whl", hash = "sha256:fa92f98a32083ef5b1a5671aec3b59b2061d8827c830438baf6fe1b020d6c782", size = 1494772, upload-time = "2026-06-08T11:29:42.199Z" },
-    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/torchvision-0.26.0-3-cp312-cp312-linux_x86_64.whl", hash = "sha256:4796cf31f004e4965950497d8cc2f783d87844666a70a10e1857217c6e598270", size = 1180915, upload-time = "2026-06-08T11:29:42.204Z" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/torchvision-0.26.0+rhaiv.1-4-cp312-cp312-linux_aarch64.whl", hash = "sha256:971df2ce8f8c88a4f3cbd3b22b1639288cea14645fc1c9e47e6c23808ed7f303", size = 1121474, upload-time = "2026-09-22T16:40:32.882Z" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/torchvision-0.26.0+rhaiv.1-4-cp312-cp312-linux_ppc64le.whl", hash = "sha256:ebb166a8bbe48ce2b101fffbbf23b81726b25f4ad5261b55952396f662bc9cde", size = 1226566, upload-time = "2026-09-22T16:39:38.038Z" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/torchvision-0.26.0+rhaiv.1-4-cp312-cp312-linux_s390x.whl", hash = "sha256:cccaa0abd88e9e98d68bfe06a3c9b2afd36c1c683fce1818fdc5b70c6ccfe64a", size = 1496651, upload-time = "2026-09-22T18:43:26.615Z" },
+    { url = "https://packages.redhat.com/api/pulp-content/public-rhai/rhoai/3.5/cpu-ubi9/torchvision-0.26.0+rhaiv.1-4-cp312-cp312-linux_x86_64.whl", hash = "sha256:7ffdae567315363bafcba61fe9a401a7a23857f198b38568eb8b40cf4d3beb1d", size = 1181251, upload-time = "2026-09-22T16:38:54.129Z" },
 ]
 
 [[package]]

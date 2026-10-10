@@ -7,12 +7,14 @@ metadata:
     build.appstudio.redhat.com/target_branch: '{{target_branch}}'
     pipelinesascode.tekton.dev/cancel-in-progress: "true"
     pipelinesascode.tekton.dev/max-keep-runs: "3"
-    pipelinesascode.tekton.dev/on-event: '[pull_request]'
     pipelinesascode.tekton.dev/on-comment: '^/build-konflux'
-    pipelinesascode.tekton.dev/on-target-branch: '[{{target_branch}}]'
+    build.appstudio.redhat.com/pull_request_number: "{{pull_request_number}}"
+    pipelinesascode.tekton.dev/on-cel-expression: |-
+      event == "pull_request"
+      && (files.all.exists(p, ! p.matches('^\\.tekton/')) || ".tekton/odh-kserve-module-operator-pull-request.yaml".pathChanged())
   labels:
-    appstudio.openshift.io/application: automation
-    appstudio.openshift.io/component: pull-request-pipelines-odh-kserve-module-operator
+    appstudio.openshift.io/application: rhoai-v3-6
+    appstudio.openshift.io/component: odh-kserve-module-operator-v3-6
     pipelines.appstudio.openshift.io/type: build
   name: odh-kserve-module-operator-on-pull-request-{{pull_request_number}}
   namespace: rhoai-tenant
@@ -23,13 +25,13 @@ spec:
   - name: revision
     value: '{{revision}}'
   - name: output-image
-    value: quay.io/rhoai/pull-request-pipelines:odh-kserve-module-operator-{{revision}}
+    value: quay.io/rhoai/odh-kserve-module-operator-rhel9:on-pr-{{pull_request_number}}
   - name: dockerfile
     value: Dockerfiles/Dockerfile.konflux.kserve-module-controller
   - name: path-context
     value: .
   - name: image-expires-after
-    value: 5d
+    value: 30d
   - name: enable-slack-failure-notification
     value: "false"
   - name: prefetch-input
@@ -41,17 +43,25 @@ spec:
     - linux-m2xlarge/arm64
     - linux/ppc64le
     - linux/s390x
+  - name: rhoai-version
+    value: "3.6.0"
+  - name: hermetic
+    value: true
+  - name: build-source-image
+    value: true
+  - name: build-image-index
+    value: true
   pipelineRef:
     params:
     - name: url
       value: https://github.com/red-hat-data-services/konflux-central.git
     - name: revision
-      value: '{{ target_branch }}'
+      value: '{{ cel: pac.target_branch.matches("^rhoai-\\d+\\.\\d+(-ea\\.\\d+)?$") ? pac.target_branch : "main" }}'
     - name: pathInRepo
       value: pipelines/multi-arch-container-build.yaml
     resolver: git
   taskRunTemplate:
-    serviceAccountName: build-pipeline-pull-request-pipelines
+    serviceAccountName: build-pipeline-odh-kserve-module-operator-v3-6
     podTemplate:
       imagePullSecrets:
       - name: redhat-appstudio-staginguser-pull-secret

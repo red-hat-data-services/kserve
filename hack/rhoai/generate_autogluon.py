@@ -72,8 +72,8 @@ def _validate_project(project_path: Path) -> str:
     project_table = _table(project.get("project"), "project")
     if project_table.get("name") != "autogluonserver":
         raise GenerationError("project.name must be autogluonserver")
-    if project_table.get("requires-python") != ">=3.11,<3.13":
-        raise GenerationError("RHOAI project must target Python >=3.11,<3.13")
+    if project_table.get("requires-python") != ">=3.12,<3.13":
+        raise GenerationError("RHOAI project must target Python >=3.12,<3.13")
 
     dependencies = project_table.get("dependencies")
     if not dependencies or not all(isinstance(item, str) for item in dependencies):
@@ -99,8 +99,12 @@ def _validate_project(project_path: Path) -> str:
 
     tool = _table(project.get("tool"), "tool")
     uv = _table(tool.get("uv"), "tool.uv")
-    if set(uv) != {"index", "sources"}:
-        raise GenerationError("tool.uv must contain only index and sources")
+    if set(uv) != {"environments", "index", "sources"}:
+        raise GenerationError(
+            "tool.uv must contain only environments, index and sources"
+        )
+    if uv["environments"] != ["sys_platform == 'linux'"]:
+        raise GenerationError("RHOAI project must resolve only Linux environments")
 
     indexes = uv["index"]
     if (
@@ -211,6 +215,26 @@ def _validate_requirements(requirements: bytes) -> None:
         raise GenerationError("exported requirement is missing a hash")
 
 
+def _omit_linux_markers(requirements: bytes) -> bytes:
+    """Drop the redundant Linux condition from requirements for the Linux image."""
+    lines = []
+    for line in requirements.splitlines(keepends=True):
+        if not re.match(rb"^[A-Za-z0-9_.-]+==", line):
+            lines.append(line)
+            continue
+        if not line.endswith(b" \\\n"):
+            raise GenerationError("exported requirement has an unexpected format")
+        requirement = line[:-3]
+        if requirement.endswith(b" and sys_platform == 'linux'"):
+            requirement = requirement.removesuffix(b" and sys_platform == 'linux'")
+        elif requirement.endswith(b" ; sys_platform == 'linux'"):
+            requirement = requirement.removesuffix(b" ; sys_platform == 'linux'")
+        else:
+            raise GenerationError("exported requirement is missing the Linux marker")
+        lines.append(requirement + b" \\\n")
+    return b"".join(lines)
+
+
 def _run_uv(project_dir: Path) -> tuple[bytes, bytes]:
     version = subprocess.run(
         ["uv", "--version"],
@@ -218,7 +242,7 @@ def _run_uv(project_dir: Path) -> tuple[bytes, bytes]:
         capture_output=True,
         text=True,
     ).stdout.strip()
-    if version != f"uv {UV_VERSION}":
+    if version.split(maxsplit=2)[:2] != ["uv", UV_VERSION]:
         raise GenerationError(f"expected uv {UV_VERSION}, got {version}")
 
     environment = os.environ.copy()
@@ -290,6 +314,7 @@ def _generate(
 
     if b"--index-url" in requirements_body or b"--extra-index-url" in requirements_body:
         raise GenerationError("uv export unexpectedly emitted an index directive")
+    requirements_body = _omit_linux_markers(requirements_body)
     _validate_requirements(requirements_body)
     if not requirements_body.endswith(b"\n"):
         requirements_body += b"\n"

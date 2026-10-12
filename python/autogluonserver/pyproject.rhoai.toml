@@ -4,23 +4,26 @@ authors = [
     {name = "Dorota Laczak", email = "dlaczak@redhat.com"}
 ]
 license = {text = "Apache-2.0"}
-requires-python = ">=3.11,<3.13"
+requires-python = ">=3.12,<3.13"
 dependencies = [
     "kserve",
     "kserve-storage",
-    "autogluon.common==1.5.0+rhaiv.5",
-    "autogluon.core==1.5.0+rhaiv.5",
-    "autogluon.features==1.5.0+rhaiv.5",
-    "autogluon.tabular[lightgbm,xgboost,tabm,fastai]==1.5.0+rhaiv.5",
-    "autogluon.timeseries==1.5.0+rhaiv.5",
+    "autogluon.common==1.6.3+rhaiv.2",
+    "autogluon.core==1.6.3+rhaiv.2",
+    "autogluon.features==1.6.3+rhaiv.2",
+    "autogluon.tabular[lightgbm,xgboost,tabm,fastai]==1.6.3+rhaiv.2",
+    "autogluon.timeseries==1.6.3+rhaiv.2",
 ]
 name = "autogluonserver"
-version = "0.1.0"
+version = "0.2.0"
 description = "Model Server implementation for AutoGluon TabularPredictor and TimeSeriesPredictor. Not intended for use outside KServe Frameworks Images."
 readme = "README.md"
 
 [dependency-groups]
 rhoai-build = ["setuptools>=61.0", "wheel"]
+
+[tool.uv]
+environments = ["sys_platform == 'linux'"]
 
 [tool.uv.sources]
 kserve = { path = "../kserve", editable = false }
@@ -33,7 +36,7 @@ kserve-storage = { path = "../storage", editable = false }
 
 [[tool.uv.index]]
 name = "aipcc"
-url = "https://console.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/"
+url = "https://packages.redhat.com/api/pypi/public-rhai/cpu-torch2.13-el9.8-test/simple"
 default = true
 [build-system]
 requires = ["setuptools>=61.0"]

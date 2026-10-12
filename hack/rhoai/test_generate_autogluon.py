@@ -80,10 +80,11 @@ class GeneratorContractTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             project_path = Path(directory) / "pyproject.rhoai.toml"
             project = PROJECT_PATH.read_text(encoding="utf-8")
+            index_url = generator._validate_project(PROJECT_PATH)
             project_path.write_text(
                 project.replace(
-                    "https://console.redhat.com/",
-                    "https://user:password@console.redhat.com/",
+                    index_url,
+                    index_url.replace("https://", "https://user:password@", 1),
                 ),
                 encoding="utf-8",
             )
@@ -96,8 +97,8 @@ class GeneratorContractTests(unittest.TestCase):
     def test_lock_rejects_artifacts_outside_allowed_host(self):
         index_url = generator._validate_project(PROJECT_PATH)
         lock = LOCK_PATH.read_bytes().replace(
-            b"https://packages.redhat.com/",
-            b"https://files.pythonhosted.org/",
+            b"https://packages.redhat.com/api/pulp-content/",
+            b"https://files.pythonhosted.org/api/pulp-content/",
             1,
         )
 
@@ -109,6 +110,26 @@ class GeneratorContractTests(unittest.TestCase):
     def test_requirements_require_hashes(self):
         with self.assertRaisesRegex(generator.GenerationError, "missing a hash"):
             generator._validate_requirements(b"package==1.0\n")
+
+    def test_export_omits_only_linux_markers(self):
+        exported = (
+            b"package==1.0 ; sys_platform == 'linux' \\\n"
+            b"    --hash=sha256:abc\n"
+            b"other==2.0 ; implementation_name != 'PyPy' and sys_platform == 'linux' \\\n"
+            b"    --hash=sha256:def\n"
+        )
+        expected = (
+            b"package==1.0 \\\n"
+            b"    --hash=sha256:abc\n"
+            b"other==2.0 ; implementation_name != 'PyPy' \\\n"
+            b"    --hash=sha256:def\n"
+        )
+
+        self.assertEqual(generator._omit_linux_markers(exported), expected)
+        with self.assertRaisesRegex(
+            generator.GenerationError, "missing the Linux marker"
+        ):
+            generator._omit_linux_markers(b"package==1.0 \\\n")
 
     def test_check_mode_detects_and_preserves_stale_outputs(self):
         outputs = {"one.txt": b"one\n", "two.txt": b"two\n"}

@@ -60,13 +60,13 @@ arches:
     name: efi-srpm-macros
     evr: 6-4.el9
     sourcerpm: efi-rpm-macros-6-4.el9.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/appstream/os/Packages/e/emacs-filesystem-27.2-18.el9.noarch.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/appstream/os/Packages/e/emacs-filesystem-27.2-18.el9_8.2.noarch.rpm
     repoid: ubi-9-for-aarch64-appstream-rpms
-    size: 9495
-    checksum: sha256:49d7b88a05a72c15b78191a987e6def04fda8e2e4ff75711f715d0c0ecadc60f
+    size: 14714
+    checksum: sha256:9fa83444f3dcc5a0e59220b864b39aa2eaccf084cf3190e03ba15cf03da3102a
     name: emacs-filesystem
-    evr: 1:27.2-18.el9
-    sourcerpm: emacs-27.2-18.el9.src.rpm
+    evr: 1:27.2-18.el9_8.2
+    sourcerpm: emacs-27.2-18.el9_8.2.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/appstream/os/Packages/f/fonts-srpm-macros-2.0.5-7.el9.1.noarch.rpm
     repoid: ubi-9-for-aarch64-appstream-rpms
     size: 30140
@@ -116,13 +116,13 @@ arches:
     name: go-srpm-macros
     evr: 3.8.1-1.el9
     sourcerpm: go-rpm-macros-3.8.1-1.el9.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/appstream/os/Packages/k/kernel-headers-5.14.0-687.56.1.el9_8.aarch64.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/appstream/os/Packages/k/kernel-headers-5.14.0-687.57.1.el9_8.aarch64.rpm
     repoid: ubi-9-for-aarch64-appstream-rpms
-    size: 2938333
-    checksum: sha256:ea29f262c5cc5b180acb285f135820fd984aa7c1b83acc0f25b3562e42fa9221
+    size: 2939977
+    checksum: sha256:31860419149438987e706dd2929fbc707552cd2e51dbc86547d294f9fed5f204
     name: kernel-headers
-    evr: 5.14.0-687.56.1.el9_8
-    sourcerpm: kernel-5.14.0-687.56.1.el9_8.src.rpm
+    evr: 5.14.0-687.57.1.el9_8
+    sourcerpm: kernel-5.14.0-687.57.1.el9_8.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/appstream/os/Packages/k/kernel-srpm-macros-1.0-14.el9.noarch.rpm
     repoid: ubi-9-for-aarch64-appstream-rpms
     size: 14098
@@ -291,27 +291,27 @@ arches:
     name: openssl-devel
     evr: 1:3.5.8-2.el9_8
     sourcerpm: openssl-3.5.8-2.el9_8.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/appstream/os/Packages/p/pcre2-devel-10.40-6.el9.aarch64.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/appstream/os/Packages/p/pcre2-devel-10.40-7.el9_8.aarch64.rpm
     repoid: ubi-9-for-aarch64-appstream-rpms
-    size: 528574
-    checksum: sha256:58600c82959cc9ed11bf8e353a1744faf1bad7629dde5efcccc2e620fbc601ea
+    size: 530697
+    checksum: sha256:40519973d50affc719bf67b6f300fab65ae033c78c8acc8457c6d84df0f9589d
     name: pcre2-devel
-    evr: 10.40-6.el9
-    sourcerpm: pcre2-10.40-6.el9.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/appstream/os/Packages/p/pcre2-utf16-10.40-6.el9.aarch64.rpm
+    evr: 10.40-7.el9_8
+    sourcerpm: pcre2-10.40-7.el9_8.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/appstream/os/Packages/p/pcre2-utf16-10.40-7.el9_8.aarch64.rpm
     repoid: ubi-9-for-aarch64-appstream-rpms
-    size: 202210
-    checksum: sha256:10fa13474654d43c785714d2250aa5db45a52b672d6ef2ba35d168e86522d5d4
+    size: 206536
+    checksum: sha256:c554cdabaa833f7868dcb714a699676e817a062b2a676b48c9f668edbe01395e
     name: pcre2-utf16
-    evr: 10.40-6.el9
-    sourcerpm: pcre2-10.40-6.el9.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/appstream/os/Packages/p/pcre2-utf32-10.40-6.el9.aarch64.rpm
+    evr: 10.40-7.el9_8
+    sourcerpm: pcre2-10.40-7.el9_8.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/appstream/os/Packages/p/pcre2-utf32-10.40-7.el9_8.aarch64.rpm
     repoid: ubi-9-for-aarch64-appstream-rpms
-    size: 192622
-    checksum: sha256:7a953c81ff18f05fba47b636e813b410e938db1f934c63b207b14bf0b52c4ad3
+    size: 196717
+    checksum: sha256:df598f06d5049e6b8acf7c4ed612674a42e923a9f3bb77e0eb81f2ada59a9009
     name: pcre2-utf32
-    evr: 10.40-6.el9
-    sourcerpm: pcre2-10.40-6.el9.src.rpm
+    evr: 10.40-7.el9_8
+    sourcerpm: pcre2-10.40-7.el9_8.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/appstream/os/Packages/p/perl-5.32.1-484.el9_8.aarch64.rpm
     repoid: ubi-9-for-aarch64-appstream-rpms
     size: 15097
@@ -2328,6 +2328,20 @@ arches:
     name: pam
     evr: 1.5.1-28.el9_8.1
     sourcerpm: pam-1.5.1-28.el9_8.1.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/baseos/os/Packages/p/pcre2-10.40-7.el9_8.aarch64.rpm
+    repoid: ubi-9-for-aarch64-baseos-rpms
+    size: 227991
+    checksum: sha256:40fd0cd92f4cf824fb5186128d360bdc0a8a9f70c9f820b8c0efda4afec75cc8
+    name: pcre2
+    evr: 10.40-7.el9_8
+    sourcerpm: pcre2-10.40-7.el9_8.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/baseos/os/Packages/p/pcre2-syntax-10.40-7.el9_8.noarch.rpm
+    repoid: ubi-9-for-aarch64-baseos-rpms
+    size: 150069
+    checksum: sha256:e7466a43ef2bfda2b1dc07e855b0db743d48b11c0bdc1402e1d2ea6fb23d33a3
+    name: pcre2-syntax
+    evr: 10.40-7.el9_8
+    sourcerpm: pcre2-10.40-7.el9_8.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/baseos/os/Packages/p/pkgconf-1.7.3-10.el9.aarch64.rpm
     repoid: ubi-9-for-aarch64-baseos-rpms
     size: 45196
@@ -2459,12 +2473,12 @@ arches:
     checksum: sha256:addc4c802c7f4fe34c2088913f5257e3304db4a5ab415550456001db9dcadcf0
     name: dwz
     evr: 0.16-1.el9
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/appstream/source/SRPMS/Packages/e/emacs-27.2-18.el9.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/appstream/source/SRPMS/Packages/e/emacs-27.2-18.el9_8.2.src.rpm
     repoid: ubi-9-for-aarch64-appstream-source-rpms
-    size: 44829188
-    checksum: sha256:48e2c8f48ac642e1cc5d7b3c2687486a173ba613979204961ff14256fc69dfd7
+    size: 44842197
+    checksum: sha256:5fd2c9aab65e2684e6252b148f6fd50cd321ce840b968e75e3e321ef4fbfd635
     name: emacs
-    evr: 1:27.2-18.el9
+    evr: 1:27.2-18.el9_8.2
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/appstream/source/SRPMS/Packages/g/ghc-srpm-macros-1.5.0-6.el9.src.rpm
     repoid: ubi-9-for-aarch64-appstream-source-rpms
     size: 10180
@@ -3551,12 +3565,12 @@ arches:
     checksum: sha256:fe61734fdb226915dff402bcd1ad2002e0fd7a4dad9042af65688804f428b30b
     name: pam
     evr: 1.5.1-28.el9_8.1
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/baseos/source/SRPMS/Packages/p/pcre2-10.40-6.el9.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/baseos/source/SRPMS/Packages/p/pcre2-10.40-7.el9_8.src.rpm
     repoid: ubi-9-for-aarch64-baseos-source-rpms
-    size: 1789790
-    checksum: sha256:a570f7192be555222aa3704882b9199fb013a84ad4d7dcf40a93d8de2ecf6e0a
+    size: 1805958
+    checksum: sha256:43c40093332890a77f7d7c573a1b540867319bbcaaec5a6dfd73101765dc6ea0
     name: pcre2
-    evr: 10.40-6.el9
+    evr: 10.40-7.el9_8
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/baseos/source/SRPMS/Packages/p/pkgconf-1.7.3-10.el9.src.rpm
     repoid: ubi-9-for-aarch64-baseos-source-rpms
     size: 310904
@@ -3676,13 +3690,13 @@ arches:
     name: efi-srpm-macros
     evr: 6-4.el9
     sourcerpm: efi-rpm-macros-6-4.el9.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/appstream/os/Packages/e/emacs-filesystem-27.2-18.el9.noarch.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/appstream/os/Packages/e/emacs-filesystem-27.2-18.el9_8.2.noarch.rpm
     repoid: ubi-9-for-ppc64le-appstream-rpms
-    size: 9495
-    checksum: sha256:49d7b88a05a72c15b78191a987e6def04fda8e2e4ff75711f715d0c0ecadc60f
+    size: 14714
+    checksum: sha256:9fa83444f3dcc5a0e59220b864b39aa2eaccf084cf3190e03ba15cf03da3102a
     name: emacs-filesystem
-    evr: 1:27.2-18.el9
-    sourcerpm: emacs-27.2-18.el9.src.rpm
+    evr: 1:27.2-18.el9_8.2
+    sourcerpm: emacs-27.2-18.el9_8.2.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/appstream/os/Packages/f/fonts-srpm-macros-2.0.5-7.el9.1.noarch.rpm
     repoid: ubi-9-for-ppc64le-appstream-rpms
     size: 30140
@@ -6082,12 +6096,12 @@ arches:
     checksum: sha256:addc4c802c7f4fe34c2088913f5257e3304db4a5ab415550456001db9dcadcf0
     name: dwz
     evr: 0.16-1.el9
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/appstream/source/SRPMS/Packages/e/emacs-27.2-18.el9.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/appstream/source/SRPMS/Packages/e/emacs-27.2-18.el9_8.2.src.rpm
     repoid: ubi-9-for-ppc64le-appstream-source-rpms
-    size: 44829188
-    checksum: sha256:48e2c8f48ac642e1cc5d7b3c2687486a173ba613979204961ff14256fc69dfd7
+    size: 44842197
+    checksum: sha256:5fd2c9aab65e2684e6252b148f6fd50cd321ce840b968e75e3e321ef4fbfd635
     name: emacs
-    evr: 1:27.2-18.el9
+    evr: 1:27.2-18.el9_8.2
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/appstream/source/SRPMS/Packages/g/ghc-srpm-macros-1.5.0-6.el9.src.rpm
     repoid: ubi-9-for-ppc64le-appstream-source-rpms
     size: 10180
@@ -7305,13 +7319,13 @@ arches:
     name: efi-srpm-macros
     evr: 6-4.el9
     sourcerpm: efi-rpm-macros-6-4.el9.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/appstream/os/Packages/e/emacs-filesystem-27.2-18.el9.noarch.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/appstream/os/Packages/e/emacs-filesystem-27.2-18.el9_8.2.noarch.rpm
     repoid: ubi-9-for-s390x-appstream-rpms
-    size: 9495
-    checksum: sha256:49d7b88a05a72c15b78191a987e6def04fda8e2e4ff75711f715d0c0ecadc60f
+    size: 14714
+    checksum: sha256:9fa83444f3dcc5a0e59220b864b39aa2eaccf084cf3190e03ba15cf03da3102a
     name: emacs-filesystem
-    evr: 1:27.2-18.el9
-    sourcerpm: emacs-27.2-18.el9.src.rpm
+    evr: 1:27.2-18.el9_8.2
+    sourcerpm: emacs-27.2-18.el9_8.2.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/appstream/os/Packages/f/fonts-srpm-macros-2.0.5-7.el9.1.noarch.rpm
     repoid: ubi-9-for-s390x-appstream-rpms
     size: 30140
@@ -7368,13 +7382,13 @@ arches:
     name: go-srpm-macros
     evr: 3.8.1-1.el9
     sourcerpm: go-rpm-macros-3.8.1-1.el9.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/appstream/os/Packages/k/kernel-headers-5.14.0-687.56.1.el9_8.s390x.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/appstream/os/Packages/k/kernel-headers-5.14.0-687.57.1.el9_8.s390x.rpm
     repoid: ubi-9-for-s390x-appstream-rpms
-    size: 2968289
-    checksum: sha256:ef1491414e210b18355701a93a707e81baaf5a0aa3b1076cd4aed38d84d5f5a0
+    size: 2969965
+    checksum: sha256:33a6f1dfc82b4e4487e3a00df7f49d05a07644da11e9f3ccbf32aca3453837fa
     name: kernel-headers
-    evr: 5.14.0-687.56.1.el9_8
-    sourcerpm: kernel-5.14.0-687.56.1.el9_8.src.rpm
+    evr: 5.14.0-687.57.1.el9_8
+    sourcerpm: kernel-5.14.0-687.57.1.el9_8.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/appstream/os/Packages/k/kernel-srpm-macros-1.0-14.el9.noarch.rpm
     repoid: ubi-9-for-s390x-appstream-rpms
     size: 14098
@@ -7543,27 +7557,27 @@ arches:
     name: openssl-devel
     evr: 1:3.5.8-2.el9_8
     sourcerpm: openssl-3.5.8-2.el9_8.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/appstream/os/Packages/p/pcre2-devel-10.40-6.el9.s390x.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/appstream/os/Packages/p/pcre2-devel-10.40-7.el9_8.s390x.rpm
     repoid: ubi-9-for-s390x-appstream-rpms
-    size: 528585
-    checksum: sha256:fe8e92c82f3f3dfa449505185e8ca242710170e8de1bf2d195513b14801a74e0
+    size: 530653
+    checksum: sha256:1aec5705224299fc6db35c206f93ad0945eda716198b0723a48fbd5550ea2f16
     name: pcre2-devel
-    evr: 10.40-6.el9
-    sourcerpm: pcre2-10.40-6.el9.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/appstream/os/Packages/p/pcre2-utf16-10.40-6.el9.s390x.rpm
+    evr: 10.40-7.el9_8
+    sourcerpm: pcre2-10.40-7.el9_8.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/appstream/os/Packages/p/pcre2-utf16-10.40-7.el9_8.s390x.rpm
     repoid: ubi-9-for-s390x-appstream-rpms
-    size: 207477
-    checksum: sha256:2c110b29a9444e443c0700c543af47f38114ff7ca5d41363915d54fe991b13e6
+    size: 211619
+    checksum: sha256:0b04a79fafb30593f556d98757291e8b6570ad96a669a03a88bc9c5df1b0f925
     name: pcre2-utf16
-    evr: 10.40-6.el9
-    sourcerpm: pcre2-10.40-6.el9.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/appstream/os/Packages/p/pcre2-utf32-10.40-6.el9.s390x.rpm
+    evr: 10.40-7.el9_8
+    sourcerpm: pcre2-10.40-7.el9_8.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/appstream/os/Packages/p/pcre2-utf32-10.40-7.el9_8.s390x.rpm
     repoid: ubi-9-for-s390x-appstream-rpms
-    size: 195777
-    checksum: sha256:d5814c3428fa5978362e0ba8fffb6d2ce4b1ce609b6e95b3d2227e143bf72526
+    size: 199624
+    checksum: sha256:5c6e650d538d7e3ab40d80281db53c1ff10ec742567423e1ab0a3a01d8b722e0
     name: pcre2-utf32
-    evr: 10.40-6.el9
-    sourcerpm: pcre2-10.40-6.el9.src.rpm
+    evr: 10.40-7.el9_8
+    sourcerpm: pcre2-10.40-7.el9_8.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/appstream/os/Packages/p/perl-5.32.1-484.el9_8.s390x.rpm
     repoid: ubi-9-for-s390x-appstream-rpms
     size: 15113
@@ -9580,6 +9594,20 @@ arches:
     name: pam
     evr: 1.5.1-28.el9_8.1
     sourcerpm: pam-1.5.1-28.el9_8.1.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/baseos/os/Packages/p/pcre2-10.40-7.el9_8.s390x.rpm
+    repoid: ubi-9-for-s390x-baseos-rpms
+    size: 227201
+    checksum: sha256:fee820347bd080be9dabf5dc7ce23a1d354240703f2665c5791607fcf2b67aec
+    name: pcre2
+    evr: 10.40-7.el9_8
+    sourcerpm: pcre2-10.40-7.el9_8.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/baseos/os/Packages/p/pcre2-syntax-10.40-7.el9_8.noarch.rpm
+    repoid: ubi-9-for-s390x-baseos-rpms
+    size: 150069
+    checksum: sha256:e7466a43ef2bfda2b1dc07e855b0db743d48b11c0bdc1402e1d2ea6fb23d33a3
+    name: pcre2-syntax
+    evr: 10.40-7.el9_8
+    sourcerpm: pcre2-10.40-7.el9_8.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/baseos/os/Packages/p/pkgconf-1.7.3-10.el9.s390x.rpm
     repoid: ubi-9-for-s390x-baseos-rpms
     size: 45258
@@ -9711,12 +9739,12 @@ arches:
     checksum: sha256:addc4c802c7f4fe34c2088913f5257e3304db4a5ab415550456001db9dcadcf0
     name: dwz
     evr: 0.16-1.el9
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/appstream/source/SRPMS/Packages/e/emacs-27.2-18.el9.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/appstream/source/SRPMS/Packages/e/emacs-27.2-18.el9_8.2.src.rpm
     repoid: ubi-9-for-s390x-appstream-source-rpms
-    size: 44829188
-    checksum: sha256:48e2c8f48ac642e1cc5d7b3c2687486a173ba613979204961ff14256fc69dfd7
+    size: 44842197
+    checksum: sha256:5fd2c9aab65e2684e6252b148f6fd50cd321ce840b968e75e3e321ef4fbfd635
     name: emacs
-    evr: 1:27.2-18.el9
+    evr: 1:27.2-18.el9_8.2
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/appstream/source/SRPMS/Packages/g/ghc-srpm-macros-1.5.0-6.el9.src.rpm
     repoid: ubi-9-for-s390x-appstream-source-rpms
     size: 10180
@@ -10803,12 +10831,12 @@ arches:
     checksum: sha256:fe61734fdb226915dff402bcd1ad2002e0fd7a4dad9042af65688804f428b30b
     name: pam
     evr: 1.5.1-28.el9_8.1
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/baseos/source/SRPMS/Packages/p/pcre2-10.40-6.el9.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/baseos/source/SRPMS/Packages/p/pcre2-10.40-7.el9_8.src.rpm
     repoid: ubi-9-for-s390x-baseos-source-rpms
-    size: 1789790
-    checksum: sha256:a570f7192be555222aa3704882b9199fb013a84ad4d7dcf40a93d8de2ecf6e0a
+    size: 1805958
+    checksum: sha256:43c40093332890a77f7d7c573a1b540867319bbcaaec5a6dfd73101765dc6ea0
     name: pcre2
-    evr: 10.40-6.el9
+    evr: 10.40-7.el9_8
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/baseos/source/SRPMS/Packages/p/pkgconf-1.7.3-10.el9.src.rpm
     repoid: ubi-9-for-s390x-baseos-source-rpms
     size: 310904
@@ -10928,13 +10956,13 @@ arches:
     name: efi-srpm-macros
     evr: 6-4.el9
     sourcerpm: efi-rpm-macros-6-4.el9.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/appstream/os/Packages/e/emacs-filesystem-27.2-18.el9.noarch.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/appstream/os/Packages/e/emacs-filesystem-27.2-18.el9_8.2.noarch.rpm
     repoid: ubi-9-for-x86_64-appstream-rpms
-    size: 9495
-    checksum: sha256:49d7b88a05a72c15b78191a987e6def04fda8e2e4ff75711f715d0c0ecadc60f
+    size: 14714
+    checksum: sha256:9fa83444f3dcc5a0e59220b864b39aa2eaccf084cf3190e03ba15cf03da3102a
     name: emacs-filesystem
-    evr: 1:27.2-18.el9
-    sourcerpm: emacs-27.2-18.el9.src.rpm
+    evr: 1:27.2-18.el9_8.2
+    sourcerpm: emacs-27.2-18.el9_8.2.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/appstream/os/Packages/f/fonts-srpm-macros-2.0.5-7.el9.1.noarch.rpm
     repoid: ubi-9-for-x86_64-appstream-rpms
     size: 30140
@@ -13320,12 +13348,12 @@ arches:
     checksum: sha256:addc4c802c7f4fe34c2088913f5257e3304db4a5ab415550456001db9dcadcf0
     name: dwz
     evr: 0.16-1.el9
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/appstream/source/SRPMS/Packages/e/emacs-27.2-18.el9.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/appstream/source/SRPMS/Packages/e/emacs-27.2-18.el9_8.2.src.rpm
     repoid: ubi-9-for-x86_64-appstream-source-rpms
-    size: 44829188
-    checksum: sha256:48e2c8f48ac642e1cc5d7b3c2687486a173ba613979204961ff14256fc69dfd7
+    size: 44842197
+    checksum: sha256:5fd2c9aab65e2684e6252b148f6fd50cd321ce840b968e75e3e321ef4fbfd635
     name: emacs
-    evr: 1:27.2-18.el9
+    evr: 1:27.2-18.el9_8.2
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/appstream/source/SRPMS/Packages/g/ghc-srpm-macros-1.5.0-6.el9.src.rpm
     repoid: ubi-9-for-x86_64-appstream-source-rpms
     size: 10180

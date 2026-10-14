@@ -1,5 +1,5 @@
 # Build the manager binary
-FROM registry.access.redhat.com/ubi9/go-toolset@sha256:6f246e8913d082df463b62a74c72f0d2b410583e1b2ac48add39cd7ede59ce62 AS builder
+FROM registry.access.redhat.com/ubi9/go-toolset@sha256:8648cd4d48e09e8cef8ad031aabc34953c264990697fe9535b9c3392f83c86b0 AS builder
 ENV PATH="$PATH:/opt/app-root/src/go/bin"
 
 # These built-in args are defined in the global scope, and are not automatically accessible within build stages or RUN commands.
@@ -21,7 +21,7 @@ RUN --mount=type=cache,target=/go/pkg/mod \
     CGO_ENABLED=1 GOOS=${TARGETOS} GOARCH=${TARGETARCH} GOFLAGS=-mod=readonly GOEXPERIMENT=strictfipsruntime  go build -tags strictfipsruntime -a -o manager ./cmd/kserve-module
 
 # Runtime
-FROM registry.redhat.io/ubi9/ubi-minimal-pqc@sha256:d34666200b64d5a183c867487fd2f48ee8547eb18134e5647099970e26f08af9
+FROM registry.redhat.io/ubi9/ubi-minimal-pqc@sha256:db10c80537d786068c7c911d7ef6ea103315d0615fa4b39b5946f7976563a8d7
 RUN microdnf install -y shadow-utils && \
     microdnf clean all && \
     useradd kserve -m -u 1000 && \

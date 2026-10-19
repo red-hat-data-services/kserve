@@ -1544,13 +1544,13 @@ arches:
     name: perl-Time-Piece
     evr: 1.3401-484.el9_8
     sourcerpm: perl-5.32.1-484.el9_8.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/appstream/os/Packages/p/perl-URI-5.09-3.el9.noarch.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/appstream/os/Packages/p/perl-URI-5.09-3.el9_8.1.noarch.rpm
     repoid: ubi-9-for-aarch64-appstream-rpms
-    size: 128279
-    checksum: sha256:1635b7d818e4f70445f7207f13e058c63c5d1f5aa081cfd2583912ae45f8e1bd
+    size: 130351
+    checksum: sha256:5dc2921a96c8dac9acbb3b2c36a45cf71c6c9bc81b12b01d08488692f7ff5bad
     name: perl-URI
-    evr: 5.09-3.el9
-    sourcerpm: perl-URI-5.09-3.el9.src.rpm
+    evr: 5.09-3.el9_8.1
+    sourcerpm: perl-URI-5.09-3.el9_8.1.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/appstream/os/Packages/p/perl-Unicode-Collate-1.29-4.el9.aarch64.rpm
     repoid: ubi-9-for-aarch64-appstream-rpms
     size: 761716
@@ -3193,12 +3193,12 @@ arches:
     checksum: sha256:f9d3745fb10235d5097536f81976f8234921de7a5c4b5cd599aa2b790f4ad18b
     name: perl-Time-Local
     evr: 2:1.300-7.el9
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/appstream/source/SRPMS/Packages/p/perl-URI-5.09-3.el9.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/appstream/source/SRPMS/Packages/p/perl-URI-5.09-3.el9_8.1.src.rpm
     repoid: ubi-9-for-aarch64-appstream-source-rpms
-    size: 123780
-    checksum: sha256:20fa38e20285da9712b42fdb9a5dffbc72644c4d608db827e2a10e9d8055dce2
+    size: 130497
+    checksum: sha256:4831e3d3b3633960ef2fd74aae4af5afd02460b9fa4ee497d1fb79f051c26cf7
     name: perl-URI
-    evr: 5.09-3.el9
+    evr: 5.09-3.el9_8.1
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/appstream/source/SRPMS/Packages/p/perl-Unicode-Collate-1.29-4.el9.src.rpm
     repoid: ubi-9-for-aarch64-appstream-source-rpms
     size: 915935

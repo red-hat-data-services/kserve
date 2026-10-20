@@ -60,13 +60,13 @@ arches:
     name: efi-srpm-macros
     evr: 6-4.el9
     sourcerpm: efi-rpm-macros-6-4.el9.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/appstream/os/Packages/e/emacs-filesystem-27.2-18.el9_8.2.noarch.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/appstream/os/Packages/e/emacs-filesystem-27.2-18.el9_8.3.noarch.rpm
     repoid: ubi-9-for-aarch64-appstream-rpms
-    size: 14714
-    checksum: sha256:9fa83444f3dcc5a0e59220b864b39aa2eaccf084cf3190e03ba15cf03da3102a
+    size: 14873
+    checksum: sha256:1639502a970d4c49a7f3f8e56009f49a3476644d21719472c83b50d05784178e
     name: emacs-filesystem
-    evr: 1:27.2-18.el9_8.2
-    sourcerpm: emacs-27.2-18.el9_8.2.src.rpm
+    evr: 1:27.2-18.el9_8.3
+    sourcerpm: emacs-27.2-18.el9_8.3.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/appstream/os/Packages/f/fonts-srpm-macros-2.0.5-7.el9.1.noarch.rpm
     repoid: ubi-9-for-aarch64-appstream-rpms
     size: 30140
@@ -2473,12 +2473,12 @@ arches:
     checksum: sha256:addc4c802c7f4fe34c2088913f5257e3304db4a5ab415550456001db9dcadcf0
     name: dwz
     evr: 0.16-1.el9
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/appstream/source/SRPMS/Packages/e/emacs-27.2-18.el9_8.2.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/appstream/source/SRPMS/Packages/e/emacs-27.2-18.el9_8.3.src.rpm
     repoid: ubi-9-for-aarch64-appstream-source-rpms
-    size: 44842197
-    checksum: sha256:5fd2c9aab65e2684e6252b148f6fd50cd321ce840b968e75e3e321ef4fbfd635
+    size: 44843497
+    checksum: sha256:984ddd469cbd7b460424bd2d054afc0d5de6d1afb6783652e803388888bd25c7
     name: emacs
-    evr: 1:27.2-18.el9_8.2
+    evr: 1:27.2-18.el9_8.3
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/appstream/source/SRPMS/Packages/g/ghc-srpm-macros-1.5.0-6.el9.src.rpm
     repoid: ubi-9-for-aarch64-appstream-source-rpms
     size: 10180
@@ -3690,13 +3690,13 @@ arches:
     name: efi-srpm-macros
     evr: 6-4.el9
     sourcerpm: efi-rpm-macros-6-4.el9.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/appstream/os/Packages/e/emacs-filesystem-27.2-18.el9_8.2.noarch.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/appstream/os/Packages/e/emacs-filesystem-27.2-18.el9_8.3.noarch.rpm
     repoid: ubi-9-for-ppc64le-appstream-rpms
-    size: 14714
-    checksum: sha256:9fa83444f3dcc5a0e59220b864b39aa2eaccf084cf3190e03ba15cf03da3102a
+    size: 14873
+    checksum: sha256:1639502a970d4c49a7f3f8e56009f49a3476644d21719472c83b50d05784178e
     name: emacs-filesystem
-    evr: 1:27.2-18.el9_8.2
-    sourcerpm: emacs-27.2-18.el9_8.2.src.rpm
+    evr: 1:27.2-18.el9_8.3
+    sourcerpm: emacs-27.2-18.el9_8.3.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/appstream/os/Packages/f/fonts-srpm-macros-2.0.5-7.el9.1.noarch.rpm
     repoid: ubi-9-for-ppc64le-appstream-rpms
     size: 30140
@@ -5174,13 +5174,13 @@ arches:
     name: perl-Time-Piece
     evr: 1.3401-484.el9_8
     sourcerpm: perl-5.32.1-484.el9_8.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/appstream/os/Packages/p/perl-URI-5.09-3.el9.noarch.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/appstream/os/Packages/p/perl-URI-5.09-3.el9_8.1.noarch.rpm
     repoid: ubi-9-for-ppc64le-appstream-rpms
-    size: 128279
-    checksum: sha256:1635b7d818e4f70445f7207f13e058c63c5d1f5aa081cfd2583912ae45f8e1bd
+    size: 130351
+    checksum: sha256:5dc2921a96c8dac9acbb3b2c36a45cf71c6c9bc81b12b01d08488692f7ff5bad
     name: perl-URI
-    evr: 5.09-3.el9
-    sourcerpm: perl-URI-5.09-3.el9.src.rpm
+    evr: 5.09-3.el9_8.1
+    sourcerpm: perl-URI-5.09-3.el9_8.1.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/appstream/os/Packages/p/perl-Unicode-Collate-1.29-4.el9.ppc64le.rpm
     repoid: ubi-9-for-ppc64le-appstream-rpms
     size: 761686
@@ -6110,12 +6110,12 @@ arches:
     checksum: sha256:addc4c802c7f4fe34c2088913f5257e3304db4a5ab415550456001db9dcadcf0
     name: dwz
     evr: 0.16-1.el9
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/appstream/source/SRPMS/Packages/e/emacs-27.2-18.el9_8.2.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/appstream/source/SRPMS/Packages/e/emacs-27.2-18.el9_8.3.src.rpm
     repoid: ubi-9-for-ppc64le-appstream-source-rpms
-    size: 44842197
-    checksum: sha256:5fd2c9aab65e2684e6252b148f6fd50cd321ce840b968e75e3e321ef4fbfd635
+    size: 44843497
+    checksum: sha256:984ddd469cbd7b460424bd2d054afc0d5de6d1afb6783652e803388888bd25c7
     name: emacs
-    evr: 1:27.2-18.el9_8.2
+    evr: 1:27.2-18.el9_8.3
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/appstream/source/SRPMS/Packages/g/ghc-srpm-macros-1.5.0-6.el9.src.rpm
     repoid: ubi-9-for-ppc64le-appstream-source-rpms
     size: 10180
@@ -6830,12 +6830,12 @@ arches:
     checksum: sha256:f9d3745fb10235d5097536f81976f8234921de7a5c4b5cd599aa2b790f4ad18b
     name: perl-Time-Local
     evr: 2:1.300-7.el9
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/appstream/source/SRPMS/Packages/p/perl-URI-5.09-3.el9.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/appstream/source/SRPMS/Packages/p/perl-URI-5.09-3.el9_8.1.src.rpm
     repoid: ubi-9-for-ppc64le-appstream-source-rpms
-    size: 123780
-    checksum: sha256:20fa38e20285da9712b42fdb9a5dffbc72644c4d608db827e2a10e9d8055dce2
+    size: 130497
+    checksum: sha256:4831e3d3b3633960ef2fd74aae4af5afd02460b9fa4ee497d1fb79f051c26cf7
     name: perl-URI
-    evr: 5.09-3.el9
+    evr: 5.09-3.el9_8.1
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/appstream/source/SRPMS/Packages/p/perl-Unicode-Collate-1.29-4.el9.src.rpm
     repoid: ubi-9-for-ppc64le-appstream-source-rpms
     size: 915935
@@ -7333,13 +7333,13 @@ arches:
     name: efi-srpm-macros
     evr: 6-4.el9
     sourcerpm: efi-rpm-macros-6-4.el9.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/appstream/os/Packages/e/emacs-filesystem-27.2-18.el9_8.2.noarch.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/appstream/os/Packages/e/emacs-filesystem-27.2-18.el9_8.3.noarch.rpm
     repoid: ubi-9-for-s390x-appstream-rpms
-    size: 14714
-    checksum: sha256:9fa83444f3dcc5a0e59220b864b39aa2eaccf084cf3190e03ba15cf03da3102a
+    size: 14873
+    checksum: sha256:1639502a970d4c49a7f3f8e56009f49a3476644d21719472c83b50d05784178e
     name: emacs-filesystem
-    evr: 1:27.2-18.el9_8.2
-    sourcerpm: emacs-27.2-18.el9_8.2.src.rpm
+    evr: 1:27.2-18.el9_8.3
+    sourcerpm: emacs-27.2-18.el9_8.3.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/appstream/os/Packages/f/fonts-srpm-macros-2.0.5-7.el9.1.noarch.rpm
     repoid: ubi-9-for-s390x-appstream-rpms
     size: 30140
@@ -8824,13 +8824,13 @@ arches:
     name: perl-Time-Piece
     evr: 1.3401-484.el9_8
     sourcerpm: perl-5.32.1-484.el9_8.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/appstream/os/Packages/p/perl-URI-5.09-3.el9.noarch.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/appstream/os/Packages/p/perl-URI-5.09-3.el9_8.1.noarch.rpm
     repoid: ubi-9-for-s390x-appstream-rpms
-    size: 128279
-    checksum: sha256:1635b7d818e4f70445f7207f13e058c63c5d1f5aa081cfd2583912ae45f8e1bd
+    size: 130351
+    checksum: sha256:5dc2921a96c8dac9acbb3b2c36a45cf71c6c9bc81b12b01d08488692f7ff5bad
     name: perl-URI
-    evr: 5.09-3.el9
-    sourcerpm: perl-URI-5.09-3.el9.src.rpm
+    evr: 5.09-3.el9_8.1
+    sourcerpm: perl-URI-5.09-3.el9_8.1.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/appstream/os/Packages/p/perl-Unicode-Collate-1.29-4.el9.s390x.rpm
     repoid: ubi-9-for-s390x-appstream-rpms
     size: 785136
@@ -9753,12 +9753,12 @@ arches:
     checksum: sha256:addc4c802c7f4fe34c2088913f5257e3304db4a5ab415550456001db9dcadcf0
     name: dwz
     evr: 0.16-1.el9
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/appstream/source/SRPMS/Packages/e/emacs-27.2-18.el9_8.2.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/appstream/source/SRPMS/Packages/e/emacs-27.2-18.el9_8.3.src.rpm
     repoid: ubi-9-for-s390x-appstream-source-rpms
-    size: 44842197
-    checksum: sha256:5fd2c9aab65e2684e6252b148f6fd50cd321ce840b968e75e3e321ef4fbfd635
+    size: 44843497
+    checksum: sha256:984ddd469cbd7b460424bd2d054afc0d5de6d1afb6783652e803388888bd25c7
     name: emacs
-    evr: 1:27.2-18.el9_8.2
+    evr: 1:27.2-18.el9_8.3
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/appstream/source/SRPMS/Packages/g/ghc-srpm-macros-1.5.0-6.el9.src.rpm
     repoid: ubi-9-for-s390x-appstream-source-rpms
     size: 10180
@@ -10473,12 +10473,12 @@ arches:
     checksum: sha256:f9d3745fb10235d5097536f81976f8234921de7a5c4b5cd599aa2b790f4ad18b
     name: perl-Time-Local
     evr: 2:1.300-7.el9
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/appstream/source/SRPMS/Packages/p/perl-URI-5.09-3.el9.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/appstream/source/SRPMS/Packages/p/perl-URI-5.09-3.el9_8.1.src.rpm
     repoid: ubi-9-for-s390x-appstream-source-rpms
-    size: 123780
-    checksum: sha256:20fa38e20285da9712b42fdb9a5dffbc72644c4d608db827e2a10e9d8055dce2
+    size: 130497
+    checksum: sha256:4831e3d3b3633960ef2fd74aae4af5afd02460b9fa4ee497d1fb79f051c26cf7
     name: perl-URI
-    evr: 5.09-3.el9
+    evr: 5.09-3.el9_8.1
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/appstream/source/SRPMS/Packages/p/perl-Unicode-Collate-1.29-4.el9.src.rpm
     repoid: ubi-9-for-s390x-appstream-source-rpms
     size: 915935
@@ -10970,13 +10970,13 @@ arches:
     name: efi-srpm-macros
     evr: 6-4.el9
     sourcerpm: efi-rpm-macros-6-4.el9.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/appstream/os/Packages/e/emacs-filesystem-27.2-18.el9_8.2.noarch.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/appstream/os/Packages/e/emacs-filesystem-27.2-18.el9_8.3.noarch.rpm
     repoid: ubi-9-for-x86_64-appstream-rpms
-    size: 14714
-    checksum: sha256:9fa83444f3dcc5a0e59220b864b39aa2eaccf084cf3190e03ba15cf03da3102a
+    size: 14873
+    checksum: sha256:1639502a970d4c49a7f3f8e56009f49a3476644d21719472c83b50d05784178e
     name: emacs-filesystem
-    evr: 1:27.2-18.el9_8.2
-    sourcerpm: emacs-27.2-18.el9_8.2.src.rpm
+    evr: 1:27.2-18.el9_8.3
+    sourcerpm: emacs-27.2-18.el9_8.3.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/appstream/os/Packages/f/fonts-srpm-macros-2.0.5-7.el9.1.noarch.rpm
     repoid: ubi-9-for-x86_64-appstream-rpms
     size: 30140
@@ -12454,13 +12454,13 @@ arches:
     name: perl-Time-Piece
     evr: 1.3401-484.el9_8
     sourcerpm: perl-5.32.1-484.el9_8.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/appstream/os/Packages/p/perl-URI-5.09-3.el9.noarch.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/appstream/os/Packages/p/perl-URI-5.09-3.el9_8.1.noarch.rpm
     repoid: ubi-9-for-x86_64-appstream-rpms
-    size: 128279
-    checksum: sha256:1635b7d818e4f70445f7207f13e058c63c5d1f5aa081cfd2583912ae45f8e1bd
+    size: 130351
+    checksum: sha256:5dc2921a96c8dac9acbb3b2c36a45cf71c6c9bc81b12b01d08488692f7ff5bad
     name: perl-URI
-    evr: 5.09-3.el9
-    sourcerpm: perl-URI-5.09-3.el9.src.rpm
+    evr: 5.09-3.el9_8.1
+    sourcerpm: perl-URI-5.09-3.el9_8.1.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/appstream/os/Packages/p/perl-Unicode-Collate-1.29-4.el9.x86_64.rpm
     repoid: ubi-9-for-x86_64-appstream-rpms
     size: 782467
@@ -13376,12 +13376,12 @@ arches:
     checksum: sha256:addc4c802c7f4fe34c2088913f5257e3304db4a5ab415550456001db9dcadcf0
     name: dwz
     evr: 0.16-1.el9
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/appstream/source/SRPMS/Packages/e/emacs-27.2-18.el9_8.2.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/appstream/source/SRPMS/Packages/e/emacs-27.2-18.el9_8.3.src.rpm
     repoid: ubi-9-for-x86_64-appstream-source-rpms
-    size: 44842197
-    checksum: sha256:5fd2c9aab65e2684e6252b148f6fd50cd321ce840b968e75e3e321ef4fbfd635
+    size: 44843497
+    checksum: sha256:984ddd469cbd7b460424bd2d054afc0d5de6d1afb6783652e803388888bd25c7
     name: emacs
-    evr: 1:27.2-18.el9_8.2
+    evr: 1:27.2-18.el9_8.3
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/appstream/source/SRPMS/Packages/g/ghc-srpm-macros-1.5.0-6.el9.src.rpm
     repoid: ubi-9-for-x86_64-appstream-source-rpms
     size: 10180
@@ -14096,12 +14096,12 @@ arches:
     checksum: sha256:f9d3745fb10235d5097536f81976f8234921de7a5c4b5cd599aa2b790f4ad18b
     name: perl-Time-Local
     evr: 2:1.300-7.el9
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/appstream/source/SRPMS/Packages/p/perl-URI-5.09-3.el9.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/appstream/source/SRPMS/Packages/p/perl-URI-5.09-3.el9_8.1.src.rpm
     repoid: ubi-9-for-x86_64-appstream-source-rpms
-    size: 123780
-    checksum: sha256:20fa38e20285da9712b42fdb9a5dffbc72644c4d608db827e2a10e9d8055dce2
+    size: 130497
+    checksum: sha256:4831e3d3b3633960ef2fd74aae4af5afd02460b9fa4ee497d1fb79f051c26cf7
     name: perl-URI
-    evr: 5.09-3.el9
+    evr: 5.09-3.el9_8.1
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/appstream/source/SRPMS/Packages/p/perl-Unicode-Collate-1.29-4.el9.src.rpm
     repoid: ubi-9-for-x86_64-appstream-source-rpms
     size: 915935

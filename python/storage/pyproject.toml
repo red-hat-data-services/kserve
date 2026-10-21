@@ -24,11 +24,14 @@ dependencies = [
     "cryptography>=46.0.5", # CVE-2026-26007 cryptography Subgroup Attack Due to Missing Subgroup Validation for SECT Curves
     # CVE-2026-32597 PyJWT accepts unknown `crit` header extensions (RFC 7515 §4.1.11 MUST violation)
     # CVE-2026-48526 PyJWT authentication bypass via JWK accepted as HMAC secret
+    # CVE-2026-102267 PyJWT verification key substitution via unvalidated JWKS redirects
     # Pinning because it is a transitive dependency.
-    "pyjwt>=2.13.0",
+    "pyjwt>=2.14.0",
     # CVE-2025-66471 urllib3 Streaming API improperly handles highly compressed data
+    # CVE-2026-97687 urllib3 traffic interception via HTTPS proxy TLS configuration override
+    # CVE-2026-97689 urllib3 Denial of Service via unbounded memory allocation in chunk parser
     # Pinning because it is a transitive dependency.
-    "urllib3>=2.6.0",
+    "urllib3>=2.8.0",
     # CVE-2026-59885 / CVE-2026-30922 pyasn1 Denial of Service via crafted ASN.1 OBJECT IDENTIFIER
     # Pinning because it is a transitive dependency.
     "pyasn1>=0.6.4",

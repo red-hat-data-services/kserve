@@ -3,6 +3,8 @@ package kservemodule_test
 import (
 	"encoding/json"
 	"fmt"
+	"os"
+	"path/filepath"
 	"time"
 
 	. "github.com/onsi/ginkgo/v2"
@@ -11,16 +13,17 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	apiextensionsv1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
 	k8serr "k8s.io/apimachinery/pkg/api/errors"
+	apimeta "k8s.io/apimachinery/pkg/api/meta"
 	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/client-go/util/retry"
 	"k8s.io/utils/ptr"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	"github.com/opendatahub-io/odh-platform-utilities/api/common"
 	"github.com/opendatahub-io/odh-platform-utilities/pkg/cluster"
-	odhLabels "github.com/opendatahub-io/odh-platform-utilities/pkg/metadata/labels"
 
 	platformv1alpha1 "github.com/opendatahub-io/kserve-module/pkg/apis/v1alpha1"
 	"github.com/opendatahub-io/kserve-module/pkg/kservemodule"
@@ -35,6 +38,24 @@ var _ = Describe("KserveModule Reconciler", func() {
 		Expect(err).To(HaveOccurred())
 		Expect(k8serr.IsInvalid(err)).To(BeTrue())
 	})
+
+	DescribeTable("rejects invalid confidential disk-key references", func(ctx SpecContext, key string) {
+		cr := fixture.KserveCR()
+		cr.Spec.ConfidentialContainers = &platformv1alpha1.ConfidentialContainersConfig{LUKSResourceID: key}
+		err := testEnv.Client.Create(ctx, cr)
+		Expect(err).To(HaveOccurred())
+		Expect(k8serr.IsInvalid(err)).To(BeTrue())
+	},
+		Entry("missing KBS scheme", "not-a-kbs-reference"),
+		Entry("missing path segment", "kbs:///repository/type"),
+		Entry("empty path segment", "kbs:///repository//tag"),
+		Entry("extra path segment", "kbs:///repository/type/tag/extra"),
+		Entry("parent directory", "kbs:///repository/../tag"),
+		Entry("current directory", "kbs:///repository/./tag"),
+		Entry("whitespace", "kbs:///repository/type/a tag"),
+		Entry("query", "kbs:///repository/type/tag?query"),
+		Entry("fragment", "kbs:///repository/type/tag#fragment"),
+	)
 
 	It("sets error status when manifests are missing", func(ctx SpecContext) {
 		savedWorkDir := testEnv.Reconciler.WorkDir()
@@ -87,6 +108,66 @@ var _ = Describe("KserveModule Reconciler", func() {
 			cm := &corev1.ConfigMap{}
 			Expect(testEnv.Client.Get(ctx,
 				client.ObjectKey{Name: "inferenceservice-config", Namespace: "opendatahub"}, cm)).To(Succeed())
+		})
+
+		It("applies confidential settings from the Kserve API and restores defaults when removed", func(ctx SpecContext) {
+			key := client.ObjectKey{Name: "inferenceservice-config", Namespace: "opendatahub"}
+			for i, tc := range []struct {
+				config *platformv1alpha1.ConfidentialContainersConfig
+				key    string
+				init   string
+			}{
+				{
+					config: &platformv1alpha1.ConfidentialContainersConfig{
+						LUKSResourceID: "kbs:///customer/disk/key", InitData: "customer-initdata",
+					},
+					key: "kbs:///customer/disk/key", init: "customer-initdata",
+				},
+				{
+					config: &platformv1alpha1.ConfidentialContainersConfig{InitData: "updated-initdata"},
+					key:    "kbs:///default/kserve-luks-password/key", init: "updated-initdata",
+				},
+				{
+					config: &platformv1alpha1.ConfidentialContainersConfig{LUKSResourceID: "kbs:///customer/other/key"},
+					key:    "kbs:///customer/other/key",
+				},
+				{key: "kbs:///default/kserve-luks-password/key"},
+			} {
+				// Old ConfigMap edits are replaced by the API settings on reconciliation.
+				Expect(retry.RetryOnConflict(retry.DefaultRetry, func() error {
+					cm := &corev1.ConfigMap{}
+					if err := testEnv.Client.Get(ctx, key, cm); err != nil {
+						return err
+					}
+					cm.Data["confidentialBareMetal"] = "old-manual-configmap-edit"
+					return testEnv.Client.Update(ctx, cm)
+				})).To(Succeed())
+				tlsEnabled := i%2 == 0
+				Expect(retry.RetryOnConflict(retry.DefaultRetry, func() error {
+					if err := testEnv.Client.Get(ctx, client.ObjectKeyFromObject(cr), cr); err != nil {
+						return err
+					}
+					cr.Spec.ConfidentialContainers = tc.config
+					cr.Spec.EnableLLMInferenceServiceTLS = ptr.To(tlsEnabled)
+					return testEnv.Client.Update(ctx, cr)
+				})).To(Succeed())
+				Eventually(func(g Gomega) {
+					cm := &corev1.ConfigMap{}
+					g.Expect(testEnv.Client.Get(ctx, key, cm)).To(Succeed())
+					defaults := map[string]string{}
+					g.Expect(json.Unmarshal([]byte(cm.Data["confidentialBareMetal"]), &defaults)).To(Succeed())
+					g.Expect(defaults).To(Equal(map[string]string{"luksResourceId": tc.key, "initData": tc.init}))
+					ingress := map[string]any{}
+					g.Expect(json.Unmarshal([]byte(cm.Data["ingress"]), &ingress)).To(Succeed())
+					g.Expect(ingress["enableLLMInferenceServiceTLS"]).To(Equal(tlsEnabled))
+					g.Expect(testEnv.Client.Get(ctx, client.ObjectKeyFromObject(cr), cr)).To(Succeed())
+					if tc.config != nil {
+						g.Expect(cr.Spec.ConfidentialContainers).NotTo(BeNil())
+						g.Expect(cr.Spec.ConfidentialContainers.LUKSResourceID).To(Equal(tc.key))
+					}
+					g.Expect(cr.Status.ObservedGeneration).To(Equal(cr.Generation))
+				}).WithContext(ctx).Should(Succeed())
+			}
 		})
 
 		It("reports ready with all OCP deployments", func(ctx SpecContext) {
@@ -180,8 +261,8 @@ var _ = Describe("KserveModule Reconciler", func() {
 	})
 
 	// WVA is removed from the product in RHOAI 3.6 (RHAISTRAT-2756).
-	// isWVAEnabled always returns false. The WVA componentConfig is still
-	// registered so defaultCleanup tears down leftovers on 3.5→3.6 upgrade.
+	// isWVAEnabled always returns false. extraCleanup tears down leftovers
+	// on 3.5→3.6 upgrade; defaultCleanup cannot once the overlay is gone.
 	// These tests verify that Managed is ignored and leftovers are deleted.
 	Context("WVA always disabled (RHOAI 3.6 removal)", Ordered, func() {
 		var cr *platformv1alpha1.Kserve
@@ -239,35 +320,14 @@ var _ = Describe("KserveModule Reconciler", func() {
 				"WVA Deployment must not be created even when ManagementState is Managed (WVA removed in 3.6)")
 		})
 
-		It("deletes a leftover WVA Deployment via defaultCleanup on upgrade", func(ctx SpecContext) {
-			// Simulate a 3.5 leftover: manually create the WVA Deployment and the
-			// overlay CRD. defaultCleanup must delete the Deployment and skip the CRD.
-			leftover := &appsv1.Deployment{}
-			leftover.Name = wvaKey.Name
-			leftover.Namespace = wvaKey.Namespace
-			leftover.Labels = map[string]string{odhLabels.PlatformPartOf: kservemodule.KserveComponentName}
-			leftover.Spec.Selector = &metav1.LabelSelector{
-				MatchLabels: map[string]string{"control-plane": wvaKey.Name},
-			}
-			leftover.Spec.Template.Labels = map[string]string{"control-plane": wvaKey.Name}
-			leftover.Spec.Template.Spec.Containers = []corev1.Container{
-				{Name: "manager", Image: "ghcr.io/llm-d/llm-d-workload-variant-autoscaler:latest"},
-			}
-			Expect(testEnv.Client.Create(ctx, leftover)).To(Succeed())
-
+		It("skips leftover overlay CRDs in defaultCleanup", func(ctx SpecContext) {
 			crd := fixture.CreateCRDByName(ctx, testEnv.Client, wvaCRDKey.Name, "test.kserve.io", "v1",
 				apiextensionsv1.NamespaceScoped)
 			DeferCleanup(func(ctx SpecContext) {
 				Expect(client.IgnoreNotFound(testEnv.Client.Delete(ctx, crd))).To(Succeed())
 			})
 
-			triggerReconcile(ctx, cr, "wva-leftover-cleanup")
-
-			Eventually(func(g Gomega) {
-				err := testEnv.Client.Get(ctx, wvaKey, &appsv1.Deployment{})
-				g.Expect(k8serr.IsNotFound(err)).To(BeTrue(),
-					"Leftover WVA Deployment should be deleted by defaultCleanup on 3.5→3.6 upgrade")
-			}).WithContext(ctx).Should(Succeed())
+			triggerReconcile(ctx, cr, "wva-leftover-crd-preserved")
 
 			Expect(testEnv.Client.Get(ctx, wvaCRDKey, &apiextensionsv1.CustomResourceDefinition{})).To(Succeed(),
 				"defaultCleanup must skip CRDs so leftover WVA CRDs survive")
@@ -326,6 +386,118 @@ var _ = Describe("KserveModule Reconciler", func() {
 				g.Expect(testEnv.Client.Get(ctx, client.ObjectKeyFromObject(cr), cr)).To(Succeed())
 				cond := fixture.FindCondition(cr, kservemodule.ConditionWVAReady)
 				g.Expect(cond).To(BeNil(), "WVAReady condition should be cleared because WVA is always disabled in 3.6")
+			}).WithContext(ctx).Should(Succeed())
+		})
+	})
+
+	Context("WVA extraCleanup", Ordered, func() {
+		var cr *platformv1alpha1.Kserve
+		wvaKey := client.ObjectKey{Name: "workload-variant-autoscaler-controller-manager", Namespace: "opendatahub"}
+		vaCRDKey := client.ObjectKey{Name: "variantautoscalings.llmd.ai"}
+		vaKey := client.ObjectKey{Name: "leftover-va", Namespace: "opendatahub"}
+		cmKey := client.ObjectKey{Name: "inferenceservice-config", Namespace: "opendatahub"}
+
+		BeforeAll(func(ctx SpecContext) {
+			testEnv.Reconciler.Deployer = kservemodule.NewDeployer()
+
+			cr = fixture.KserveCR()
+			Expect(testEnv.Client.Create(ctx, cr)).To(Succeed())
+			DeferCleanup(func(ctx SpecContext) {
+				deleteAndWaitGone(ctx, cr)
+			})
+
+			Eventually(func(g Gomega) {
+				g.Expect(testEnv.Client.Get(ctx, client.ObjectKeyFromObject(cr), cr)).To(Succeed())
+				cond := fixture.FindCondition(cr, string(common.ConditionTypeProvisioningSucceeded))
+				g.Expect(cond).NotTo(BeNil())
+				g.Expect(cond.Status).To(Equal(metav1.ConditionTrue))
+			}).WithContext(ctx).Should(Succeed())
+		})
+
+		It("deletes a leftover WVA Deployment when the overlay is gone", func(ctx SpecContext) {
+			// Production 3.6 images no longer clone the WVA overlay. extraCleanup
+			// must still delete the 3.5 controller even without a renderable overlay
+			// and even when the leftover has no platform.opendatahub.io/part-of label.
+			overlay := filepath.Join(testEnv.Reconciler.WorkDir(), kservemodule.WVAComponentName)
+			Expect(os.RemoveAll(overlay)).To(Succeed())
+			DeferCleanup(func() {
+				fixture.WriteMinimalManifests(testEnv.Reconciler.WorkDir())
+			})
+
+			leftover := &appsv1.Deployment{}
+			leftover.Name = wvaKey.Name
+			leftover.Namespace = wvaKey.Namespace
+			leftover.Spec.Selector = &metav1.LabelSelector{
+				MatchLabels: map[string]string{"control-plane": wvaKey.Name},
+			}
+			leftover.Spec.Template.Labels = map[string]string{"control-plane": wvaKey.Name}
+			leftover.Spec.Template.Spec.Containers = []corev1.Container{
+				{Name: "manager", Image: "ghcr.io/llm-d/llm-d-workload-variant-autoscaler:latest"},
+			}
+			Expect(testEnv.Client.Create(ctx, leftover)).To(Succeed())
+
+			triggerReconcile(ctx, cr, "wva-leftover-deploy-no-overlay")
+
+			Eventually(func(g Gomega) {
+				err := testEnv.Client.Get(ctx, wvaKey, &appsv1.Deployment{})
+				g.Expect(k8serr.IsNotFound(err)).To(BeTrue(),
+					"Leftover WVA Deployment should be deleted by extraCleanup without an overlay")
+			}).WithContext(ctx).Should(Succeed())
+		})
+
+		It("deletes leftover VariantAutoscaling CRs/CRD and strips the ConfigMap key", func(ctx SpecContext) {
+			fixture.CreateCRD(ctx, testEnv.Client, "llmd.ai", "v1alpha1", "VariantAutoscaling",
+				apiextensionsv1.NamespaceScoped)
+
+			va := &unstructured.Unstructured{Object: map[string]any{
+				"apiVersion": "llmd.ai/v1alpha1",
+				"kind":       "VariantAutoscaling",
+				"metadata": map[string]any{
+					"name":      vaKey.Name,
+					"namespace": vaKey.Namespace,
+				},
+			}}
+			va.SetGroupVersionKind(schema.GroupVersionKind{
+				Group: "llmd.ai", Version: "v1alpha1", Kind: "VariantAutoscaling",
+			})
+			Expect(testEnv.Client.Create(ctx, va)).To(Succeed())
+
+			err := retry.RetryOnConflict(retry.DefaultRetry, func() error {
+				cm := &corev1.ConfigMap{}
+				if err := testEnv.Client.Get(ctx, cmKey, cm); err != nil {
+					return err
+				}
+				if cm.Data == nil {
+					cm.Data = map[string]string{}
+				}
+				cm.Data["autoscaling-wva-controller-config"] = `{"prometheus":{"url":"http://thanos"}}`
+				return testEnv.Client.Update(ctx, cm)
+			})
+			Expect(err).NotTo(HaveOccurred())
+
+			triggerReconcile(ctx, cr, "wva-extra-cleanup")
+
+			Eventually(func(g Gomega) {
+				got := &unstructured.Unstructured{}
+				got.SetGroupVersionKind(schema.GroupVersionKind{
+					Group: "llmd.ai", Version: "v1alpha1", Kind: "VariantAutoscaling",
+				})
+				err := testEnv.Client.Get(ctx, vaKey, got)
+				g.Expect(k8serr.IsNotFound(err) || apimeta.IsNoMatchError(err)).To(BeTrue(),
+					"leftover VariantAutoscaling CR should be deleted by extraCleanup")
+			}).WithContext(ctx).Should(Succeed())
+
+			Eventually(func(g Gomega) {
+				err := testEnv.Client.Get(ctx, vaCRDKey, &apiextensionsv1.CustomResourceDefinition{})
+				g.Expect(k8serr.IsNotFound(err)).To(BeTrue(),
+					"leftover VariantAutoscaling CRD should be deleted by extraCleanup")
+			}).WithContext(ctx).Should(Succeed())
+
+			Eventually(func(g Gomega) {
+				cm := &corev1.ConfigMap{}
+				g.Expect(testEnv.Client.Get(ctx, cmKey, cm)).To(Succeed())
+				g.Expect(cm.Data).NotTo(HaveKey("autoscaling-wva-controller-config"))
+				g.Expect(cm.Data).To(HaveKey("ingress"))
 			}).WithContext(ctx).Should(Succeed())
 		})
 	})

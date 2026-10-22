@@ -39,6 +39,10 @@ func customizeKserveConfigMap(resources []unstructured.Unstructured, kserve *pla
 		return nil, err
 	}
 
+	if !isWVAEnabled(kserve) && cm.Data != nil {
+		delete(cm.Data, autoscalingWVAControllerConfigKey)
+	}
+
 	if err := updateInferenceCM(cm, kserve); err != nil {
 		return nil, err
 	}
@@ -86,6 +90,17 @@ func updateInferenceCM(cm *corev1.ConfigMap, kserve *platformv1alpha1.Kserve) er
 		data["serviceClusterIPNone"] = headless
 	}); err != nil {
 		return err
+	}
+
+	if confidential := kserve.Spec.ConfidentialContainers; confidential != nil {
+		if err := updateCMJSONKey(cm, "confidentialBareMetal", func(data map[string]any) {
+			if confidential.LUKSResourceID != "" {
+				data["luksResourceId"] = confidential.LUKSResourceID
+			}
+			data["initData"] = confidential.InitData
+		}); err != nil {
+			return err
+		}
 	}
 
 	oauthProxy := kserve.Spec.OAuthProxy

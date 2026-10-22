@@ -22,7 +22,7 @@ spec:
       name: vLLM
   containers:
     - name: kserve-container
-      image: $(vllm-cpu-image)
+      image: $(vllm-cpu-pz-image)
       command:
         - python
         - -m

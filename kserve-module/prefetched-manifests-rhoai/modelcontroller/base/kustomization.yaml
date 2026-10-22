@@ -228,6 +228,11 @@ replacements:
       fieldPath: data.vllm-cuda-image-fast-1
     targets:
       - select:
+          kind: ClusterServingRuntime
+          name: csr-kserve-vllm-cuda-fast-1
+        fieldPaths:
+          - spec.containers.0.image
+      - select:
           kind: Template
           name: vllm-cuda-runtime-template-fast-1
         fieldPaths:
@@ -244,6 +249,11 @@ replacements:
       name: odh-model-controller-parameters
       fieldPath: data.vllm-cuda-image-fast-2
     targets:
+      - select:
+          kind: ClusterServingRuntime
+          name: csr-kserve-vllm-cuda-fast-2
+        fieldPaths:
+          - spec.containers.0.image
       - select:
           kind: Template
           name: vllm-cuda-runtime-template-fast-2
@@ -262,6 +272,11 @@ replacements:
       fieldPath: data.vllm-rocm-image-fast-1
     targets:
       - select:
+          kind: ClusterServingRuntime
+          name: csr-kserve-vllm-rocm-fast-1
+        fieldPaths:
+          - spec.containers.0.image
+      - select:
           kind: Template
           name: vllm-rocm-runtime-template-fast-1
         fieldPaths:
@@ -272,6 +287,11 @@ replacements:
       name: odh-model-controller-parameters
       fieldPath: data.vllm-rocm-image-fast-2
     targets:
+      - select:
+          kind: ClusterServingRuntime
+          name: csr-kserve-vllm-rocm-fast-2
+        fieldPaths:
+          - spec.containers.0.image
       - select:
           kind: Template
           name: vllm-rocm-runtime-template-fast-2
@@ -284,6 +304,11 @@ replacements:
       fieldPath: data.vllm-gaudi-image-fast-1
     targets:
       - select:
+          kind: ClusterServingRuntime
+          name: csr-kserve-vllm-gaudi-fast-1
+        fieldPaths:
+          - spec.containers.0.image
+      - select:
           kind: Template
           name: vllm-gaudi-runtime-template-fast-1
         fieldPaths:
@@ -294,6 +319,11 @@ replacements:
       name: odh-model-controller-parameters
       fieldPath: data.vllm-gaudi-image-fast-2
     targets:
+      - select:
+          kind: ClusterServingRuntime
+          name: csr-kserve-vllm-gaudi-fast-2
+        fieldPaths:
+          - spec.containers.0.image
       - select:
           kind: Template
           name: vllm-gaudi-runtime-template-fast-2
@@ -306,6 +336,11 @@ replacements:
       fieldPath: data.vllm-spyre-image-fast-1
     targets:
       - select:
+          kind: ClusterServingRuntime
+          name: csr-kserve-vllm-spyre-x86-fast-1
+        fieldPaths:
+          - spec.containers.0.image
+      - select:
           kind: Template
           name: vllm-spyre-x86-runtime-template-fast-1
         fieldPaths:
@@ -316,6 +351,11 @@ replacements:
       name: odh-model-controller-parameters
       fieldPath: data.vllm-spyre-image-fast-1
     targets:
+      - select:
+          kind: ClusterServingRuntime
+          name: csr-kserve-vllm-spyre-s390x-fast-1
+        fieldPaths:
+          - spec.containers.0.image
       - select:
           kind: Template
           name: vllm-spyre-s390x-runtime-template-fast-1
@@ -328,6 +368,11 @@ replacements:
       fieldPath: data.vllm-spyre-image-fast-1
     targets:
       - select:
+          kind: ClusterServingRuntime
+          name: csr-kserve-vllm-spyre-ppc64le-fast-1
+        fieldPaths:
+          - spec.containers.0.image
+      - select:
           kind: Template
           name: vllm-spyre-ppc64le-runtime-template-fast-1
         fieldPaths:
@@ -338,6 +383,11 @@ replacements:
       name: odh-model-controller-parameters
       fieldPath: data.vllm-spyre-image-fast-2
     targets:
+      - select:
+          kind: ClusterServingRuntime
+          name: csr-kserve-vllm-spyre-x86-fast-2
+        fieldPaths:
+          - spec.containers.0.image
       - select:
           kind: Template
           name: vllm-spyre-x86-runtime-template-fast-2
@@ -350,6 +400,11 @@ replacements:
       fieldPath: data.vllm-spyre-image-fast-2
     targets:
       - select:
+          kind: ClusterServingRuntime
+          name: csr-kserve-vllm-spyre-s390x-fast-2
+        fieldPaths:
+          - spec.containers.0.image
+      - select:
           kind: Template
           name: vllm-spyre-s390x-runtime-template-fast-2
         fieldPaths:
@@ -361,6 +416,11 @@ replacements:
       fieldPath: data.vllm-spyre-image-fast-2
     targets:
       - select:
+          kind: ClusterServingRuntime
+          name: csr-kserve-vllm-spyre-ppc64le-fast-2
+        fieldPaths:
+          - spec.containers.0.image
+      - select:
           kind: Template
           name: vllm-spyre-ppc64le-runtime-template-fast-2
         fieldPaths:
@@ -371,6 +431,11 @@ replacements:
       name: odh-model-controller-parameters
       fieldPath: data.vllm-cpu-pz-image-fast-1
     targets:
+      - select:
+          kind: ClusterServingRuntime
+          name: csr-kserve-vllm-cpu-fast-1
+        fieldPaths:
+          - spec.containers.0.image
       - select:
           kind: Template
           name: vllm-cpu-runtime-template-fast-1
@@ -388,6 +453,11 @@ replacements:
       fieldPath: data.vllm-cpu-pz-image-fast-2
     targets:
       - select:
+          kind: ClusterServingRuntime
+          name: csr-kserve-vllm-cpu-fast-2
+        fieldPaths:
+          - spec.containers.0.image
+      - select:
           kind: Template
           name: vllm-cpu-runtime-template-fast-2
         fieldPaths:
@@ -404,6 +474,11 @@ replacements:
       fieldPath: data.vllm-cpu-x86-image-fast-1
     targets:
       - select:
+          kind: ClusterServingRuntime
+          name: csr-kserve-vllm-cpu-x86-fast-1
+        fieldPaths:
+          - spec.containers.0.image
+      - select:
           kind: Template
           name: vllm-cpu-x86-runtime-template-fast-1
         fieldPaths:
@@ -414,6 +489,11 @@ replacements:
       name: odh-model-controller-parameters
       fieldPath: data.vllm-cpu-x86-image-fast-2
     targets:
+      - select:
+          kind: ClusterServingRuntime
+          name: csr-kserve-vllm-cpu-x86-fast-2
+        fieldPaths:
+          - spec.containers.0.image
       - select:
           kind: Template
           name: vllm-cpu-x86-runtime-template-fast-2

@@ -35,6 +35,7 @@ rules:
   - watch
 - apiGroups:
   - ""
+  - events.k8s.io
   resources:
   - events
   verbs:
@@ -89,6 +90,18 @@ rules:
   verbs:
   - get
   - list
+  - watch
+- apiGroups:
+  - grid.praxis.fast
+  resources:
+  - inferenceproviders
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
   - watch
 - apiGroups:
   - infrastructure.opendatahub.io
@@ -231,6 +244,12 @@ rules:
   - patch
   - update
   - watch
+- apiGroups:
+  - resource.k8s.io
+  resources:
+  - resourceclaimtemplates
+  verbs:
+  - get
 - apiGroups:
   - serving.kserve.io
   resources:

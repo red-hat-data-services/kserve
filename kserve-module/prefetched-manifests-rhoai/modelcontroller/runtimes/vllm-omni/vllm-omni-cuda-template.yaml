@@ -56,6 +56,9 @@ objects:
           ports:
             - containerPort: 8080
               protocol: TCP
+          volumeMounts:
+            - name: shm
+              mountPath: /dev/shm
           startupProbe:
             httpGet:
               path: /health
@@ -81,3 +84,8 @@ objects:
             capabilities:
               drop:
                 - ALL
+      volumes:
+        - name: shm
+          emptyDir:
+            medium: Memory
+            sizeLimit: 8Gi

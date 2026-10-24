@@ -65,6 +65,8 @@ objects:
           volumeMounts:
             - name: spyre-cache
               mountPath: /opt/ibm/spyre/models
+            - name: shm
+              mountPath: /dev/shm
       multiModel: false
       schedulerName: spyre-scheduler
       supportedModelFormats:
@@ -73,3 +75,7 @@ objects:
       volumes:
         - name: spyre-cache
           emptyDir: {}
+        - name: shm
+          emptyDir:
+            medium: Memory
+            sizeLimit: 2Gi

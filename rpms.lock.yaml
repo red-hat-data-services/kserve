@@ -137,13 +137,13 @@ arches:
     name: keyutils-libs-devel
     evr: 1.6.3-1.el9
     sourcerpm: keyutils-1.6.3-1.el9.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/appstream/os/Packages/k/krb5-devel-1.21.1-10.el9_8.aarch64.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/appstream/os/Packages/k/krb5-devel-1.21.1-10.el9_8.1.aarch64.rpm
     repoid: ubi-9-for-aarch64-appstream-rpms
-    size: 152591
-    checksum: sha256:202439a4147f672e93a9479f35f76ca4bb642c0c06d6e1c83e106d0500e0529a
+    size: 152563
+    checksum: sha256:c65cabc930fc5388d27d79d9a2ac0482895790fa05b00e3cdabb5dc96eb98080
     name: krb5-devel
-    evr: 1.21.1-10.el9_8
-    sourcerpm: krb5-1.21.1-10.el9_8.src.rpm
+    evr: 1.21.1-10.el9_8.1
+    sourcerpm: krb5-1.21.1-10.el9_8.1.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/appstream/os/Packages/l/libasan-11.5.0-14.el9.aarch64.rpm
     repoid: ubi-9-for-aarch64-appstream-rpms
     size: 409047
@@ -2188,20 +2188,27 @@ arches:
     name: kmod-libs
     evr: 28-11.el9
     sourcerpm: kmod-28-11.el9.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/baseos/os/Packages/k/krb5-pkinit-1.21.1-10.el9_8.aarch64.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/baseos/os/Packages/k/krb5-libs-1.21.1-10.el9_8.1.aarch64.rpm
     repoid: ubi-9-for-aarch64-baseos-rpms
-    size: 63481
-    checksum: sha256:7d68029f168910db1568d718c49965f0b15773e400f9906eb5e3e0d677a86a36
+    size: 793631
+    checksum: sha256:35ea4e07d704837be334a199e8deb950db2ac7e655b2edc578d0ac309d08ce59
+    name: krb5-libs
+    evr: 1.21.1-10.el9_8.1
+    sourcerpm: krb5-1.21.1-10.el9_8.1.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/baseos/os/Packages/k/krb5-pkinit-1.21.1-10.el9_8.1.aarch64.rpm
+    repoid: ubi-9-for-aarch64-baseos-rpms
+    size: 63428
+    checksum: sha256:6d1f42e5535e096c2feeb2d95c85b2888e06be5b23b4d1defa3e47483eea4a11
     name: krb5-pkinit
-    evr: 1.21.1-10.el9_8
-    sourcerpm: krb5-1.21.1-10.el9_8.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/baseos/os/Packages/k/krb5-workstation-1.21.1-10.el9_8.aarch64.rpm
+    evr: 1.21.1-10.el9_8.1
+    sourcerpm: krb5-1.21.1-10.el9_8.1.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/baseos/os/Packages/k/krb5-workstation-1.21.1-10.el9_8.1.aarch64.rpm
     repoid: ubi-9-for-aarch64-baseos-rpms
-    size: 552993
-    checksum: sha256:9d4091f1a28055fbfbd239a43c5783cb9cc8544aa49686cdf2dfbaa572db5cb9
+    size: 553117
+    checksum: sha256:9b016782e11bac9f6d4d041a741fe1e8272efba23d2cc814293501b083f8b38e
     name: krb5-workstation
-    evr: 1.21.1-10.el9_8
-    sourcerpm: krb5-1.21.1-10.el9_8.src.rpm
+    evr: 1.21.1-10.el9_8.1
+    sourcerpm: krb5-1.21.1-10.el9_8.1.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/baseos/os/Packages/l/libatomic-11.5.0-14.el9.aarch64.rpm
     repoid: ubi-9-for-aarch64-baseos-rpms
     size: 26108
@@ -2244,13 +2251,13 @@ arches:
     name: libgomp
     evr: 11.5.0-14.el9
     sourcerpm: gcc-11.5.0-14.el9.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/baseos/os/Packages/l/libkadm5-1.21.1-10.el9_8.aarch64.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/baseos/os/Packages/l/libkadm5-1.21.1-10.el9_8.1.aarch64.rpm
     repoid: ubi-9-for-aarch64-baseos-rpms
-    size: 82214
-    checksum: sha256:6a20ea15caaf3aa3d0913eedaa970554b5cd3824d57d83e085d757dd170d0514
+    size: 83066
+    checksum: sha256:701c5e5f84278a167b4a2077118659329893ca3af9e1f19271a7c1b06d9b2fb3
     name: libkadm5
-    evr: 1.21.1-10.el9_8
-    sourcerpm: krb5-1.21.1-10.el9_8.src.rpm
+    evr: 1.21.1-10.el9_8.1
+    sourcerpm: krb5-1.21.1-10.el9_8.1.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/baseos/os/Packages/l/libpkgconf-1.7.3-10.el9.aarch64.rpm
     repoid: ubi-9-for-aarch64-baseos-rpms
     size: 38310
@@ -3463,12 +3470,12 @@ arches:
     checksum: sha256:4f6fefbf0d004b23494fe18ccfff2b9151ea887a276c56a6f25ea597a250991c
     name: kmod
     evr: 28-11.el9
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/baseos/source/SRPMS/Packages/k/krb5-1.21.1-10.el9_8.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/baseos/source/SRPMS/Packages/k/krb5-1.21.1-10.el9_8.1.src.rpm
     repoid: ubi-9-for-aarch64-baseos-source-rpms
-    size: 8964976
-    checksum: sha256:b22a66515c98c14a4969a403d5419b9f9bab50015553863de866d3f45fd6d922
+    size: 8966024
+    checksum: sha256:79d2d304f67abfe9034d75d56a2055ba12274b24eb9cb2ea2f88dbf124b24943
     name: krb5
-    evr: 1.21.1-10.el9_8
+    evr: 1.21.1-10.el9_8.1
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/baseos/source/SRPMS/Packages/l/libdb-5.3.28-57.el9_6.src.rpm
     repoid: ubi-9-for-aarch64-baseos-source-rpms
     size: 35290920
@@ -3746,13 +3753,13 @@ arches:
     name: go-srpm-macros
     evr: 3.8.1-1.el9
     sourcerpm: go-rpm-macros-3.8.1-1.el9.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/appstream/os/Packages/k/kernel-headers-5.14.0-687.60.1.el9_8.ppc64le.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/appstream/os/Packages/k/kernel-headers-5.14.0-687.61.1.el9_8.ppc64le.rpm
     repoid: ubi-9-for-ppc64le-appstream-rpms
-    size: 2971185
-    checksum: sha256:b45d84f7e0a0089f1892ef22440176bf888b8147a8a2ad32d6d1786a08c07f19
+    size: 2978901
+    checksum: sha256:5d8cbfc5cb7de76549b4bf6ac58fad0293fddece11d8a95870b15815652c267e
     name: kernel-headers
-    evr: 5.14.0-687.60.1.el9_8
-    sourcerpm: kernel-5.14.0-687.60.1.el9_8.src.rpm
+    evr: 5.14.0-687.61.1.el9_8
+    sourcerpm: kernel-5.14.0-687.61.1.el9_8.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/appstream/os/Packages/k/kernel-srpm-macros-1.0-14.el9.noarch.rpm
     repoid: ubi-9-for-ppc64le-appstream-rpms
     size: 14098
@@ -3767,13 +3774,13 @@ arches:
     name: keyutils-libs-devel
     evr: 1.6.3-1.el9
     sourcerpm: keyutils-1.6.3-1.el9.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/appstream/os/Packages/k/krb5-devel-1.21.1-10.el9_8.ppc64le.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/appstream/os/Packages/k/krb5-devel-1.21.1-10.el9_8.1.ppc64le.rpm
     repoid: ubi-9-for-ppc64le-appstream-rpms
-    size: 152628
-    checksum: sha256:8dd311e055fc0706548172d7299dd8fd0107369c35c10f8eafbc6d89ea8f23ac
+    size: 152568
+    checksum: sha256:f2959385ca4db20a362045413d8624e0825e2e5e82dc4402d263f0353b026992
     name: krb5-devel
-    evr: 1.21.1-10.el9_8
-    sourcerpm: krb5-1.21.1-10.el9_8.src.rpm
+    evr: 1.21.1-10.el9_8.1
+    sourcerpm: krb5-1.21.1-10.el9_8.1.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/appstream/os/Packages/l/libasan-11.5.0-14.el9.ppc64le.rpm
     repoid: ubi-9-for-ppc64le-appstream-rpms
     size: 440756
@@ -5818,20 +5825,27 @@ arches:
     name: kmod-libs
     evr: 28-11.el9
     sourcerpm: kmod-28-11.el9.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/baseos/os/Packages/k/krb5-pkinit-1.21.1-10.el9_8.ppc64le.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/baseos/os/Packages/k/krb5-libs-1.21.1-10.el9_8.1.ppc64le.rpm
     repoid: ubi-9-for-ppc64le-baseos-rpms
-    size: 71309
-    checksum: sha256:85dab95558f71785fb643acdabc7319f80636d46c9c3db0036c9774e802839a4
+    size: 873073
+    checksum: sha256:f831a49841e0b99f296a43e9a747cd74030002b35f84b9c3f6d296f2cc0742d5
+    name: krb5-libs
+    evr: 1.21.1-10.el9_8.1
+    sourcerpm: krb5-1.21.1-10.el9_8.1.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/baseos/os/Packages/k/krb5-pkinit-1.21.1-10.el9_8.1.ppc64le.rpm
+    repoid: ubi-9-for-ppc64le-baseos-rpms
+    size: 71451
+    checksum: sha256:c904bbf41278786f97506af39be9cc2c7f22c830caea20da11bd77e24ecda8a5
     name: krb5-pkinit
-    evr: 1.21.1-10.el9_8
-    sourcerpm: krb5-1.21.1-10.el9_8.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/baseos/os/Packages/k/krb5-workstation-1.21.1-10.el9_8.ppc64le.rpm
+    evr: 1.21.1-10.el9_8.1
+    sourcerpm: krb5-1.21.1-10.el9_8.1.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/baseos/os/Packages/k/krb5-workstation-1.21.1-10.el9_8.1.ppc64le.rpm
     repoid: ubi-9-for-ppc64le-baseos-rpms
-    size: 560018
-    checksum: sha256:b6aee024667195b5dd42d91352c7b7225c2fd9f1899ab61eeb8bc3661a9cd42b
+    size: 560175
+    checksum: sha256:62b73619ba385e2b44a42765ef09c4c17d00aa4e48fc08e4a6302298ef46c13d
     name: krb5-workstation
-    evr: 1.21.1-10.el9_8
-    sourcerpm: krb5-1.21.1-10.el9_8.src.rpm
+    evr: 1.21.1-10.el9_8.1
+    sourcerpm: krb5-1.21.1-10.el9_8.1.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/baseos/os/Packages/l/libatomic-11.5.0-14.el9.ppc64le.rpm
     repoid: ubi-9-for-ppc64le-baseos-rpms
     size: 25237
@@ -5874,13 +5888,13 @@ arches:
     name: libgomp
     evr: 11.5.0-14.el9
     sourcerpm: gcc-11.5.0-14.el9.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/baseos/os/Packages/l/libkadm5-1.21.1-10.el9_8.ppc64le.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/baseos/os/Packages/l/libkadm5-1.21.1-10.el9_8.1.ppc64le.rpm
     repoid: ubi-9-for-ppc64le-baseos-rpms
-    size: 90109
-    checksum: sha256:91ce044fccf08104e6a90e3b0ffa488e26be3fa60dbe4b3f3e0018a4e4964788
+    size: 90112
+    checksum: sha256:88f4579bf2b54b472228c3491a9f981b58f4fd662864aff6d7179d956483ad50
     name: libkadm5
-    evr: 1.21.1-10.el9_8
-    sourcerpm: krb5-1.21.1-10.el9_8.src.rpm
+    evr: 1.21.1-10.el9_8.1
+    sourcerpm: krb5-1.21.1-10.el9_8.1.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/baseos/os/Packages/l/libpkgconf-1.7.3-10.el9.ppc64le.rpm
     repoid: ubi-9-for-ppc64le-baseos-rpms
     size: 42712
@@ -7100,12 +7114,12 @@ arches:
     checksum: sha256:4f6fefbf0d004b23494fe18ccfff2b9151ea887a276c56a6f25ea597a250991c
     name: kmod
     evr: 28-11.el9
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/baseos/source/SRPMS/Packages/k/krb5-1.21.1-10.el9_8.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/baseos/source/SRPMS/Packages/k/krb5-1.21.1-10.el9_8.1.src.rpm
     repoid: ubi-9-for-ppc64le-baseos-source-rpms
-    size: 8964976
-    checksum: sha256:b22a66515c98c14a4969a403d5419b9f9bab50015553863de866d3f45fd6d922
+    size: 8966024
+    checksum: sha256:79d2d304f67abfe9034d75d56a2055ba12274b24eb9cb2ea2f88dbf124b24943
     name: krb5
-    evr: 1.21.1-10.el9_8
+    evr: 1.21.1-10.el9_8.1
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/baseos/source/SRPMS/Packages/l/libdb-5.3.28-57.el9_6.src.rpm
     repoid: ubi-9-for-ppc64le-baseos-source-rpms
     size: 35290920
@@ -7417,13 +7431,13 @@ arches:
     name: keyutils-libs-devel
     evr: 1.6.3-1.el9
     sourcerpm: keyutils-1.6.3-1.el9.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/appstream/os/Packages/k/krb5-devel-1.21.1-10.el9_8.s390x.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/appstream/os/Packages/k/krb5-devel-1.21.1-10.el9_8.1.s390x.rpm
     repoid: ubi-9-for-s390x-appstream-rpms
-    size: 152608
-    checksum: sha256:52692800d5c8cee5b8be9d3aa920787897862bf3ee2a8707b7872250ea46b4f5
+    size: 152551
+    checksum: sha256:9cc0893737a27f84961592d3046d74fa90af1fa457962131ca255237fc8d238a
     name: krb5-devel
-    evr: 1.21.1-10.el9_8
-    sourcerpm: krb5-1.21.1-10.el9_8.src.rpm
+    evr: 1.21.1-10.el9_8.1
+    sourcerpm: krb5-1.21.1-10.el9_8.1.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/appstream/os/Packages/l/libasan-11.5.0-14.el9.s390x.rpm
     repoid: ubi-9-for-s390x-appstream-rpms
     size: 412888
@@ -9468,20 +9482,27 @@ arches:
     name: kmod-libs
     evr: 28-11.el9
     sourcerpm: kmod-28-11.el9.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/baseos/os/Packages/k/krb5-pkinit-1.21.1-10.el9_8.s390x.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/baseos/os/Packages/k/krb5-libs-1.21.1-10.el9_8.1.s390x.rpm
     repoid: ubi-9-for-s390x-baseos-rpms
-    size: 63558
-    checksum: sha256:d28d9a694fd051a32ab4a22419a4eb729ea2bf42521fddeb04cf1026ad7c82b0
+    size: 772469
+    checksum: sha256:71db63cf970cc699e802bb8d9bc7a1d963767b3557520490518dd8176fab42e9
+    name: krb5-libs
+    evr: 1.21.1-10.el9_8.1
+    sourcerpm: krb5-1.21.1-10.el9_8.1.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/baseos/os/Packages/k/krb5-pkinit-1.21.1-10.el9_8.1.s390x.rpm
+    repoid: ubi-9-for-s390x-baseos-rpms
+    size: 63369
+    checksum: sha256:3e60d94753e2e27451f84bd08e4c2471c228c980941d79179ab2f475d3c12919
     name: krb5-pkinit
-    evr: 1.21.1-10.el9_8
-    sourcerpm: krb5-1.21.1-10.el9_8.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/baseos/os/Packages/k/krb5-workstation-1.21.1-10.el9_8.s390x.rpm
+    evr: 1.21.1-10.el9_8.1
+    sourcerpm: krb5-1.21.1-10.el9_8.1.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/baseos/os/Packages/k/krb5-workstation-1.21.1-10.el9_8.1.s390x.rpm
     repoid: ubi-9-for-s390x-baseos-rpms
-    size: 551539
-    checksum: sha256:9f168f865348a930ffdc825bba5ec25f49b3e66d241e616baecef8c3699dd5cb
+    size: 551351
+    checksum: sha256:eb8c9af2c9c7d2d76c6dbb45b6cac94e2ebce2d01280efbea8adf335acd85a98
     name: krb5-workstation
-    evr: 1.21.1-10.el9_8
-    sourcerpm: krb5-1.21.1-10.el9_8.src.rpm
+    evr: 1.21.1-10.el9_8.1
+    sourcerpm: krb5-1.21.1-10.el9_8.1.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/baseos/os/Packages/l/libatomic-11.5.0-14.el9.s390x.rpm
     repoid: ubi-9-for-s390x-baseos-rpms
     size: 23565
@@ -9524,13 +9545,13 @@ arches:
     name: libgomp
     evr: 11.5.0-14.el9
     sourcerpm: gcc-11.5.0-14.el9.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/baseos/os/Packages/l/libkadm5-1.21.1-10.el9_8.s390x.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/baseos/os/Packages/l/libkadm5-1.21.1-10.el9_8.1.s390x.rpm
     repoid: ubi-9-for-s390x-baseos-rpms
-    size: 80152
-    checksum: sha256:12a5794445d4a8044e9c1a2682ed7ab308bc50d9ad923dae3754ad200fccb8dd
+    size: 80102
+    checksum: sha256:dee337b866caccbf40f6bd69da22877f98ba1ba3b1972eb16e16dab18195e56a
     name: libkadm5
-    evr: 1.21.1-10.el9_8
-    sourcerpm: krb5-1.21.1-10.el9_8.src.rpm
+    evr: 1.21.1-10.el9_8.1
+    sourcerpm: krb5-1.21.1-10.el9_8.1.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/baseos/os/Packages/l/libpkgconf-1.7.3-10.el9.s390x.rpm
     repoid: ubi-9-for-s390x-baseos-rpms
     size: 37876
@@ -10743,12 +10764,12 @@ arches:
     checksum: sha256:4f6fefbf0d004b23494fe18ccfff2b9151ea887a276c56a6f25ea597a250991c
     name: kmod
     evr: 28-11.el9
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/baseos/source/SRPMS/Packages/k/krb5-1.21.1-10.el9_8.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/baseos/source/SRPMS/Packages/k/krb5-1.21.1-10.el9_8.1.src.rpm
     repoid: ubi-9-for-s390x-baseos-source-rpms
-    size: 8964976
-    checksum: sha256:b22a66515c98c14a4969a403d5419b9f9bab50015553863de866d3f45fd6d922
+    size: 8966024
+    checksum: sha256:79d2d304f67abfe9034d75d56a2055ba12274b24eb9cb2ea2f88dbf124b24943
     name: krb5
-    evr: 1.21.1-10.el9_8
+    evr: 1.21.1-10.el9_8.1
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/baseos/source/SRPMS/Packages/l/libdb-5.3.28-57.el9_6.src.rpm
     repoid: ubi-9-for-s390x-baseos-source-rpms
     size: 35290920
@@ -11054,13 +11075,13 @@ arches:
     name: keyutils-libs-devel
     evr: 1.6.3-1.el9
     sourcerpm: keyutils-1.6.3-1.el9.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/appstream/os/Packages/k/krb5-devel-1.21.1-10.el9_8.x86_64.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/appstream/os/Packages/k/krb5-devel-1.21.1-10.el9_8.1.x86_64.rpm
     repoid: ubi-9-for-x86_64-appstream-rpms
-    size: 152611
-    checksum: sha256:7ba9b36033f06d4864ee66956a417fc93ade29bc0c7a0d65291d24f0b26597bc
+    size: 152601
+    checksum: sha256:5b6be3f83c7db37ed54bb6d0e79f40fe0fadbbdf9a93a72a676a8045a919223e
     name: krb5-devel
-    evr: 1.21.1-10.el9_8
-    sourcerpm: krb5-1.21.1-10.el9_8.src.rpm
+    evr: 1.21.1-10.el9_8.1
+    sourcerpm: krb5-1.21.1-10.el9_8.1.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/appstream/os/Packages/l/libcom_err-devel-1.46.5-8.el9.x86_64.rpm
     repoid: ubi-9-for-x86_64-appstream-rpms
     size: 16789
@@ -13098,20 +13119,27 @@ arches:
     name: kmod-libs
     evr: 28-11.el9
     sourcerpm: kmod-28-11.el9.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/baseos/os/Packages/k/krb5-pkinit-1.21.1-10.el9_8.x86_64.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/baseos/os/Packages/k/krb5-libs-1.21.1-10.el9_8.1.x86_64.rpm
     repoid: ubi-9-for-x86_64-baseos-rpms
-    size: 64586
-    checksum: sha256:7850cd9a2e64a956dfd8dc646dbb88ac21ff7a367b29cc758585c4101ac40c4f
+    size: 790530
+    checksum: sha256:867bf5fb56f787d3515053cb0f5f14e6aced3ba43999f03f255c2d3f6c0c8f36
+    name: krb5-libs
+    evr: 1.21.1-10.el9_8.1
+    sourcerpm: krb5-1.21.1-10.el9_8.1.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/baseos/os/Packages/k/krb5-pkinit-1.21.1-10.el9_8.1.x86_64.rpm
+    repoid: ubi-9-for-x86_64-baseos-rpms
+    size: 64785
+    checksum: sha256:3c9680aa38564b5f3d92c0dab0b79bf8acaed5b5f92155cd9dab6446e1c569e4
     name: krb5-pkinit
-    evr: 1.21.1-10.el9_8
-    sourcerpm: krb5-1.21.1-10.el9_8.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/baseos/os/Packages/k/krb5-workstation-1.21.1-10.el9_8.x86_64.rpm
+    evr: 1.21.1-10.el9_8.1
+    sourcerpm: krb5-1.21.1-10.el9_8.1.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/baseos/os/Packages/k/krb5-workstation-1.21.1-10.el9_8.1.x86_64.rpm
     repoid: ubi-9-for-x86_64-baseos-rpms
-    size: 553713
-    checksum: sha256:fb5a1c792d72c980e39684a676336d899e79ff5c579c923426a4cbd8cf610e70
+    size: 553662
+    checksum: sha256:c1d30853b9c5cd6148961cd6e5c2ba043b79d18ec1fff0cde5b421c5d2f737f5
     name: krb5-workstation
-    evr: 1.21.1-10.el9_8
-    sourcerpm: krb5-1.21.1-10.el9_8.src.rpm
+    evr: 1.21.1-10.el9_8.1
+    sourcerpm: krb5-1.21.1-10.el9_8.1.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/baseos/os/Packages/l/libdb-5.3.28-57.el9_6.x86_64.rpm
     repoid: ubi-9-for-x86_64-baseos-rpms
     size: 755192
@@ -13147,13 +13175,13 @@ arches:
     name: libgomp
     evr: 11.5.0-14.el9
     sourcerpm: gcc-11.5.0-14.el9.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/baseos/os/Packages/l/libkadm5-1.21.1-10.el9_8.x86_64.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/baseos/os/Packages/l/libkadm5-1.21.1-10.el9_8.1.x86_64.rpm
     repoid: ubi-9-for-x86_64-baseos-rpms
-    size: 83010
-    checksum: sha256:789897755fd1c2f6189f13f7ae4cf0a860f3ab21b018eb4054f19a9a3ad4456f
+    size: 83161
+    checksum: sha256:49253dd52b79b9c643d717e1bf3b5cdab48ae93bb0edeab9105efe2ceaa18dcb
     name: libkadm5
-    evr: 1.21.1-10.el9_8
-    sourcerpm: krb5-1.21.1-10.el9_8.src.rpm
+    evr: 1.21.1-10.el9_8.1
+    sourcerpm: krb5-1.21.1-10.el9_8.1.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/baseos/os/Packages/l/libpkgconf-1.7.3-10.el9.x86_64.rpm
     repoid: ubi-9-for-x86_64-baseos-rpms
     size: 38387
@@ -14366,12 +14394,12 @@ arches:
     checksum: sha256:4f6fefbf0d004b23494fe18ccfff2b9151ea887a276c56a6f25ea597a250991c
     name: kmod
     evr: 28-11.el9
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/baseos/source/SRPMS/Packages/k/krb5-1.21.1-10.el9_8.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/baseos/source/SRPMS/Packages/k/krb5-1.21.1-10.el9_8.1.src.rpm
     repoid: ubi-9-for-x86_64-baseos-source-rpms
-    size: 8964976
-    checksum: sha256:b22a66515c98c14a4969a403d5419b9f9bab50015553863de866d3f45fd6d922
+    size: 8966024
+    checksum: sha256:79d2d304f67abfe9034d75d56a2055ba12274b24eb9cb2ea2f88dbf124b24943
     name: krb5
-    evr: 1.21.1-10.el9_8
+    evr: 1.21.1-10.el9_8.1
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/baseos/source/SRPMS/Packages/l/libdb-5.3.28-57.el9_6.src.rpm
     repoid: ubi-9-for-x86_64-baseos-source-rpms
     size: 35290920

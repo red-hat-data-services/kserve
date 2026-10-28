@@ -15,7 +15,7 @@ import unittest
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
 GENERATOR_PATH = Path(__file__).with_name("generate_storage.py")
-WORKFLOW_PATH = REPOSITORY_ROOT / ".github/workflows/storage-rhoai-update.yml"
+WORKFLOW_PATH = REPOSITORY_ROOT / ".github/workflows/rhoai-artifacts-update.yml"
 
 spec = importlib.util.spec_from_file_location("generate_storage", GENERATOR_PATH)
 if spec is None or spec.loader is None:
@@ -103,9 +103,22 @@ class WorkflowContractTests(unittest.TestCase):
             "python/storage/pyproject.toml",
             "python/storage/konflux.rhoai.overrides",
             "python/storage/konflux-hdfs.in",
-            "hack/rhoai/generate_storage.py",
+            "python/storage/konflux-build-deps.in",
+            "hack/rhoai/*.py",
         ):
             self.assertIn(watched, workflow)
+        # The unified workflow dispatches both generators and keeps the
+        # generate matrix serialized so bot pushes cannot race.
+        self.assertIn("max-parallel: 1", workflow)
+        self.assertIn("generate_${{ matrix.generator }}.py", workflow)
+        # Failure notification is dormant until the webhook secret and the
+        # mention variable are configured; no hardcoded mention target, and
+        # skipped notifications are logged as warnings, not silent.
+        self.assertIn("secrets.RHOAI_DEVOPS_SLACK_WEBHOOK != ''", workflow)
+        self.assertIn("vars.RHOAI_SLACK_MENTIONS != ''", workflow)
+        self.assertIn("SLACK_MENTIONS: ${{ vars.RHOAI_SLACK_MENTIONS }}", workflow)
+        self.assertIn("if: always()", workflow)
+        self.assertIn("::warning title=Slack notifications skipped", workflow)
 
 
 if __name__ == "__main__":

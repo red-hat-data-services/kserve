@@ -328,10 +328,14 @@ grpc-interceptor==0.15.4 \
     --hash=sha256:f2d52e05e8e7ab629c418621386fc4654b9eb2b41cd8fee6d696f3f7e878b26b
     # via kserve
 grpcio==1.84.0 \
+    --hash=sha256:05ec8079bf3e9f05f3a8c100149943a90c6fa5bdd2a715f09dd15e98ccdef327 \
+    --hash=sha256:0ac33ac2f322d6f5765a61f5689b7605afec74ed1da82b8ba9198aee0a0b1c80 \
     --hash=sha256:2f2684261301273500b9ccac71c35b6c79b4eeee84cb75be41070391dab4202a \
+    --hash=sha256:442c0aeea1a062e225ba4b9c4f6296aef0386a0764c86cd2005790ee38e6eed8 \
     --hash=sha256:5eacf1a43c95efeea9cbb7bcb7a7731dbc310a8625c5dd97d82cec674b3bdd1c \
     --hash=sha256:6967c0cd37070c800eaf0af83ad14a9013697dcd6bdb674eac79adb83dea5c62 \
-    --hash=sha256:e278f2e85fb69cb1904303c5d79019a25c82bc6a3895885135b4568efc0b7295
+    --hash=sha256:e278f2e85fb69cb1904303c5d79019a25c82bc6a3895885135b4568efc0b7295 \
+    --hash=sha256:f15a3bb96079d251e0987c0add18b535d78749c89474e719355041f1ad09f103
     # via
     #   grpc-interceptor
     #   grpcio-tools
@@ -754,8 +758,12 @@ plum-dispatch==2.9.0 \
 preshed==3.0.13 \
     --hash=sha256:1bcb84a389ecb9f61417eeee5de7328fe3d01bba4f26e4c07f6dec98e82b0f99 \
     --hash=sha256:447e89751380161864b04273f1440a137025bfdcc1286f1398827441d2f5cc70 \
+    --hash=sha256:4b4c89c043372e7d047e6c746f6fe4cad1fcc4710d5f36dbc6e224e6af690720 \
+    --hash=sha256:53d779d15dfdbe232d85caf419cfe72fbf1385502e81e902c3b2ce91ced67c7b \
+    --hash=sha256:6d2bb4fa0e6a986e5b47dfa52b1bb57e80a322e6d966cb994d45490381f77702 \
     --hash=sha256:6e689600368bc6670e3b92482038e71b7fb1d8b3ff68f3ae683e548398529684 \
-    --hash=sha256:aa6d19676e4ae7c182dde4e2fc1d95df5fb874e986d6e6bcdb468d4ea2a06f80
+    --hash=sha256:aa6d19676e4ae7c182dde4e2fc1d95df5fb874e986d6e6bcdb468d4ea2a06f80 \
+    --hash=sha256:e64371ba3446fc0678b24fb4b493d692b546a15c98fb21c50ff1ee7807ad8691
     # via
     #   spacy
     #   thinc
@@ -834,8 +842,8 @@ pydantic-core==2.46.5 \
 pygments==2.21.0 \
     --hash=sha256:6c00fcce5ee73d4c60c6741b93e15f99bc21a3e9c38d278215a3d874feeec550
     # via rich
-pyjwt==2.15.1 \
-    --hash=sha256:93c255639f9db189d03b4ebdbddd34e912a77961801bae3ae5424028f4154894
+pyjwt==2.14.0 \
+    --hash=sha256:a9fefab8785ec448f89a4d8e998fc2e8c897ef451cb79d333396f7dc79d54abd
     # via
     #   kserve
     #   kserve-storage

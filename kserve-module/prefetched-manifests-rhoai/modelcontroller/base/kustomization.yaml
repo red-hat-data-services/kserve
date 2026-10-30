@@ -506,6 +506,11 @@ replacements:
       fieldPath: data.vllm-omni-cuda-image
     targets:
       - select:
+          kind: ClusterServingRuntime
+          name: csr-kserve-vllm-omni-cuda
+        fieldPaths:
+          - spec.containers.0.image
+      - select:
           kind: Template
           name: vllm-omni-cuda-runtime-template
         fieldPaths:
@@ -517,6 +522,11 @@ replacements:
       fieldPath: data.vllm-omni-cuda-image-fast-1
     targets:
       - select:
+          kind: ClusterServingRuntime
+          name: csr-kserve-vllm-omni-cuda-fast-1
+        fieldPaths:
+          - spec.containers.0.image
+      - select:
           kind: Template
           name: vllm-omni-cuda-runtime-template-fast-1
         fieldPaths:
@@ -527,6 +537,11 @@ replacements:
       name: odh-model-controller-parameters
       fieldPath: data.vllm-omni-cuda-image-fast-2
     targets:
+      - select:
+          kind: ClusterServingRuntime
+          name: csr-kserve-vllm-omni-cuda-fast-2
+        fieldPaths:
+          - spec.containers.0.image
       - select:
           kind: Template
           name: vllm-omni-cuda-runtime-template-fast-2

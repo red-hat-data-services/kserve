@@ -324,3 +324,9 @@ rules:
   - list
   - update
   - watch
+- apiGroups:
+  - serving.opendatahub.io
+  resources:
+  - models
+  verbs:
+  - post

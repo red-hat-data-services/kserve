@@ -952,3 +952,12 @@ func GetRouterReadinessProbe() *corev1.Probe {
 	}
 	return probe
 }
+
+// RouteRuleNamingAnnotationKey is read from spec.annotations, so a preset can
+// carry it.
+const RouteRuleNamingAnnotationKey = KServeAPIGroupName + "/route-rule-naming"
+
+const (
+	RouteRuleNamingPreset = "preset"
+	RouteRuleNamingUnique = "unique"
+)

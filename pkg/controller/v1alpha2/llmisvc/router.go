@@ -45,6 +45,7 @@ import (
 
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/log"
+	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 
 	"github.com/kserve/kserve/pkg/apis/serving/v1alpha2"
 	"github.com/kserve/kserve/pkg/constants"
@@ -86,11 +87,15 @@ const AnnotationModelBasedRoutingOnly = "serving.kserve.io/model-based-routing-o
 // roll the pods. A key can only join before it ships: dropping one that pod
 // templates already carry changes their hash and rolls every workload that has
 // it on upgrade.
-var routingSpecAnnotations = []string{AnnotationModelBasedRoutingEnabled, AnnotationModelBasedRoutingOnly}
+var routingSpecAnnotations = []string{AnnotationModelBasedRoutingEnabled, AnnotationModelBasedRoutingOnly, AnnotationRouteRuleNaming}
 
-// ErrPreconditionNotMet is a sentinel error returned by ensureGatewayPreconditions
-// when a non-transient precondition is not met (e.g. a required CRD is missing).
-// The caller should mark status but not propagate the error to avoid infinite requeue.
+const AnnotationRouteRuleNaming = constants.RouteRuleNamingAnnotationKey
+
+// ErrPreconditionNotMet indicates a non-transient routing precondition failure
+// (e.g. a required CRD is missing or the routing strategy cannot be applied).
+// The caller should mark status and then return either nil or a
+// reconcile.TerminalError - never a plain error, which would requeue with
+// backoff against inputs that only a spec or ConfigMap change can fix.
 var ErrPreconditionNotMet = errors.New("precondition not met")
 
 // reconcileRouter handles the networking and routing components for the LLM service
@@ -132,6 +137,16 @@ func (r *LLMISVCReconciler) reconcileRouter(ctx context.Context, llmSvc *v1alpha
 	// as refs are attached to reconciled routes
 	resolvedGWs, err := r.reconcileHTTPRoutes(ctx, llmSvc, cfg)
 	if err != nil {
+		if errors.Is(err, ErrPreconditionNotMet) {
+			// The strategy the ConfigMap names cannot be applied to this spec.
+			// Retrying re-renders the same inputs, so stop until one of them changes:
+			// the spec and ConfigMap watches re-enqueue the service, and the terminal
+			// error still surfaces through the reconcile log and event. The render
+			// failed before any write, so a route from an earlier reconcile still
+			// routes as before; a new service has none.
+			llmSvc.MarkHTTPRoutesNotReady("RoutingPreconditionNotMet", "%s; any existing HTTPRoute keeps its previous matches", err.Error())
+			return reconcile.TerminalError(fmt.Errorf("failed to reconcile HTTP routes: %w", err))
+		}
 		llmSvc.MarkHTTPRoutesNotReady("HTTPRouteReconcileError", "Failed to reconcile HTTPRoute: %v", err.Error())
 		return fmt.Errorf("failed to reconcile HTTP routes: %w", err)
 	}
@@ -166,7 +181,7 @@ func (r *LLMISVCReconciler) reconcileHTTPRoutes(ctx context.Context, llmSvc *v1a
 	logger := log.FromContext(ctx)
 	logger.Info("Reconciling HTTPRoute")
 
-	expectedHTTPRoute := r.expectedHTTPRoute(ctx, llmSvc, cfg)
+	expectedHTTPRoute, renderErr := r.expectedHTTPRoute(ctx, llmSvc, cfg)
 
 	if utils.GetForceStopRuntime(llmSvc) || llmSvc.Spec.Router == nil || llmSvc.Spec.Router.Route == nil {
 		llmSvc.MarkGroupReadyUnset()
@@ -175,6 +190,13 @@ func (r *LLMISVCReconciler) reconcileHTTPRoutes(ctx context.Context, llmSvc *v1a
 			return nil, err
 		}
 		return nil, Delete(ctx, r, llmSvc, expectedHTTPRoute)
+	}
+
+	// Checked only after the stop path above, which needs just the route's
+	// identity: a strategy failure must not block teardown, and nothing below
+	// may run against an incomplete spec.
+	if renderErr != nil {
+		return nil, fmt.Errorf("failed to render HTTPRoute: %w", renderErr)
 	}
 
 	// Before group injection: it keeps a rule on the service's own backend when
@@ -282,8 +304,12 @@ func (r *LLMISVCReconciler) collectReferencedRoutes(ctx context.Context, llmSvc 
 }
 
 // expectedHTTPRoute creates the HTTPRoute specification for this service
-// This route is created when the service specifies inline routing configuration
-func (r *LLMISVCReconciler) expectedHTTPRoute(ctx context.Context, llmSvc *v1alpha2.LLMInferenceService, cfg *Config) *gwapiv1.HTTPRoute {
+// This route is created when the service specifies inline routing configuration.
+// The returned route is always non-nil so callers that only need its identity
+// (e.g. deletion) can use it even when the model-routing transform fails; on a
+// non-nil error the returned route's spec is incomplete and must not be
+// written to the cluster.
+func (r *LLMISVCReconciler) expectedHTTPRoute(ctx context.Context, llmSvc *v1alpha2.LLMInferenceService, cfg *Config) (*gwapiv1.HTTPRoute, error) {
 	httpRoute := &gwapiv1.HTTPRoute{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      kmeta.ChildName(llmSvc.GetName(), "-kserve-route"),
@@ -313,13 +339,17 @@ func (r *LLMISVCReconciler) expectedHTTPRoute(ctx context.Context, llmSvc *v1alp
 				cfg.ModelBasedRoutingHeaderName,
 			)
 		}
+
+		if err := applyRouteRuleNaming(httpRoute.Spec.Rules, llmSvc, cfg); err != nil {
+			return httpRoute, err
+		}
 	}
 
 	// Migration logic: check if we should switch from v1alpha2 to v1 InferencePool
 	// Only applies to managed routes with a scheduler (not using external pool refs)
 	if llmSvc.Spec.Router == nil || llmSvc.Spec.Router.Scheduler == nil ||
 		llmSvc.Spec.Router.Scheduler.Pool.HasRef() {
-		return httpRoute
+		return httpRoute, nil
 	}
 
 	logger := log.FromContext(ctx).WithValues("migration", "InferencePool")
@@ -385,7 +415,7 @@ func (r *LLMISVCReconciler) expectedHTTPRoute(ctx context.Context, llmSvc *v1alp
 		)
 	}
 
-	return httpRoute
+	return httpRoute, nil
 }
 
 func (r *LLMISVCReconciler) updateRoutingStatus(ctx context.Context, llmSvc *v1alpha2.LLMInferenceService, routes ...*gwapiv1.HTTPRoute) ([]ResolvedGateway, error) {
@@ -686,7 +716,8 @@ func (r *LLMISVCReconciler) EvaluateHTTPRouteConditions(ctx context.Context, llm
 
 	// Get managed route if it exists
 	if llmSvc.Spec.Router.Route.HTTP.HasSpec() {
-		expectedHTTPRoute := r.expectedHTTPRoute(ctx, llmSvc, cfg)
+		// Only the route's identity is read, which a render failure leaves intact.
+		expectedHTTPRoute, _ := r.expectedHTTPRoute(ctx, llmSvc, cfg)
 		// Try to get the actual managed route from the cluster
 		managedRoute := &gwapiv1.HTTPRoute{}
 		if err := r.Get(ctx, types.NamespacedName{

@@ -97,6 +97,10 @@ type Config struct {
 	ModelBasedRoutingHeaderName string                `json:"modelBasedRoutingHeaderName,omitempty"`
 	ModelBasedRoutingMode       ModelBasedRoutingMode `json:"modelBasedRoutingMode,omitempty"`
 
+	// RouteRuleNaming is not validated at load; applyRouteRuleNaming rejects an
+	// unknown value per service.
+	RouteRuleNaming RouteRuleNaming `json:"routeRuleNaming,omitempty"`
+
 	// WVAAutoscalingConfig holds Prometheus and monitoring settings for WVA autoscaling.
 	// nil when the "autoscaling-wva-controller-config" key is not present in inferenceservice-config.
 	WVAAutoscalingConfig *WVAAutoscalingConfig `json:"-"`
@@ -172,6 +176,7 @@ func NewConfig(ingressConfig *v1beta1.IngressConfig, storageConfig *types.Storag
 		EnableTLS:                   ingressConfig.EnableLLMInferenceServiceTLS,
 		ModelBasedRoutingHeaderName: ingressConfig.ModelBasedRoutingHeaderName,
 		ModelBasedRoutingMode:       parseModelBasedRoutingMode(ingressConfig.ModelBasedRoutingMode),
+		RouteRuleNaming:             RouteRuleNaming(ingressConfig.RouteRuleNaming),
 		StorageConfig:               storageConfig,
 		CredentialConfig:            credentialConfig,
 		SchedulerConfig:             schedulerConfig,

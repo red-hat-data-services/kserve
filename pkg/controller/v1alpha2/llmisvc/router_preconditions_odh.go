@@ -65,7 +65,12 @@ func (r *LLMISVCReconciler) ensureGatewayPreconditions(ctx context.Context, llmS
 		if err != nil {
 			return fmt.Errorf("failed to load config: %w", err)
 		}
-		route := r.expectedHTTPRoute(ctx, llmSvc, cfg)
+		// Only the route's identity is needed, which a render failure leaves intact: a
+		// route that cannot render must not stay up unauthenticated.
+		route, renderErr := r.expectedHTTPRoute(ctx, llmSvc, cfg)
+		if renderErr != nil {
+			logger.V(1).Info("Expected HTTPRoute failed to render, deleting it by identity", "error", renderErr)
+		}
 		if err := Delete(ctx, r, llmSvc, route); err != nil {
 			return fmt.Errorf("AuthPolicy CRD is not available, please install Red Hat Connectivity Link: %w", err)
 		}

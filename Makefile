@@ -310,12 +310,14 @@ uv-lock: $(UV)
 	cd kserve && $(UV) lock && cd .. && \
 	for file in $$(find . -type f -name "pyproject.toml" -not -path "./pyproject.toml" -not -path "*.venv/*" -not -path "*/site-packages/*" -not -path "*/__pypackages__/*" -not -path "*/build/*"); do \
 		folder=$$(dirname "$$file"); \
-		echo "moving into folder $$folder"; \
 		case "$$folder" in \
-			*plugin*|plugin|kserve) \
+			*plugin*|plugin|./kserve) \
 				echo -e "\033[33mSkipping folder $$folder\033[0m" ;; \
+			./autogluonserver) \
+				echo -e "\033[33mSkipping folder $$folder: autogluon.* pins are +rhaiv builds served only by the AIPCC index; its dependencies of record are autogluon-all-requirements.txt, regenerated with 'make -C autogluonserver requirements'\033[0m" ;; \
 			*) \
-				cd "$$folder" && $(UV) lock && cd - > /dev/null ;; \
+				echo "moving into folder $$folder"; \
+				( cd "$$folder" && $(UV) lock ) || exit 1 ;; \
 		esac; \
 	done
 

@@ -62,6 +62,7 @@ const (
 	DefaultModelBasedRoutingHeaderName = "X-Gateway-Model-Name"
 	DefaultModelBasedRoutingMode       = "enabled"
 	DefaultLoRAModelRoutingStrategy    = constants.LoRAModelRoutingStrategyExact
+	DefaultRouteRuleNaming             = constants.RouteRuleNamingPreset
 )
 
 // Error messages
@@ -130,10 +131,14 @@ type IngressConfig struct {
 	DomainTemplate               string    `json:"domainTemplate,omitempty"`
 	UrlScheme                    string    `json:"urlScheme,omitempty"`
 	EnableLLMInferenceServiceTLS bool      `json:"enableLLMInferenceServiceTLS,omitempty"`
-	DisableIstioVirtualHost      bool      `json:"disableIstioVirtualHost,omitempty"`
-	PathTemplate                 string    `json:"pathTemplate,omitempty"`
-	DisableIngressCreation       bool      `json:"disableIngressCreation,omitempty"`
-	DisableHTTPRouteTimeout      bool      `json:"disableHTTPRouteTimeout,omitempty"`
+	// LLMInferenceServiceTLSMinVersion configures the minimum TLS version for Go-based LLMISVC components. vLLM does not expose a minimum-version option.
+	LLMInferenceServiceTLSMinVersion string `json:"llmInferenceServiceTLSMinVersion,omitempty"`
+	// LLMInferenceServiceTLSCipherSuites configures TLS 1.2 cipher suites using Go/IANA names; values are translated to OpenSSL names for vLLM.
+	LLMInferenceServiceTLSCipherSuites string `json:"llmInferenceServiceTLSCipherSuites,omitempty"`
+	DisableIstioVirtualHost            bool   `json:"disableIstioVirtualHost,omitempty"`
+	PathTemplate                       string `json:"pathTemplate,omitempty"`
+	DisableIngressCreation             bool   `json:"disableIngressCreation,omitempty"`
+	DisableHTTPRouteTimeout            bool   `json:"disableHTTPRouteTimeout,omitempty"`
 
 	ModelBasedRoutingHeaderName string `json:"modelBasedRoutingHeaderName,omitempty"`
 	ModelBasedRoutingMode       string `json:"modelBasedRoutingMode,omitempty"`
@@ -143,6 +148,11 @@ type IngressConfig struct {
 	// (the default) or "regex", compared case-insensitively. Any other value
 	// fails config loading like the other ingress keys.
 	LoRAModelRoutingStrategy string `json:"loraModelRoutingStrategy,omitempty"`
+
+	// RouteRuleNaming is "preset" (the default) or "unique", which suffixes the
+	// LLMInferenceService HTTPRoute rule names per service. An unsupported value
+	// sets HTTPRoutesReady=False on the services that use it.
+	RouteRuleNaming string `json:"routeRuleNaming,omitempty"`
 }
 
 // +kubebuilder:object:generate=false
@@ -170,10 +180,14 @@ type RolloutSpec struct {
 
 // +kubebuilder:object:generate=false
 type LocalModelConfig struct {
-	Enabled                      bool   `json:"enabled"`
-	JobNamespace                 string `json:"jobNamespace"`
-	DefaultJobImage              string `json:"defaultJobImage,omitempty"`
-	FSGroup                      *int64 `json:"fsGroup,omitempty"`
+	Enabled         bool   `json:"enabled"`
+	JobNamespace    string `json:"jobNamespace"`
+	DefaultJobImage string `json:"defaultJobImage,omitempty"`
+	FSGroup         *int64 `json:"fsGroup,omitempty"`
+	// SharedPVCImportFSGroup is applied to shared-PVC import Jobs, which run in the cache's
+	// own namespace. It is independent of FSGroup, which applies only to per-node download
+	// Jobs in JobNamespace. Leave it unset to let namespace admission assign the group.
+	SharedPVCImportFSGroup       *int64 `json:"sharedPVCImportFSGroup,omitempty"`
 	JobTTLSecondsAfterFinished   *int32 `json:"jobTTLSecondsAfterFinished,omitempty"`
 	ReconcilationFrequencyInSecs *int64 `json:"reconcilationFrequencyInSecs,omitempty"`
 	DisableVolumeManagement      bool   `json:"disableVolumeManagement,omitempty"`
@@ -185,28 +199,47 @@ const (
 	DefaultKernelCacheMountType                               = "oci"
 	DefaultKernelCacheJobNamespace                            = "kserve-kernelcache-jobs"
 	DefaultKernelCacheJobTTLSeconds                     int32 = 600
+	DefaultKernelCacheRuntimeImagePrefetchJobTTLSeconds int32 = 86400
 	DefaultKernelCacheReconcileIntervalSeconds          int64 = 300
 	DefaultKernelCacheMCVCaptureReadinessTimeoutSeconds int64 = 600
-	DefaultKernelCacheAbandonedCapturePolicy                  = "retain"
+	// DefaultKernelCacheRegistryTokenTTLSeconds is the default lifetime of a
+	// registry ServiceAccount token issued for KernelCache access.
+	DefaultKernelCacheRegistryTokenTTLSeconds   int64 = 600
+	DefaultKernelCacheAbandonedCapturePolicy          = "retain"
+	DefaultKernelCacheArtifactSecurityMode            = "cert"
+	DefaultKernelCacheArtifactSigningProfileRef       = "kernelcache-signer"
+	DefaultKernelCacheArtifactTrustBundle             = "kserve/kernelcache-root-ca"
+	DefaultKernelCacheArtifactSubjectRegexp           = "spiffe://kserve/kernelcache-signer"
+	// KernelCacheRegistryAuthTypeNone disables registry credential provisioning.
+	KernelCacheRegistryAuthTypeNone = "none"
+	// KernelCacheRegistryAuthTypeServiceAccountToken uses the Kubernetes
+	// TokenRequest API to issue short-lived registry credentials.
+	KernelCacheRegistryAuthTypeServiceAccountToken = "serviceAccountToken"
 )
+
+// +kubebuilder:object:generate=false
+type KernelCacheRuntimeImagePrefetchConfig struct {
+	Enabled                    bool   `json:"enabled,omitempty"`
+	JobTTLSecondsAfterFinished *int32 `json:"jobTTLSecondsAfterFinished,omitempty"`
+}
 
 // +kubebuilder:object:generate=false
 // KernelCacheConfig contains the shared KernelCache configuration loaded from
 // the kernelcache entry in the inferenceservice-config ConfigMap.
 type KernelCacheConfig struct {
-	Enabled                           bool   `json:"enabled"`
-	DefaultSidecarInjection           bool   `json:"defaultSidecarInjection"`
-	DefaultMountType                  string `json:"defaultMountType,omitempty"`
-	DefaultNodeGroup                  string `json:"defaultNodeGroup,omitempty"`
-	JobNamespace                      string `json:"jobNamespace"`
-	MCVImage                          string `json:"mcvImage,omitempty"`
-	MCVCaptureReadinessTimeoutSeconds int64  `json:"mcvCaptureReadinessTimeoutSeconds,omitempty"`
-	PrefetchImage                     string `json:"prefetchImage,omitempty"`
-	JobTTLSecondsAfterFinished        *int32 `json:"jobTTLSecondsAfterFinished,omitempty"`
-	ReconcileIntervalSeconds          *int64 `json:"reconcileIntervalSeconds,omitempty"`
-	AbandonedCapturePolicy            string `json:"abandonedCapturePolicy,omitempty"`
-	// Registry contains the endpoint used to build generated capture image references.
-	// Registry credentials are added by the registry authentication integration.
+	Enabled                           bool                                  `json:"enabled"`
+	DefaultSidecarInjection           bool                                  `json:"defaultSidecarInjection"`
+	DefaultMountType                  string                                `json:"defaultMountType,omitempty"`
+	DefaultNodeGroup                  string                                `json:"defaultNodeGroup,omitempty"`
+	JobNamespace                      string                                `json:"jobNamespace"`
+	MCVImage                          string                                `json:"mcvImage,omitempty"`
+	MCVCaptureReadinessTimeoutSeconds int64                                 `json:"mcvCaptureReadinessTimeoutSeconds,omitempty"`
+	PrefetchImage                     string                                `json:"prefetchImage,omitempty"`
+	RuntimeImagePrefetch              KernelCacheRuntimeImagePrefetchConfig `json:"runtimeImagePrefetch,omitempty"`
+	JobTTLSecondsAfterFinished        *int32                                `json:"jobTTLSecondsAfterFinished,omitempty"`
+	ReconcileIntervalSeconds          *int64                                `json:"reconcileIntervalSeconds,omitempty"`
+	AbandonedCapturePolicy            string                                `json:"abandonedCapturePolicy,omitempty"`
+	// Registry configures the OCI registry used by capture and prefetch operations.
 	Registry KernelCacheRegistryConfig `json:"registry,omitempty"`
 	// ArtifactSecurity controls signing of completed capture artifacts.
 	ArtifactSecurity KernelCacheArtifactSecurityConfig `json:"artifactSecurity,omitempty"`
@@ -220,6 +253,8 @@ type KernelCacheConfig struct {
 	ReadinessEnv []corev1.EnvVar `json:"-"`
 	// ReporterSecretName is the per-capture reporter Secret mounted into MCV.
 	ReporterSecretName string `json:"-"`
+	// CredentialSecretName is the per-capture registry Secret mounted into MCV.
+	CredentialSecretName string `json:"-"`
 	// CaptureName identifies the KernelCacheCapture associated with the Pod.
 	CaptureName string `json:"-"`
 	// CaptureNamespace is the namespace of the associated KernelCacheCapture.
@@ -229,10 +264,99 @@ type KernelCacheConfig struct {
 }
 
 // +kubebuilder:object:generate=false
-// KernelCacheRegistryConfig contains the endpoint used by generated capture images.
-// Registry authentication configuration is intentionally added separately.
+// KernelCacheRegistryConfig defines the registry endpoint, trust bundle, and
+// authentication used by KernelCache capture and prefetch operations.
 type KernelCacheRegistryConfig struct {
+	// Endpoint is the OCI registry host and optional port.
 	Endpoint string `json:"endpoint,omitempty"`
+	// Insecure allows MCV to use plain HTTP for registry operations. The default is false.
+	Insecure bool `json:"insecure,omitempty"`
+	// Auth configures how registry credentials are provisioned.
+	Auth KernelCacheRegistryAuth `json:"auth,omitempty"`
+	// CAConfigMapRef optionally references a ConfigMap key containing the
+	// registry CA bundle.
+	CAConfigMapRef *KernelCacheConfigMapKeyRef `json:"caConfigMapRef,omitempty"`
+}
+
+// +kubebuilder:object:generate=false
+// KernelCacheRegistryAuth defines how KernelCache obtains registry credentials.
+type KernelCacheRegistryAuth struct {
+	// Type selects none or serviceAccountToken authentication. The zero value
+	// is treated as none.
+	Type string `json:"type,omitempty"`
+	// TokenTTLSeconds is the lifetime of a token issued through TokenRequest.
+	// The default is 600 seconds when serviceAccountToken is selected.
+	TokenTTLSeconds int64 `json:"tokenTTLSeconds,omitempty"`
+	// PushRoleRef identifies the Role or ClusterRole bound to the per-capture
+	// ServiceAccount used to publish captured images.
+	PushRoleRef *KernelCacheRegistryRoleRef `json:"pushRoleRef,omitempty"`
+	// PullRoleRef identifies the Role or ClusterRole bound to the prefetch
+	// ServiceAccount used to pull cache images.
+	PullRoleRef *KernelCacheRegistryRoleRef `json:"pullRoleRef,omitempty"`
+}
+
+// +kubebuilder:object:generate=false
+// KernelCacheRegistryRoleRef identifies the Kubernetes Role or ClusterRole
+// used to authorize registry access.
+type KernelCacheRegistryRoleRef struct {
+	// Kind is Role or ClusterRole.
+	Kind string `json:"kind"`
+	// Name is the name of the referenced Role or ClusterRole.
+	Name string `json:"name"`
+}
+
+// +kubebuilder:object:generate=false
+// KernelCacheConfigMapKeyRef identifies a value in a ConfigMap.
+type KernelCacheConfigMapKeyRef struct {
+	// Name is the name of the referenced ConfigMap.
+	Name string `json:"name"`
+	// Key is the data key containing the referenced value.
+	Key string `json:"key"`
+}
+
+// Validate checks registry authentication settings without provisioning any
+// credentials. Credential lifecycle handling is performed by consumers.
+func (c *KernelCacheRegistryConfig) Validate() error {
+	if c.CAConfigMapRef != nil && (c.CAConfigMapRef.Name == "" || c.CAConfigMapRef.Key == "") {
+		return errors.New("registry.caConfigMapRef requires name and key")
+	}
+	if c.Insecure && c.CAConfigMapRef != nil {
+		return errors.New("registry.insecure cannot be used with registry.caConfigMapRef")
+	}
+	if c.Insecure && c.Auth.Type == KernelCacheRegistryAuthTypeServiceAccountToken {
+		return errors.New("registry.insecure cannot be used with registry.auth.type serviceAccountToken")
+	}
+	switch c.Auth.Type {
+	case "", KernelCacheRegistryAuthTypeNone:
+		return nil
+	case KernelCacheRegistryAuthTypeServiceAccountToken:
+		if c.Endpoint == "" || strings.ContainsAny(c.Endpoint, "/ \t\n") {
+			return errors.New("registry.endpoint must be a registry host with optional port")
+		}
+		if err := validateKernelCacheRegistryRoleRef("pushRoleRef", c.Auth.PushRoleRef); err != nil {
+			return err
+		}
+		if err := validateKernelCacheRegistryRoleRef("pullRoleRef", c.Auth.PullRoleRef); err != nil {
+			return err
+		}
+		if c.Auth.TokenTTLSeconds != 0 &&
+			(c.Auth.TokenTTLSeconds < DefaultKernelCacheRegistryTokenTTLSeconds || c.Auth.TokenTTLSeconds > 3600) {
+			return errors.New("registry.auth.tokenTTLSeconds must be between 600 and 3600")
+		}
+	default:
+		return fmt.Errorf("unsupported registry.auth.type %q", c.Auth.Type)
+	}
+	return nil
+}
+
+func validateKernelCacheRegistryRoleRef(field string, ref *KernelCacheRegistryRoleRef) error {
+	if ref == nil || ref.Kind == "" || ref.Name == "" {
+		return fmt.Errorf("registry.auth.%s requires kind and name", field)
+	}
+	if ref.Kind != "Role" && ref.Kind != "ClusterRole" {
+		return fmt.Errorf("registry.auth.%s.kind must be Role or ClusterRole", field)
+	}
+	return nil
 }
 
 // +kubebuilder:object:generate=false
@@ -277,9 +401,25 @@ func (c *KernelCacheConfig) DeepCopy() *KernelCacheConfig {
 		value := *c.JobTTLSecondsAfterFinished
 		out.JobTTLSecondsAfterFinished = &value
 	}
+	if c.RuntimeImagePrefetch.JobTTLSecondsAfterFinished != nil {
+		value := *c.RuntimeImagePrefetch.JobTTLSecondsAfterFinished
+		out.RuntimeImagePrefetch.JobTTLSecondsAfterFinished = &value
+	}
 	if c.ReconcileIntervalSeconds != nil {
 		value := *c.ReconcileIntervalSeconds
 		out.ReconcileIntervalSeconds = &value
+	}
+	if c.Registry.CAConfigMapRef != nil {
+		value := *c.Registry.CAConfigMapRef
+		out.Registry.CAConfigMapRef = &value
+	}
+	if c.Registry.Auth.PushRoleRef != nil {
+		value := *c.Registry.Auth.PushRoleRef
+		out.Registry.Auth.PushRoleRef = &value
+	}
+	if c.Registry.Auth.PullRoleRef != nil {
+		value := *c.Registry.Auth.PullRoleRef
+		out.Registry.Auth.PullRoleRef = &value
 	}
 	return &out
 }
@@ -474,6 +614,14 @@ func NewIngressConfig(isvcConfigMap *corev1.ConfigMap) (*IngressConfig, error) {
 			constants.LoRAModelRoutingStrategyExact, constants.LoRAModelRoutingStrategyRegex, ingressConfig.LoRAModelRoutingStrategy)
 	}
 
+	// Not validated, unlike the other keys: a typo in this llmisvc-only key would
+	// fail every reader of the ingress config. The llmisvc router rejects it per
+	// service instead.
+	ingressConfig.RouteRuleNaming = strings.ToLower(strings.TrimSpace(ingressConfig.RouteRuleNaming))
+	if ingressConfig.RouteRuleNaming == "" {
+		ingressConfig.RouteRuleNaming = DefaultRouteRuleNaming
+	}
+
 	return ingressConfig, nil
 }
 
@@ -532,6 +680,7 @@ func NewLocalModelConfig(isvcConfigMap *corev1.ConfigMap) (*LocalModelConfig, er
 // NewKernelCacheConfig parses the KernelCache configuration and applies source defaults.
 func NewKernelCacheConfig(isvcConfigMap *corev1.ConfigMap) (*KernelCacheConfig, error) {
 	jobTTLSeconds := DefaultKernelCacheJobTTLSeconds
+	runtimeImagePrefetchJobTTLSeconds := DefaultKernelCacheRuntimeImagePrefetchJobTTLSeconds
 	reconcileIntervalSeconds := DefaultKernelCacheReconcileIntervalSeconds
 	kernelCacheConfig := &KernelCacheConfig{
 		DefaultSidecarInjection:           true,
@@ -540,12 +689,24 @@ func NewKernelCacheConfig(isvcConfigMap *corev1.ConfigMap) (*KernelCacheConfig, 
 		MCVImage:                          DefaultKernelCacheMCVImage,
 		MCVCaptureReadinessTimeoutSeconds: DefaultKernelCacheMCVCaptureReadinessTimeoutSeconds,
 		PrefetchImage:                     DefaultKernelCachePrefetchImage,
-		JobTTLSecondsAfterFinished:        &jobTTLSeconds,
-		ReconcileIntervalSeconds:          &reconcileIntervalSeconds,
-		AbandonedCapturePolicy:            DefaultKernelCacheAbandonedCapturePolicy,
+		RuntimeImagePrefetch: KernelCacheRuntimeImagePrefetchConfig{
+			JobTTLSecondsAfterFinished: &runtimeImagePrefetchJobTTLSeconds,
+		},
+		JobTTLSecondsAfterFinished: &jobTTLSeconds,
+		ReconcileIntervalSeconds:   &reconcileIntervalSeconds,
+		AbandonedCapturePolicy:     DefaultKernelCacheAbandonedCapturePolicy,
+		Registry: KernelCacheRegistryConfig{
+			Insecure: false,
+			Auth:     KernelCacheRegistryAuth{Type: KernelCacheRegistryAuthTypeNone},
+		},
 		ArtifactSecurity: KernelCacheArtifactSecurityConfig{
-			Mode:          "none",
+			Mode:          DefaultKernelCacheArtifactSecurityMode,
 			FailurePolicy: string(kernelcachetypes.FailurePolicyReject),
+			Cert: KernelCacheArtifactCertConfig{
+				SigningProfileRef: DefaultKernelCacheArtifactSigningProfileRef,
+				TrustBundle:       DefaultKernelCacheArtifactTrustBundle,
+				SubjectRegexp:     DefaultKernelCacheArtifactSubjectRegexp,
+			},
 		},
 	}
 	if kernelCache, ok := isvcConfigMap.Data[KernelCacheConfigName]; ok {
@@ -569,6 +730,10 @@ func NewKernelCacheConfig(isvcConfigMap *corev1.ConfigMap) (*KernelCacheConfig, 
 		value := DefaultKernelCacheJobTTLSeconds
 		kernelCacheConfig.JobTTLSecondsAfterFinished = &value
 	}
+	if kernelCacheConfig.RuntimeImagePrefetch.JobTTLSecondsAfterFinished == nil {
+		value := DefaultKernelCacheRuntimeImagePrefetchJobTTLSeconds
+		kernelCacheConfig.RuntimeImagePrefetch.JobTTLSecondsAfterFinished = &value
+	}
 	if kernelCacheConfig.ReconcileIntervalSeconds == nil {
 		value := DefaultKernelCacheReconcileIntervalSeconds
 		kernelCacheConfig.ReconcileIntervalSeconds = &value
@@ -585,8 +750,26 @@ func NewKernelCacheConfig(isvcConfigMap *corev1.ConfigMap) (*KernelCacheConfig, 
 	if kernelCacheConfig.MCVCaptureReadinessTimeoutSeconds <= 0 {
 		return nil, errors.New("kernelcache.mcvCaptureReadinessTimeoutSeconds must be greater than zero")
 	}
+	if kernelCacheConfig.Registry.Auth.Type == KernelCacheRegistryAuthTypeServiceAccountToken &&
+		kernelCacheConfig.Registry.Auth.TokenTTLSeconds == 0 {
+		kernelCacheConfig.Registry.Auth.TokenTTLSeconds = DefaultKernelCacheRegistryTokenTTLSeconds
+	}
+	if err := kernelCacheConfig.Registry.Validate(); err != nil {
+		return nil, err
+	}
 	if kernelCacheConfig.ArtifactSecurity.Mode == "" {
-		kernelCacheConfig.ArtifactSecurity.Mode = "none"
+		kernelCacheConfig.ArtifactSecurity.Mode = DefaultKernelCacheArtifactSecurityMode
+	}
+	if kernelCacheConfig.ArtifactSecurity.Mode == DefaultKernelCacheArtifactSecurityMode {
+		if kernelCacheConfig.ArtifactSecurity.Cert.SigningProfileRef == "" {
+			kernelCacheConfig.ArtifactSecurity.Cert.SigningProfileRef = DefaultKernelCacheArtifactSigningProfileRef
+		}
+		if kernelCacheConfig.ArtifactSecurity.Cert.TrustBundle == "" {
+			kernelCacheConfig.ArtifactSecurity.Cert.TrustBundle = DefaultKernelCacheArtifactTrustBundle
+		}
+		if kernelCacheConfig.ArtifactSecurity.Cert.SubjectRegexp == "" {
+			kernelCacheConfig.ArtifactSecurity.Cert.SubjectRegexp = DefaultKernelCacheArtifactSubjectRegexp
+		}
 	}
 	if kernelCacheConfig.ArtifactSecurity.FailurePolicy == "" {
 		kernelCacheConfig.ArtifactSecurity.FailurePolicy = string(kernelcachetypes.FailurePolicyReject)

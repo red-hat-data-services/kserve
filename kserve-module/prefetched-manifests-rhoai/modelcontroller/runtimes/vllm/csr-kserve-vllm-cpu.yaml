@@ -18,11 +18,11 @@ spec:
     prometheus.io/path: "/metrics"
   multiModel: false
   supportedModelFormats:
-    - autoSelect: true
+    - autoSelect: false
       name: vLLM
   containers:
     - name: kserve-container
-      image: $(vllm-cpu-image)
+      image: $(vllm-cpu-pz-image)
       command:
         - python
         - -m
@@ -37,3 +37,11 @@ spec:
       ports:
         - containerPort: 8080
           protocol: TCP
+      volumeMounts:
+        - name: shm
+          mountPath: /dev/shm
+  volumes:
+    - name: shm
+      emptyDir:
+        medium: Memory
+        sizeLimit: 2Gi

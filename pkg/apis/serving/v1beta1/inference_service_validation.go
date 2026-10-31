@@ -566,6 +566,16 @@ func validateScaleTarget(target MetricTarget) error {
 	return nil
 }
 
+func validateKedaScaleTarget(target MetricTarget) error {
+	if target.Type == UtilizationMetricType {
+		return errors.New("the target type Utilization is not supported for KEDA external or pod metrics")
+	}
+	if target.Type == "" && target.Value == nil {
+		return errors.New("the target threshold value should not be empty")
+	}
+	return validateScaleTarget(target)
+}
+
 func validateScalingHPACompExtension(compExtSpec *ComponentExtensionSpec) error {
 	metric := MetricCPU
 	if compExtSpec.ScaleMetric != nil {
@@ -642,10 +652,7 @@ func validateScalingKedaCompExtension(compExtSpec *ComponentExtensionSpec) error
 				if metric.External.Metric.Query == "" {
 					return errors.New("the query should not be empty")
 				}
-				if metric.External.Target.Value == nil {
-					return errors.New("the target threshold value should not be empty")
-				}
-				if err := validateScaleTarget(metric.External.Target); err != nil {
+				if err := validateKedaScaleTarget(metric.External.Target); err != nil {
 					return err
 				}
 			case PodMetricSourceType:
@@ -655,10 +662,7 @@ func validateScalingKedaCompExtension(compExtSpec *ComponentExtensionSpec) error
 				if metric.PodMetric.Metric.Query == "" {
 					return errors.New("the query should not be empty")
 				}
-				if metric.PodMetric.Target.Value == nil {
-					return errors.New("the target threshold value should not be empty")
-				}
-				if err := validateScaleTarget(metric.PodMetric.Target); err != nil {
+				if err := validateKedaScaleTarget(metric.PodMetric.Target); err != nil {
 					return err
 				}
 			default:
@@ -730,9 +734,13 @@ func validateDeploymentMode(newIsvc *InferenceService, oldIsvc *InferenceService
 		return nil
 	}
 	statusDeploymentMode := string(constants.ParseDeploymentMode(oldIsvc.Status.DeploymentMode))
-	annotationDeploymentMode, ok := newIsvc.Annotations[constants.DeploymentMode]
+	rawAnnotationDeploymentMode, ok := newIsvc.Annotations[constants.DeploymentMode]
+	// Normalize the annotation the same way the status side is normalized, so a legacy
+	// alias annotation ("Serverless"/"RawDeployment") that hasn't actually changed doesn't
+	// get compared against its own normalized form and rejected. See issue #5885.
+	annotationDeploymentMode := string(constants.ParseDeploymentMode(rawAnnotationDeploymentMode))
 	if ok && annotationDeploymentMode != statusDeploymentMode {
-		return fmt.Errorf("update rejected: deploymentMode cannot be changed from '%s' to '%s'", statusDeploymentMode, annotationDeploymentMode)
+		return fmt.Errorf("update rejected: deploymentMode cannot be changed from '%s' to '%s'", statusDeploymentMode, rawAnnotationDeploymentMode)
 	}
 	return nil
 }
@@ -766,6 +774,9 @@ func validateStorageURISpec(storageUri *StorageUri) error {
 	// Validate individual storage URI specification
 	if storageUri.Uri == "" {
 		return errors.New("storage URI cannot be empty")
+	}
+	if err := utils.CheckHTTPStorageURI(storageUri.Uri); err != nil {
+		return err
 	}
 
 	if storageUri.MountPath == "/" {
@@ -850,6 +861,11 @@ func validateMultipleStorageURIs(isvc *InferenceService) error {
 		if storageURI != nil && storageURIs != nil {
 			return errors.New(InvalidStorageUriConfigError)
 		}
+		if storageURI != nil {
+			if err := utils.CheckHTTPStorageURI(*storageURI); err != nil {
+				return err
+			}
+		}
 
 		if err := validateMultipleStorageURIsSpec(storageURIs); err != nil {
 			return err
@@ -865,6 +881,11 @@ func validateMultipleStorageURIs(isvc *InferenceService) error {
 		if storageURI != nil && storageURIs != nil {
 			return errors.New(InvalidStorageUriConfigError)
 		}
+		if storageURI != nil {
+			if err := utils.CheckHTTPStorageURI(*storageURI); err != nil {
+				return err
+			}
+		}
 
 		if err := validateMultipleStorageURIsSpec(storageURIs); err != nil {
 			return err
@@ -879,6 +900,11 @@ func validateMultipleStorageURIs(isvc *InferenceService) error {
 
 	if storageURI != nil && storageURIs != nil {
 		return errors.New(InvalidStorageUriConfigError)
+	}
+	if storageURI != nil {
+		if err := utils.CheckHTTPStorageURI(*storageURI); err != nil {
+			return err
+		}
 	}
 
 	if err := validateMultipleStorageURIsSpec(storageURIs); err != nil {

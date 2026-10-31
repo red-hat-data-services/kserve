@@ -1,4 +1,4 @@
-name: Update RHOAI AutoGluon artifacts
+name: Update RHOAI generated artifacts
 
 on:
   push:
@@ -10,8 +10,11 @@ on:
       - python/autogluonserver/autogluon-all-requirements.txt
       - python/kserve/pyproject.toml
       - python/storage/pyproject.toml
+      - python/storage/konflux.rhoai.overrides
+      - python/storage/konflux-hdfs.in
+      - python/storage/konflux-build-deps.in
       - hack/rhoai/*.py
-      - .github/workflows/autogluon-rhoai-update.yml
+      - .github/workflows/rhoai-artifacts-update.yml
   pull_request_target:
     types: [closed]
     branches: ['rhoai-[0-9].[0-9]**']
@@ -21,8 +24,11 @@ on:
       - python/autogluonserver/autogluon-all-requirements.txt
       - python/kserve/pyproject.toml
       - python/storage/pyproject.toml
+      - python/storage/konflux.rhoai.overrides
+      - python/storage/konflux-hdfs.in
+      - python/storage/konflux-build-deps.in
       - hack/rhoai/*.py
-      - .github/workflows/autogluon-rhoai-update.yml
+      - .github/workflows/rhoai-artifacts-update.yml
   pull_request:
     paths:
       - python/autogluonserver/pyproject.rhoai.toml
@@ -30,14 +36,17 @@ on:
       - python/autogluonserver/autogluon-all-requirements.txt
       - python/kserve/pyproject.toml
       - python/storage/pyproject.toml
+      - python/storage/konflux.rhoai.overrides
+      - python/storage/konflux-hdfs.in
+      - python/storage/konflux-build-deps.in
       - hack/rhoai/*.py
-      - .github/workflows/autogluon-rhoai-update.yml
+      - .github/workflows/rhoai-artifacts-update.yml
   workflow_dispatch:
 permissions:
   contents: read
 
 concurrency:
-  group: autogluon-rhoai-${{ github.event_name == 'pull_request_target' && github.event.pull_request.base.ref || github.ref_name }}
+  group: rhoai-artifacts-${{ github.event_name == 'pull_request_target' && github.event.pull_request.base.ref || github.ref_name }}
   cancel-in-progress: false
 
 jobs:
@@ -45,6 +54,10 @@ jobs:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        generator: [autogluon, storage]
     steps:
       - name: Check out pull request
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
@@ -62,7 +75,7 @@ jobs:
         run: python -m pip install uv==0.7.8
 
       - name: Test generator contract
-        run: uv run hack/rhoai/test_generate_autogluon.py
+        run: uv run "hack/rhoai/test_generate_${{ matrix.generator }}.py"
 
   generate:
     if: >-
@@ -70,6 +83,21 @@ jobs:
       (github.event_name != 'pull_request_target' || github.event.pull_request.merged == true)
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    # Serialize the matrix legs: every leg pushes bot commits to the target
+    # branch, and running them one at a time keeps those pushes race-free.
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        include:
+          - generator: autogluon
+            outputs: >-
+              python/autogluonserver/uv.rhoai.lock
+              python/autogluonserver/autogluon-all-requirements.txt
+          - generator: storage
+            outputs: >-
+              python/storage/requirements.txt
+              python/storage/requirements-build-deps.txt
     env:
       TARGET_BRANCH: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.base.ref || github.ref_name }}
       CHECKOUT_REF: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.merge_commit_sha || github.sha }}
@@ -117,19 +145,16 @@ jobs:
               git reset --hard "origin/$TARGET_BRANCH"
             fi
 
-            uv run hack/rhoai/generate_autogluon.py
+            uv run "hack/rhoai/generate_${{ matrix.generator }}.py"
 
-            GENERATED=(
-              python/autogluonserver/uv.rhoai.lock
-              python/autogluonserver/autogluon-all-requirements.txt
-            )
+            read -r -a GENERATED <<< "${{ matrix.outputs }}"
             git add -- "${GENERATED[@]}"
             if git diff --staged --quiet; then
-              echo "RHOAI AutoGluon artifacts are already current"
+              echo "RHOAI ${{ matrix.generator }} artifacts are already current"
               exit 0
             fi
 
-            git commit -m "chore(autogluon): regenerate RHOAI artifacts"
+            git commit -m "chore(${{ matrix.generator }}): regenerate RHOAI artifacts"
             if git push origin "HEAD:refs/heads/$TARGET_BRANCH"; then
               echo "Generated artifact push succeeded (attempt ${attempt})"
               exit 0
@@ -139,3 +164,48 @@ jobs:
           done
           echo "ERROR: generated artifact push failed after ${MAX_RETRIES} attempts" >&2
           exit 1
+
+      - name: Report notification configuration
+        # Make it visible in every run whether failure notifications are
+        # armed, and why not if they are not. Env-indirect so the webhook
+        # value is never interpolated into the script body.
+        if: always()
+        env:
+          SLACK_WEBHOOK: ${{ secrets.RHOAI_DEVOPS_SLACK_WEBHOOK }}
+          SLACK_MENTIONS: ${{ vars.RHOAI_SLACK_MENTIONS }}
+        run: |
+          armed=true
+          if [ -z "$SLACK_WEBHOOK" ]; then
+            armed=false
+            echo "::warning title=Slack notifications skipped::RHOAI_DEVOPS_SLACK_WEBHOOK secret is not set on this repository; failure notifications will not be posted."
+          else
+            echo "RHOAI_DEVOPS_SLACK_WEBHOOK is set."
+          fi
+          if [ -z "$SLACK_MENTIONS" ]; then
+            armed=false
+            echo "::warning title=Slack notifications skipped::RHOAI_SLACK_MENTIONS variable is not set on this repository; failure notifications will not be posted."
+          else
+            echo "RHOAI_SLACK_MENTIONS is set."
+          fi
+          if [ "$armed" = true ]; then
+            echo "Slack failure notifications are armed."
+          else
+            echo "::warning title=Slack notifications skipped::Failure notifications are disabled until both RHOAI_DEVOPS_SLACK_WEBHOOK and RHOAI_SLACK_MENTIONS are configured."
+          fi
+
+      - name: Notify on failure
+        # Dormant until RHOAI_DEVOPS_SLACK_WEBHOOK (secret) and
+        # RHOAI_SLACK_MENTIONS (variable, e.g. '<!subteam^S…>') are set.
+        if: >-
+          failure() &&
+          secrets.RHOAI_DEVOPS_SLACK_WEBHOOK != '' &&
+          vars.RHOAI_SLACK_MENTIONS != ''
+        uses: rtcamp/action-slack-notify@sha256:17fac87b8ea4ffec1f90b855f7f88e8fd69ec8568f690f4ea24d5a408eeee419a
+        env:
+          SLACK_WEBHOOK: ${{ secrets.RHOAI_DEVOPS_SLACK_WEBHOOK }}
+          SLACK_COLOR: danger
+          SLACK_TITLE: RHOAI artifact regeneration failed (${{ matrix.generator }})
+          SLACK_MENTIONS: ${{ vars.RHOAI_SLACK_MENTIONS }}
+          SLACK_MESSAGE: |
+            generate_${{ matrix.generator }}.py failed on ${{ github.ref_name }}.
+            ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}

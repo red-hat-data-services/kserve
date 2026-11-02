@@ -19,10 +19,10 @@ on:
 # The two reads are on data that is public on this repository, so the calls
 # succeed without them, but the block should say what the job actually touches.
 permissions:
-  contents: write      # squash-merge the pull request
+  contents: write # squash-merge the pull request
   pull-requests: write # squash-merge the pull request, comment when that is refused
-  checks: read         # read the check aggregate on the head commit
-  issues: read         # list open pull requests by label
+  checks: read # read the check aggregate on the head commit
+  issues: read # list open pull requests by label
 
 jobs:
   auto-merge:
@@ -32,7 +32,7 @@ jobs:
       - name: Check out the OWNERS file
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
-          ref: master
+          ref: main
           # The job talks to the API only, so the checkout has no use for a token.
           persist-credentials: false
 

@@ -107,7 +107,14 @@ func (r *LLMISVCReconciler) reconcileRouterPlatformNetworking(ctx context.Contex
 		if err != nil {
 			return fmt.Errorf("failed to load config: %w", err)
 		}
-		routes = append(routes, r.expectedHTTPRoute(ctx, llmSvc, cfg))
+		// Gateway discovery reads only spec.parentRefs, which a render failure leaves
+		// intact. A stopped service gets here with a route that failed to render, and
+		// it still has to tear down its DestinationRules.
+		route, renderErr := r.expectedHTTPRoute(ctx, llmSvc, cfg)
+		if renderErr != nil {
+			log.FromContext(ctx).V(1).Info("Expected HTTPRoute failed to render, using its parentRefs only", "error", renderErr)
+		}
+		routes = append(routes, route)
 	}
 
 	isIstio, err := r.hasIstioGateway(ctx, routes)

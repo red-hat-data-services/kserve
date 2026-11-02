@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"regexp"
 	"slices"
+	"strings"
 
 	"k8s.io/utils/ptr"
 
@@ -34,6 +35,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/webhook/admission"
 	gwapiv1 "sigs.k8s.io/gateway-api/apis/v1"
 
+	"github.com/kserve/kserve/pkg/constants"
 	"github.com/kserve/kserve/pkg/utils"
 	kservevalidation "github.com/kserve/kserve/pkg/validation"
 )
@@ -107,6 +109,7 @@ func (l *LLMInferenceServiceValidator) validate(ctx context.Context, prev *LLMIn
 	allErrs = append(allErrs, l.validateLoRAAdapters(llmSvc)...)
 	allErrs = append(allErrs, l.validateKVCacheOffloading(llmSvc)...)
 	allErrs = append(allErrs, l.validateManagedDRAAnnotations(llmSvc)...)
+	allErrs = append(allErrs, l.validateRouteRuleNamingAnnotation(llmSvc)...)
 
 	allErrs = append(allErrs, l.validateImmutable(prev, llmSvc)...)
 
@@ -824,4 +827,28 @@ func (l *LLMInferenceServiceValidator) validateTrafficFields(
 	}
 
 	return allErrs
+}
+
+// validateRouteRuleNamingAnnotation sees only the service's own annotations. A
+// value carried by a preset is caught when the merged spec is validated at
+// reconcile.
+func (l *LLMInferenceServiceValidator) validateRouteRuleNamingAnnotation(llmSvc *LLMInferenceService) field.ErrorList {
+	return ValidateRouteRuleNamingAnnotation(llmSvc.Spec.Annotations, field.NewPath("spec", "annotations"))
+}
+
+// ValidateRouteRuleNamingAnnotation is exported for the v1alpha1 validator.
+func ValidateRouteRuleNamingAnnotation(annotations map[string]string, path *field.Path) field.ErrorList {
+	raw, ok := annotations[constants.RouteRuleNamingAnnotationKey]
+	if !ok {
+		return nil
+	}
+	switch strings.ToLower(strings.TrimSpace(raw)) {
+	case "", constants.RouteRuleNamingPreset, constants.RouteRuleNamingUnique:
+		return nil
+	}
+	return field.ErrorList{field.NotSupported(
+		path.Key(constants.RouteRuleNamingAnnotationKey),
+		raw,
+		[]string{constants.RouteRuleNamingPreset, constants.RouteRuleNamingUnique},
+	)}
 }

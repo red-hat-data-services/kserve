@@ -42,6 +42,7 @@ _LLMISVC_CORE_EXCLUDED = {
     "test_llm_tracing.py",
     "test_llm_inference_service_conversion.py",
     "test_storage_version_migration.py",
+    "test_llm_shared_gateway_epp.py",
 }
 
 

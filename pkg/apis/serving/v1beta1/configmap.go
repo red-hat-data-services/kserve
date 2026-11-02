@@ -58,6 +58,7 @@ const (
 
 	DefaultModelBasedRoutingHeaderName = "X-Gateway-Model-Name"
 	DefaultModelBasedRoutingMode       = "enabled"
+	DefaultRouteRuleNaming             = constants.RouteRuleNamingPreset
 )
 
 // Error messages
@@ -133,6 +134,11 @@ type IngressConfig struct {
 
 	ModelBasedRoutingHeaderName string `json:"modelBasedRoutingHeaderName,omitempty"`
 	ModelBasedRoutingMode       string `json:"modelBasedRoutingMode,omitempty"`
+
+	// RouteRuleNaming is "preset" (the default) or "unique", which suffixes the
+	// LLMInferenceService HTTPRoute rule names per service. An unsupported value
+	// sets HTTPRoutesReady=False on the services that use it.
+	RouteRuleNaming string `json:"routeRuleNaming,omitempty"`
 }
 
 // +kubebuilder:object:generate=false
@@ -357,6 +363,14 @@ func NewIngressConfig(isvcConfigMap *corev1.ConfigMap) (*IngressConfig, error) {
 
 	if ingressConfig.ModelBasedRoutingMode == "" {
 		ingressConfig.ModelBasedRoutingMode = DefaultModelBasedRoutingMode
+	}
+
+	// Not validated, unlike the other keys: a typo in this llmisvc-only key would
+	// fail every reader of the ingress config. The llmisvc router rejects it per
+	// service instead.
+	ingressConfig.RouteRuleNaming = strings.ToLower(strings.TrimSpace(ingressConfig.RouteRuleNaming))
+	if ingressConfig.RouteRuleNaming == "" {
+		ingressConfig.RouteRuleNaming = DefaultRouteRuleNaming
 	}
 
 	return ingressConfig, nil

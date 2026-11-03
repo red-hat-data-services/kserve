@@ -126,8 +126,8 @@ catalogue==2.0.10 \
     #   spacy
     #   srsly
     #   thinc
-certifi==2026.6.17 \
-    --hash=sha256:36a32caf926900a4f112e18621636a19ce6474c5b2aeb148588147d2633ec530
+certifi==2026.10.19 \
+    --hash=sha256:3aad93ed5a2e5467cbe9c3f8879f96949d85dc5964aed70f2ce24edcf6b833f8
     # via
     #   httpcore
     #   httpx

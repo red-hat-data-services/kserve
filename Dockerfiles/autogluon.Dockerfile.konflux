@@ -1,4 +1,4 @@
-ARG BASE_IMAGE="quay.io/aipcc/base-images/cpu:3.5"
+ARG BASE_IMAGE=quay.io/aipcc/base-images/cpu:3.5.6-1793331003
 
 FROM ${BASE_IMAGE} AS builder
 

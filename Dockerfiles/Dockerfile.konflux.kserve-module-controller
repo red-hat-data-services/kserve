@@ -1,5 +1,5 @@
 # Build the manager binary
-FROM registry.access.redhat.com/ubi9/go-toolset:1.26@sha256:beaa5163d808534e703aca4d3c2845210f032141eb0b85303c18d453d624d1f0 AS builder
+FROM registry.access.redhat.com/ubi9/go-toolset:1.26@sha256:c2bd0309bf78ae317024fdfc5602a31704e0dba9572f6d4b0bd4b681033dc965 AS builder
 ENV PATH="$PATH:/opt/app-root/src/go/bin"
 
 # These built-in args are defined in the global scope, and are not automatically accessible within build stages or RUN commands.

@@ -13,8 +13,8 @@ metadata:
       event == "pull_request"
       && (files.all.exists(p, ! p.matches('^\\.tekton/')) || ".tekton/odh-kserve-localmodelnode-agent-pull-request.yaml".pathChanged())
   labels:
-    appstudio.openshift.io/application: rhoai-v3-6
-    appstudio.openshift.io/component: odh-kserve-localmodelnode-agent-v3-6
+    appstudio.openshift.io/application: rhoai-v3-7-ea-1
+    appstudio.openshift.io/component: odh-kserve-localmodelnode-agent-v3-7-ea-1
     pipelines.appstudio.openshift.io/type: build
   name: odh-kserve-localmodelnode-agent-on-pull-request-{{pull_request_number}}
   namespace: rhoai-tenant
@@ -54,7 +54,7 @@ spec:
   - name: enable-slack-failure-notification
     value: "false"
   - name: rhoai-version
-    value: "3.6.0"
+    value: "3.7.0-ea.1"
   - name: build-source-image
     value: true
   - name: rhel-subscription-activation-key
@@ -69,7 +69,7 @@ spec:
     - name: pathInRepo
       value: pipelines/multi-arch-container-build.yaml
   taskRunTemplate:
-    serviceAccountName: build-pipeline-odh-kserve-localmodelnode-agent-v3-6
+    serviceAccountName: build-pipeline-odh-kserve-localmodelnode-agent-v3-7-ea-1
   workspaces:
   - name: git-auth
     secret:

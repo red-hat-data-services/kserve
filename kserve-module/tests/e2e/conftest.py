@@ -43,7 +43,10 @@ WVA_DEPLOYMENT = "workload-variant-autoscaler-controller-manager"
 WVA_CONFIGMAP = "workload-variant-autoscaler-saturation-scaling-config"
 MODELEXPRESS_DEPLOYMENT = "modelexpress-operator"
 MODELEXPRESS_CLUSTERROLES_XKS = ["modelexpress-operator"]
-MODELEXPRESS_CLUSTERROLES_OCP = ["modelexpress-operator", "modelexpress-operator-openshift"]
+MODELEXPRESS_CLUSTERROLES_OCP = [
+    "modelexpress-operator",
+    "modelexpress-operator-openshift",
+]
 MODELEXPRESS_CRDS = [
     "modelexpressservers.modelexpress.opendatahub.io",
     "modelmetadatas.modelexpress.nvidia.com",
@@ -566,12 +569,21 @@ def wait_for_deployment(kubectl_bin, name, namespace=NAMESPACE, timeout=TIMEOUT_
 def scale_deployment(kubectl_bin, name, replicas, namespace=NAMESPACE):
     """Scale a deployment to the given replica count."""
     run(
-        [kubectl_bin, "scale", "deployment", name, "-n", namespace,
-         f"--replicas={replicas}"]
+        [
+            kubectl_bin,
+            "scale",
+            "deployment",
+            name,
+            "-n",
+            namespace,
+            f"--replicas={replicas}",
+        ]
     )
 
 
-def wait_for_deployment_scaled_down(kubectl_bin, name, namespace=NAMESPACE, timeout=TIMEOUT_60S):
+def wait_for_deployment_scaled_down(
+    kubectl_bin, name, namespace=NAMESPACE, timeout=TIMEOUT_60S
+):
     """Wait until a scaled-down deployment has no replica pods left.
 
     Reads status.replicas and retries on a failed get, rather than reading the
@@ -588,7 +600,9 @@ def wait_for_deployment_scaled_down(kubectl_bin, name, namespace=NAMESPACE, time
             if dep.get("status", {}).get("replicas", 0) == 0:
                 return
         time.sleep(2)
-    raise TimeoutError(f"deployment {name} still has replicas after scaling to 0 within {timeout}s")
+    raise TimeoutError(
+        f"deployment {name} still has replicas after scaling to 0 within {timeout}s"
+    )
 
 
 def wait_for_daemonset_ready(

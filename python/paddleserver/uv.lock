@@ -1397,7 +1397,7 @@ requires-dist = [
     { name = "dulwich", specifier = ">=1.2.5" },
     { name = "google-cloud-storage", specifier = ">=2.14.0,<3.0.0" },
     { name = "hf-xet", specifier = ">=1.5.0" },
-    { name = "huggingface-hub", extras = ["hf-transfer"], specifier = ">=0.32.0" },
+    { name = "huggingface-hub", specifier = ">=0.32.0" },
     { name = "jwcrypto", marker = "extra == 'confidential'", specifier = ">=1.5.0" },
     { name = "modelscope-hub", specifier = ">=0.1.4" },
     { name = "oras", specifier = ">=0.2.42,<1.0.0" },

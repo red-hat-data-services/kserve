@@ -1,0 +1,26 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: model-serving-api-allow-ingress
+  namespace: system
+spec:
+  podSelector:
+    matchLabels:
+      app: model-serving-api
+  policyTypes:
+    - Ingress
+    - Egress
+  # Temporary compatibility exception: Dashboard, monitoring, and kubelet
+  # sources are not yet represented by verified peers. Narrow this rule after
+  # their deployed traffic identities have been qualified.
+  ingress:
+    - ports:
+        - protocol: TCP
+          port: 8443
+        - protocol: TCP
+          port: 8080
+  # The API requires Kubernetes API and DNS access and may use a configured
+  # OTLP endpoint. Keep egress explicitly open until those destinations can be
+  # represented safely by narrower peers.
+  egress:
+    - {}

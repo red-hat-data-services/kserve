@@ -10,6 +10,7 @@ labels:
 
 resources:
   - server.yaml
+  - networkpolicy.yaml
   - service.yaml
   - service_account.yaml
   - clusterrole.yaml

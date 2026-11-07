@@ -154,6 +154,46 @@ webhooks:
     service:
       name: webhook-service
       namespace: system
+      path: /validate-serving-kserve-io-v1alpha1-llminferenceservice
+  failurePolicy: Fail
+  name: validating.llmisvc-v1alpha1.odh-model-controller.opendatahub.io
+  rules:
+  - apiGroups:
+    - serving.kserve.io
+    apiVersions:
+    - v1alpha1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - llminferenceservices
+  sideEffects: None
+- admissionReviewVersions:
+  - v1
+  clientConfig:
+    service:
+      name: webhook-service
+      namespace: system
+      path: /validate-serving-kserve-io-v1alpha2-llminferenceservice
+  failurePolicy: Fail
+  name: validating.llmisvc-v1alpha2.odh-model-controller.opendatahub.io
+  rules:
+  - apiGroups:
+    - serving.kserve.io
+    apiVersions:
+    - v1alpha2
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - llminferenceservices
+  sideEffects: None
+- admissionReviewVersions:
+  - v1
+  clientConfig:
+    service:
+      name: webhook-service
+      namespace: system
       path: /validate-serving-kserve-io-v1beta1-inferenceservice
   failurePolicy: Fail
   name: validating.isvc.odh-model-controller.opendatahub.io

@@ -20,7 +20,7 @@ spec:
   multiModel: false
   schedulerName: spyre-scheduler
   supportedModelFormats:
-    - autoSelect: true
+    - autoSelect: false
       name: vLLM
   containers:
     - name: kserve-container

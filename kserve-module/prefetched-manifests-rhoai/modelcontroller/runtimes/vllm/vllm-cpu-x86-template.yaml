@@ -51,3 +51,11 @@ objects:
           ports:
             - containerPort: 8080
               protocol: TCP
+          volumeMounts:
+            - name: shm
+              mountPath: /dev/shm
+      volumes:
+        - name: shm
+          emptyDir:
+            medium: Memory
+            sizeLimit: 2Gi

@@ -1,6 +1,7 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "github>red-hat-data-services/konflux-central//renovate/default-renovate.json5"
+    "github>red-hat-data-services/konflux-central//renovate/default-renovate.json5",
+    "github>red-hat-data-services/konflux-central//renovate/aipcc-base-images-renovate.json5"
   ]
 }

@@ -21,21 +21,21 @@ spec:
   supportedModelFormats:
     - name: openvino_ir
       version: opset13
-      autoSelect: true
+      autoSelect: false
     - name: onnx
       version: "1"
     - name: tensorflow
       version: "1"
-      autoSelect: true
+      autoSelect: false
     - name: tensorflow
       version: "2"
-      autoSelect: true
+      autoSelect: false
     - name: paddle
       version: "2"
-      autoSelect: true
+      autoSelect: false
     - name: pytorch
       version: "2"
-      autoSelect: true
+      autoSelect: false
   protocolVersions:
     - v2
     - grpc-v2

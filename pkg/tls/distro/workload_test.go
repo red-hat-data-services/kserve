@@ -240,7 +240,11 @@ func TestResolveWorkloadArgsStrictGroups(t *testing.T) {
 			TLSSecurityProfile: &configv1.TLSSecurityProfile{Type: configv1.TLSProfileCustomType, Custom: &configv1.CustomTLSProfile{
 				TLSProfileSpec: configv1.TLSProfileSpec{
 					MinTLSVersion: configv1.VersionTLS13,
-					Groups:        []configv1.TLSGroup{configv1.TLSGroupSecP256r1, configv1.TLSGroupX25519},
+					Groups: []configv1.TLSGroup{
+						configv1.TLSGroupSecP256r1,
+						configv1.TLSGroupX25519,
+						configv1.TLSGroupX25519MLKEM768,
+					},
 				},
 			}},
 		},
@@ -251,7 +255,7 @@ func TestResolveWorkloadArgsStrictGroups(t *testing.T) {
 		t.Fatal(err)
 	}
 	if got.MinVersion != "VersionTLS13" || got.CurveIDs != "23" {
-		t.Fatalf("ResolveWorkloadArgs() = %+v, want strict-FIPS TLS 1.3 with supported group 23", got)
+		t.Fatalf("ResolveWorkloadArgs() = %+v, want TLS 1.3 with supported FIPS group 23", got)
 	}
 }
 

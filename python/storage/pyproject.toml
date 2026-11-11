@@ -7,7 +7,8 @@ license = {text = "https://github.com/kserve/kserve/blob/master/LICENSE"}
 requires-python = "<3.13,>=3.11"
 dependencies = [
     "aiohttp<4.0.0,>=3.14.4", # CVE-2026-111064
-    "certifi>=2024.7.4",
+    # GHSA-6q48-6c7w-9gw2 certifi bundles emSign root CAs with compromised intermediate CA keys
+    "certifi>=2026.10.19",
     "requests<3.0.0,>=2.32.2",
     "google-cloud-storage<3.0.0,>=2.14.0",
     "azure-storage-blob<13.0.0,>=12.20.0",

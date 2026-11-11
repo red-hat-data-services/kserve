@@ -10,6 +10,7 @@
         namespace: opendatahub
         path: /mutate-serving-kserve-io-v1alpha1-llminferenceservice
     failurePolicy: Fail
+    matchPolicy: Exact
     name: connection-llmisvc-v1alpha1.odh-model-controller.opendatahub.io
     rules:
     - apiGroups:
@@ -30,6 +31,7 @@
         namespace: opendatahub
         path: /mutate-serving-kserve-io-v1alpha2-llminferenceservice
     failurePolicy: Fail
+    matchPolicy: Exact
     name: connection-llmisvc-v1alpha2.odh-model-controller.opendatahub.io
     rules:
     - apiGroups:

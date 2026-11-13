@@ -17,7 +17,7 @@ REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
 PROJECT_PATH = REPOSITORY_ROOT / "python/autogluonserver/pyproject.rhoai.toml"
 LOCK_PATH = REPOSITORY_ROOT / "python/autogluonserver/uv.rhoai.lock"
 GENERATOR_PATH = Path(__file__).with_name("generate_autogluon.py")
-WORKFLOW_PATH = REPOSITORY_ROOT / ".github/workflows/autogluon-rhoai-update.yml"
+WORKFLOW_PATH = REPOSITORY_ROOT / ".github/workflows/rhoai-artifacts-update.yml"
 
 spec = importlib.util.spec_from_file_location("generate_autogluon", GENERATOR_PATH)
 if spec is None or spec.loader is None:
@@ -52,8 +52,11 @@ class GeneratorContractTests(unittest.TestCase):
             "python/autogluonserver/autogluon-all-requirements.txt",
             "python/kserve/pyproject.toml",
             "python/storage/pyproject.toml",
+            "python/storage/konflux.rhoai.overrides",
+            "python/storage/konflux-hdfs.in",
+            "python/storage/konflux-build-deps.in",
             "hack/rhoai/*.py",
-            ".github/workflows/autogluon-rhoai-update.yml",
+            ".github/workflows/rhoai-artifacts-update.yml",
         )
         push_event = workflow.split("  pull_request_target:", 1)[0]
         self.assertIn("branches:\n      - main", push_event)

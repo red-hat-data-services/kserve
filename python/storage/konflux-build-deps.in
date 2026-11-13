@@ -1,0 +1,8 @@
+# Build-time dependencies for the storage-initializer hermetic Konflux build.
+#
+# These back the setuptools build of the kserve-storage wheel inside the
+# image; they are compiled into requirements-build-deps.txt by
+# hack/rhoai/generate_storage.py.
+packaging
+setuptools
+wheel

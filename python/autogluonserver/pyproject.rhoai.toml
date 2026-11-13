@@ -25,6 +25,14 @@ rhoai-build = ["setuptools>=61.0", "wheel"]
 [tool.uv]
 environments = ["sys_platform == 'linux'"]
 
+# Downstream hermetic delta: the shared python/storage/pyproject.toml is
+# ODH-verbatim and declares huggingface-hub[hf-transfer], but hf-transfer is
+# not onboarded to the AIPCC index (AIPCC-18230); hf-xet supersedes it. Drop
+# this override once hf-transfer is onboarded.
+override-dependencies = [
+    "huggingface-hub>=0.32.0",
+]
+
 [tool.uv.sources]
 kserve = { path = "../kserve", editable = false }
 kserve-storage = { path = "../storage", editable = false }

@@ -15,11 +15,11 @@ adagio==0.2.6 \
 aiohappyeyeballs==2.7.1 \
     --hash=sha256:148c42ea64254eff51702e3643744a5d29e19f1cc7f1adcfb2289d7ac711ae80
     # via aiohttp
-aiohttp==3.14.1 \
-    --hash=sha256:bd49302b6aa79db20905429d539a0a328adf440c0a75508892ae9700d6318857 \
-    --hash=sha256:c958019fc4a4a4536be8308b5efdebb7b31b51dbcf9cc651e16d782ec404d372 \
-    --hash=sha256:dc7528950c7a168f8f70cfba05e112f4a857d658c9f0dfc854d6d4e9b17ecc23 \
-    --hash=sha256:f3c686257c0297a912e82e2582f6587b922f1e7b1e3ff0a2d3d3fb7093db545e
+aiohttp==3.14.4 \
+    --hash=sha256:616d46938b694f83e92b99a70b5b70a24399af080acdb35e4e86ede599f57649 \
+    --hash=sha256:8b622b90579c8ec79118878eb59eb0ad4b27f35059e1b32bce4bd0a12192d06d \
+    --hash=sha256:969d26dd38892e4bca272fccb280d8d1c16046acb6fea3864760c8c2bd7e644c \
+    --hash=sha256:c3f27bb6facc93eb0466a38f3d89034896211b7c4ee306aeaa2b50da2062ba26
     # via
     #   fsspec
     #   kserve
@@ -109,14 +109,14 @@ blis==1.3.3 \
     --hash=sha256:80c8d5f0e51831694734105d9a047193aebf7918c05c865923abe52b56785910 \
     --hash=sha256:c1ae9d426e7345eb936fda81639a7dddcaaf479bffc948da7c0c4018fe18103b
     # via thinc
-boto3==1.43.50 \
-    --hash=sha256:00c080260af44da1faaed39ed97e3d37762e9414426eed89cc9137e7e8ae96a9
+boto3==1.43.122 \
+    --hash=sha256:6b7c23b6239f25cb36763567eccbe5d764ce9492da8abc3fea70b2a86401349a
     # via
     #   autogluon-common
     #   autogluon-core
     #   kserve-storage
-botocore==1.43.50 \
-    --hash=sha256:a202e00c75172a292d6cd3f5d217b7c27333c496ef854ead607ea6b3d7b6bb2d
+botocore==1.43.122 \
+    --hash=sha256:c93126155826c2942b1ba2a482423cc70e79a987ad9607a1bf2d9a5348e83759
     # via
     #   boto3
     #   s3transfer
@@ -261,8 +261,8 @@ fastprogress==1.1.6 \
 fasttransform==0.0.2 \
     --hash=sha256:84a8ea9d5e91f85b0e3d6f03f864dbdf02d6706c073a5034f7bf541e69e93e80
     # via fastai
-filelock==3.30.2 \
-    --hash=sha256:3876bce9fb39cd4dc9dc025336708416b2159bd96c5b4ca2d77dd14c9c7600ba
+filelock==4.2.4 \
+    --hash=sha256:3cddca5b5ab48b12258abe2ee146cb6c7bb36ccb2817ed369d358cf7088fe892
     # via
     #   huggingface-hub
     #   torch
@@ -572,8 +572,8 @@ numpy==2.3.5 \
     #   utilsforecast
     #   window-ops
     #   xgboost
-oauthlib==3.3.1 \
-    --hash=sha256:c6fbab4f1a77a539f01175e2ea74b9552806bd0a849c70e744fda4ab801031c0
+oauthlib==4.0.1 \
+    --hash=sha256:34b43745c5ea92dfc2e35bee015080ed1d16d4249b5d84d025d2b6949c531458
     # via
     #   python-fasthtml
     #   requests-oauthlib
@@ -642,15 +642,11 @@ patsy==1.0.2 \
 peft==0.19.1 \
     --hash=sha256:f535ba967638601280a0d00480242ff013e14b5f9d8596a2c3ffa353ae5f159d
     # via autogluon-timeseries
-pillow==12.3.0 \
-    --hash=sha256:292ad662c4a21daa5c557816bd36870c036fcb32f1863a474725c9a48db317f2 \
-    --hash=sha256:4a904ef7f3765fc818c3a483529ff04147e97cc0390f9eec5edd30cae497fafe \
-    --hash=sha256:5762ef56cdceff2319ac80ed92150106a0bf51ec2eea15226f44c9d983e7b916 \
-    --hash=sha256:65a30ac6a91ac6d2d08c73441c8fe69653d0d818312b18d1dc86ee8932529cec \
-    --hash=sha256:787b6ebb6a267bca4040c40296487e0428b7ba8fe3024b2863626ba09d566fc9 \
-    --hash=sha256:bb4f92e67999c0820fd8a9f959f0dce3b0b0dcb8144d47aa7a1432183e7c4c98 \
-    --hash=sha256:c7d40c6deb9bf0b847d4f027d55e2362d55fbee8876dbf728af0e2efe345128a \
-    --hash=sha256:e803d1800d5fb6ed2fbbb8d1aa4a42f1f9080ed98b6f929646b920330031f6b1
+pillow==13.0.0 \
+    --hash=sha256:28998a83b7064f7b5418a9cbd83422007e36382424080d2d0d399c217fa77b0e \
+    --hash=sha256:2ee1aa6abaa9a76617aaabb5c9d2ad6cdb85ddb3b524a3d172cb86b08ffcf4c3 \
+    --hash=sha256:3f20989af8bc95245f8c138304d85f350ab191da661b9b42dc3ef8988833d059 \
+    --hash=sha256:823c9b5f18f00efb44008dac8ac24a869d50ff0f1d62bedb0e081ba058a8a23c
     # via
     #   fastai
     #   matplotlib
@@ -714,8 +710,8 @@ pyarrow==20.0.0 \
     # via
     #   autogluon-common
     #   triad
-pyasn1==0.6.4 \
-    --hash=sha256:aa4baf3e3b2b894b21127fc4769773650d15543dec5a3756daaa19c0f3763b7f
+pyasn1==0.6.5 \
+    --hash=sha256:fdaff1dbf2cf5bb53eace764b0eef67f0a0e8a9b18aa1bf8503ad25199575e6f
     # via
     #   kserve
     #   kserve-storage
@@ -744,8 +740,8 @@ pydantic-core==2.46.4 \
 pygments==2.20.0 \
     --hash=sha256:14c06510dc5a2dbf9d83a85463d229907d0456e167a3752d361e6cd1cbfd1152
     # via rich
-pyjwt==2.13.0 \
-    --hash=sha256:2d0ec124d9f710af8e14c3b2576bcef5a977e607ef38e97e9fbbc8efe47cfbf6
+pyjwt==2.14.0 \
+    --hash=sha256:050a6c242167127a342838a07c14e2dd3139ace09a035b183d30072baed7024e
     # via
     #   kserve
     #   kserve-storage
@@ -1093,8 +1089,8 @@ typing-inspection==0.4.2 \
 tzdata==2026.3 \
     --hash=sha256:c785829cf72ef723f0788ee27618a0143532630f9e301ecc09f73990c7b212be
     # via pandas
-urllib3==2.7.0 \
-    --hash=sha256:8c0d942cee38135eb54435268fa34bceed0d0a7dff31d8aaee06c06ef8637942
+urllib3==2.8.0 \
+    --hash=sha256:cf189e13e706ae0f5465262fe46be26aeddd638328f239825c67496621c68627
     # via
     #   botocore
     #   dulwich

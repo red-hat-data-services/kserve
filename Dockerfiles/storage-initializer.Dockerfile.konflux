@@ -48,7 +48,8 @@ ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 # krb5-libs provides the system libkrb5/libgssapi_krb5 that the python gssapi and
 # krb5 wheels link against for the HDFS Kerberos backend.
-RUN microdnf install -y  \
+RUN microdnf update -y ca-certificates \
+    && microdnf install -y  \
         shadow-utils python3.12 krb5-libs \
     &&  microdnf clean all \
     && alternatives --install /usr/bin/unversioned-python python /usr/bin/python3.12 1

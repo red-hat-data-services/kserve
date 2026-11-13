@@ -7154,13 +7154,13 @@ arches:
     name: keyutils-libs-devel
     evr: 1.6.3-1.el9
     sourcerpm: keyutils-1.6.3-1.el9.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/appstream/os/Packages/k/krb5-devel-1.21.1-10.el9_8.1.s390x.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/appstream/os/Packages/k/krb5-devel-1.21.1-10.el9_9.2.s390x.rpm
     repoid: ubi-9-for-s390x-appstream-rpms
-    size: 152551
-    checksum: sha256:9cc0893737a27f84961592d3046d74fa90af1fa457962131ca255237fc8d238a
+    size: 156229
+    checksum: sha256:175f403dea34cd03344b978b452f44d62e17e88f2bf21d3bfed7dbae6cc0f24f
     name: krb5-devel
-    evr: 1.21.1-10.el9_8.1
-    sourcerpm: krb5-1.21.1-10.el9_8.1.src.rpm
+    evr: 1.21.1-10.el9_9.2
+    sourcerpm: krb5-1.21.1-10.el9_9.2.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/appstream/os/Packages/l/libasan-11.5.0-17.el9_9.s390x.rpm
     repoid: ubi-9-for-s390x-appstream-rpms
     size: 413986
@@ -9177,20 +9177,27 @@ arches:
     name: gzip
     evr: 1.12-2.el9_8
     sourcerpm: gzip-1.12-2.el9_8.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/baseos/os/Packages/k/krb5-pkinit-1.21.1-10.el9_8.1.s390x.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/baseos/os/Packages/k/krb5-libs-1.21.1-10.el9_9.2.s390x.rpm
     repoid: ubi-9-for-s390x-baseos-rpms
-    size: 63369
-    checksum: sha256:3e60d94753e2e27451f84bd08e4c2471c228c980941d79179ab2f475d3c12919
+    size: 777541
+    checksum: sha256:d72ac27a271f9158f23c110785d6123dad29b2cccefe599ee3c1162a5c932500
+    name: krb5-libs
+    evr: 1.21.1-10.el9_9.2
+    sourcerpm: krb5-1.21.1-10.el9_9.2.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/baseos/os/Packages/k/krb5-pkinit-1.21.1-10.el9_9.2.s390x.rpm
+    repoid: ubi-9-for-s390x-baseos-rpms
+    size: 67090
+    checksum: sha256:5ce3a1b309b1617e907a6e329d790299cb91c755f12787f65002bfba762ed5e9
     name: krb5-pkinit
-    evr: 1.21.1-10.el9_8.1
-    sourcerpm: krb5-1.21.1-10.el9_8.1.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/baseos/os/Packages/k/krb5-workstation-1.21.1-10.el9_8.1.s390x.rpm
+    evr: 1.21.1-10.el9_9.2
+    sourcerpm: krb5-1.21.1-10.el9_9.2.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/baseos/os/Packages/k/krb5-workstation-1.21.1-10.el9_9.2.s390x.rpm
     repoid: ubi-9-for-s390x-baseos-rpms
-    size: 551351
-    checksum: sha256:eb8c9af2c9c7d2d76c6dbb45b6cac94e2ebce2d01280efbea8adf335acd85a98
+    size: 555683
+    checksum: sha256:e66da9cdeccbcb13167e2db8353886c23ebc443d1b0652a00476c93468d358d6
     name: krb5-workstation
-    evr: 1.21.1-10.el9_8.1
-    sourcerpm: krb5-1.21.1-10.el9_8.1.src.rpm
+    evr: 1.21.1-10.el9_9.2
+    sourcerpm: krb5-1.21.1-10.el9_9.2.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/baseos/os/Packages/l/libatomic-11.5.0-17.el9_9.s390x.rpm
     repoid: ubi-9-for-s390x-baseos-rpms
     size: 26347
@@ -9233,13 +9240,13 @@ arches:
     name: libgomp
     evr: 11.5.0-17.el9_9
     sourcerpm: gcc-11.5.0-17.el9_9.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/baseos/os/Packages/l/libkadm5-1.21.1-10.el9_8.1.s390x.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/baseos/os/Packages/l/libkadm5-1.21.1-10.el9_9.2.s390x.rpm
     repoid: ubi-9-for-s390x-baseos-rpms
-    size: 80102
-    checksum: sha256:dee337b866caccbf40f6bd69da22877f98ba1ba3b1972eb16e16dab18195e56a
+    size: 83546
+    checksum: sha256:5f2938e22aa16ec98bd44295e799b3f86280916c21c411f88ceccae8bd24342e
     name: libkadm5
-    evr: 1.21.1-10.el9_8.1
-    sourcerpm: krb5-1.21.1-10.el9_8.1.src.rpm
+    evr: 1.21.1-10.el9_9.2
+    sourcerpm: krb5-1.21.1-10.el9_9.2.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/baseos/os/Packages/l/libpkgconf-1.7.3-10.el9.s390x.rpm
     repoid: ubi-9-for-s390x-baseos-rpms
     size: 37876
@@ -10379,12 +10386,12 @@ arches:
     checksum: sha256:6afa567438acd0d3a6a66bc6a3c68ec2f4ae5ed9c7230c3f0478d2281a092688
     name: keyutils
     evr: 1.6.3-1.el9
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/baseos/source/SRPMS/Packages/k/krb5-1.21.1-10.el9_8.1.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/baseos/source/SRPMS/Packages/k/krb5-1.21.1-10.el9_9.2.src.rpm
     repoid: ubi-9-for-s390x-baseos-source-rpms
-    size: 8966024
-    checksum: sha256:79d2d304f67abfe9034d75d56a2055ba12274b24eb9cb2ea2f88dbf124b24943
+    size: 9051812
+    checksum: sha256:bf167a98f8d5d5e6bd5b2dfe1340e14a473e55ee47a609f55c5d73888dd222a8
     name: krb5
-    evr: 1.21.1-10.el9_8.1
+    evr: 1.21.1-10.el9_9.2
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/baseos/source/SRPMS/Packages/l/libdb-5.3.28-57.el9_6.src.rpm
     repoid: ubi-9-for-s390x-baseos-source-rpms
     size: 35290920

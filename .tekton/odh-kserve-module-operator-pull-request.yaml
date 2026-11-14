@@ -7,10 +7,11 @@ metadata:
     build.appstudio.redhat.com/target_branch: '{{target_branch}}'
     pipelinesascode.tekton.dev/cancel-in-progress: "true"
     pipelinesascode.tekton.dev/max-keep-runs: "3"
-    pipelinesascode.tekton.dev/on-comment: '^/build-konflux'
+    pipelinesascode.tekton.dev/on-comment: '^/build-konflux (odh-kserve-module-operator|all)$'
     build.appstudio.redhat.com/pull_request_number: "{{pull_request_number}}"
     pipelinesascode.tekton.dev/on-cel-expression: |-
-      event == "pull_request"
+      konflux_cluster == "stone-prod-p02"
+      && event == "pull_request"
       && (files.all.exists(p, ! p.matches('^\\.tekton/')) || ".tekton/odh-kserve-module-operator-pull-request.yaml".pathChanged())
   labels:
     appstudio.openshift.io/application: rhoai-v3-7-ea-1
@@ -41,8 +42,6 @@ spec:
     value:
     - linux/x86_64
     - linux-m2xlarge/arm64
-    - linux/ppc64le
-    - linux/s390x
   - name: rhoai-version
     value: "3.7.0-ea.1"
   - name: hermetic

@@ -22,7 +22,7 @@ USER root
 RUN CGO_ENABLED=1 GOOS=${TARGETOS} GOARCH=${TARGETARCH} GOFLAGS=-mod=mod GOEXPERIMENT=strictfipsruntime go build -tags "${GOTAGS},strictfipsruntime" -a -o manager ./cmd/manager
 
 # Use distroless as minimal base image to package the manager binary
-FROM registry.redhat.io/ubi9/ubi-minimal-pqc:9.8@sha256:d638f3b49b79575329aacdae2739f954effe2467c12147711e73445c4fc97819
+FROM registry.redhat.io/ubi9/ubi-minimal-pqc:9.8@sha256:eb807555968d40a35c815329eec6ef52b56a8bb3e6f06c25f7440ead905f8c74
 
 RUN microdnf install -y shadow-utils && \
     microdnf clean all && \

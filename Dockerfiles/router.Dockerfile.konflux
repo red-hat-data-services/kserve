@@ -21,7 +21,7 @@ USER root
 RUN CGO_ENABLED=1 GOOS=${TARGETOS} GOARCH=${TARGETARCH} GOEXPERIMENT=strictfipsruntime go build -tags strictfipsruntime -a -o router ./cmd/router
 
 # Copy the inference-router into a thin image
-FROM registry.redhat.io/ubi9/ubi-minimal-pqc@sha256:eb807555968d40a35c815329eec6ef52b56a8bb3e6f06c25f7440ead905f8c74
+FROM registry.redhat.io/ubi9/ubi-minimal-pqc:9.8@sha256:eb807555968d40a35c815329eec6ef52b56a8bb3e6f06c25f7440ead905f8c74
 RUN microdnf install -y shadow-utils && \
     microdnf clean all && \
     useradd kserve -m -u 1000

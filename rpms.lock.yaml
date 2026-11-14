@@ -3642,13 +3642,13 @@ arches:
     name: keyutils-libs-devel
     evr: 1.6.3-1.el9
     sourcerpm: keyutils-1.6.3-1.el9.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/appstream/os/Packages/k/krb5-devel-1.21.1-10.el9_8.1.ppc64le.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/appstream/os/Packages/k/krb5-devel-1.21.1-10.el9_9.2.ppc64le.rpm
     repoid: ubi-9-for-ppc64le-appstream-rpms
-    size: 152568
-    checksum: sha256:f2959385ca4db20a362045413d8624e0825e2e5e82dc4402d263f0353b026992
+    size: 156196
+    checksum: sha256:b3c5153a42547ee4be5b64689c3d8f7b46b13d93714d714ceae3d1a5c7f0c9df
     name: krb5-devel
-    evr: 1.21.1-10.el9_8.1
-    sourcerpm: krb5-1.21.1-10.el9_8.1.src.rpm
+    evr: 1.21.1-10.el9_9.2
+    sourcerpm: krb5-1.21.1-10.el9_9.2.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/appstream/os/Packages/l/libasan-11.5.0-17.el9_9.ppc64le.rpm
     repoid: ubi-9-for-ppc64le-appstream-rpms
     size: 443877
@@ -5665,20 +5665,27 @@ arches:
     name: gzip
     evr: 1.12-2.el9_8
     sourcerpm: gzip-1.12-2.el9_8.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/baseos/os/Packages/k/krb5-pkinit-1.21.1-10.el9_8.1.ppc64le.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/baseos/os/Packages/k/krb5-libs-1.21.1-10.el9_9.2.ppc64le.rpm
     repoid: ubi-9-for-ppc64le-baseos-rpms
-    size: 71451
-    checksum: sha256:c904bbf41278786f97506af39be9cc2c7f22c830caea20da11bd77e24ecda8a5
+    size: 876903
+    checksum: sha256:f97e2655f7a99483891af524cab2259fb2f2190e5f7d7da75ae71ecbef1f65a8
+    name: krb5-libs
+    evr: 1.21.1-10.el9_9.2
+    sourcerpm: krb5-1.21.1-10.el9_9.2.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/baseos/os/Packages/k/krb5-pkinit-1.21.1-10.el9_9.2.ppc64le.rpm
+    repoid: ubi-9-for-ppc64le-baseos-rpms
+    size: 75053
+    checksum: sha256:c77b056cee02cd30b7bad8dc6c736af30774017138fb93fae43de83536c1a6dc
     name: krb5-pkinit
-    evr: 1.21.1-10.el9_8.1
-    sourcerpm: krb5-1.21.1-10.el9_8.1.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/baseos/os/Packages/k/krb5-workstation-1.21.1-10.el9_8.1.ppc64le.rpm
+    evr: 1.21.1-10.el9_9.2
+    sourcerpm: krb5-1.21.1-10.el9_9.2.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/baseos/os/Packages/k/krb5-workstation-1.21.1-10.el9_9.2.ppc64le.rpm
     repoid: ubi-9-for-ppc64le-baseos-rpms
-    size: 560175
-    checksum: sha256:62b73619ba385e2b44a42765ef09c4c17d00aa4e48fc08e4a6302298ef46c13d
+    size: 564600
+    checksum: sha256:98784a7d4cda70c0dcb8a34c972c3ceb2a12d46380f048705aef324b2a1f85d5
     name: krb5-workstation
-    evr: 1.21.1-10.el9_8.1
-    sourcerpm: krb5-1.21.1-10.el9_8.1.src.rpm
+    evr: 1.21.1-10.el9_9.2
+    sourcerpm: krb5-1.21.1-10.el9_9.2.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/baseos/os/Packages/l/libatomic-11.5.0-17.el9_9.ppc64le.rpm
     repoid: ubi-9-for-ppc64le-baseos-rpms
     size: 27964
@@ -5721,13 +5728,13 @@ arches:
     name: libgomp
     evr: 11.5.0-17.el9_9
     sourcerpm: gcc-11.5.0-17.el9_9.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/baseos/os/Packages/l/libkadm5-1.21.1-10.el9_8.1.ppc64le.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/baseos/os/Packages/l/libkadm5-1.21.1-10.el9_9.2.ppc64le.rpm
     repoid: ubi-9-for-ppc64le-baseos-rpms
-    size: 90112
-    checksum: sha256:88f4579bf2b54b472228c3491a9f981b58f4fd662864aff6d7179d956483ad50
+    size: 92565
+    checksum: sha256:a76d664207b9344ddf07d923bbf494c7e4dd11d1ccdf61c5807a3202dac01147
     name: libkadm5
-    evr: 1.21.1-10.el9_8.1
-    sourcerpm: krb5-1.21.1-10.el9_8.1.src.rpm
+    evr: 1.21.1-10.el9_9.2
+    sourcerpm: krb5-1.21.1-10.el9_9.2.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/baseos/os/Packages/l/libpkgconf-1.7.3-10.el9.ppc64le.rpm
     repoid: ubi-9-for-ppc64le-baseos-rpms
     size: 42712
@@ -6867,12 +6874,12 @@ arches:
     checksum: sha256:6afa567438acd0d3a6a66bc6a3c68ec2f4ae5ed9c7230c3f0478d2281a092688
     name: keyutils
     evr: 1.6.3-1.el9
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/baseos/source/SRPMS/Packages/k/krb5-1.21.1-10.el9_8.1.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/baseos/source/SRPMS/Packages/k/krb5-1.21.1-10.el9_9.2.src.rpm
     repoid: ubi-9-for-ppc64le-baseos-source-rpms
-    size: 8966024
-    checksum: sha256:79d2d304f67abfe9034d75d56a2055ba12274b24eb9cb2ea2f88dbf124b24943
+    size: 9051812
+    checksum: sha256:bf167a98f8d5d5e6bd5b2dfe1340e14a473e55ee47a609f55c5d73888dd222a8
     name: krb5
-    evr: 1.21.1-10.el9_8.1
+    evr: 1.21.1-10.el9_9.2
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/baseos/source/SRPMS/Packages/l/libdb-5.3.28-57.el9_6.src.rpm
     repoid: ubi-9-for-ppc64le-baseos-source-rpms
     size: 35290920

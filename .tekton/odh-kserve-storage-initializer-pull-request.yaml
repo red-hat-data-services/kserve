@@ -47,7 +47,11 @@ spec:
     value: true
   - name: prefetch-input
     value: |
-      [{"path": ".", "type": "rpm"}]
+      [
+        {"type": "rpm", "path": "."},
+        {"type": "pip", "path": "python/storage", "allow_binary": true,
+         "requirements_build_files": ["requirements-build-deps.txt"]}
+      ]
   - name: build-image-index
     value: true
   - name: image-expires-after

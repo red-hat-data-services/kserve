@@ -58,6 +58,12 @@ dependencies = [
     # execution (fixed in 1.38.0).
     # Pinning because it is a transitive dependency.
     "azure-core>=1.38.0",
+    # CVE-2026-112940 filelock: Arbitrary file overwrite via insecure database file
+    # reopening. Versions in the range >=3.20.4,<4.2.1 contain the CVE. We currently
+    # ship 3.18.0 (unaffected); this cap fences off the vulnerable window. To raise
+    # it past 3.20.3, jump directly to >=4.2.1 — note that requires Python >=3.11.
+    # Pinning because it is a transitive dependency.
+    "filelock>=3.12.2,<3.20.4",
 ]
 name = "kserve-storage"
 version = "0.17.0"

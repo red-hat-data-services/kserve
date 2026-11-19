@@ -53,11 +53,11 @@ ENV PATH="${VIRTUAL_ENV}/bin:$PATH"
 
 COPY --from=builder --chown=1001 /opt/app-root/ /opt/app-root/
 
-# Remove compromised roots from the vendored bundles found by the image check.
+# Replace compromised roots in vendored CA bundles with the system trust store.
+# ubi-minimal / base images may lack `cmp` (diffutils); verify with python instead.
 RUN cp /etc/pki/tls/certs/ca-bundle.crt /opt/app-root/lib/python3.12/site-packages/pip/_vendor/certifi/cacert.pem && \
     cp /etc/pki/tls/certs/ca-bundle.crt /opt/app-root/.venv/lib/python3.12/site-packages/botocore/cacert.pem && \
-    cmp -s /etc/pki/tls/certs/ca-bundle.crt /opt/app-root/lib/python3.12/site-packages/pip/_vendor/certifi/cacert.pem && \
-    cmp -s /etc/pki/tls/certs/ca-bundle.crt /opt/app-root/.venv/lib/python3.12/site-packages/botocore/cacert.pem
+    python3.12 -c 'from pathlib import Path; s=Path("/etc/pki/tls/certs/ca-bundle.crt").read_bytes(); assert s == Path("/opt/app-root/lib/python3.12/site-packages/pip/_vendor/certifi/cacert.pem").read_bytes(); assert s == Path("/opt/app-root/.venv/lib/python3.12/site-packages/botocore/cacert.pem").read_bytes()'
 
 # uv and uvx are only needed while building the image.
 RUN rm -f /opt/app-root/bin/uv /opt/app-root/bin/uvx

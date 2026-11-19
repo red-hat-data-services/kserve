@@ -60,9 +60,10 @@ COPY --from=builder --chown=kserve:kserve $VIRTUAL_ENV $VIRTUAL_ENV
 COPY --from=builder storage storage
 COPY ./storage-initializer /storage-initializer
 
-# Remove compromised roots from the vendored bundle found by the image check.
+# Replace compromised roots in botocore's vendored CA bundle with the system trust store.
+# ubi-minimal has no `cmp` (diffutils); verify with python instead.
 RUN cp /etc/pki/tls/certs/ca-bundle.crt /prod_venv/lib/python3.12/site-packages/botocore/cacert.pem && \
-    cmp -s /etc/pki/tls/certs/ca-bundle.crt /prod_venv/lib/python3.12/site-packages/botocore/cacert.pem
+    python3.12 -c 'from pathlib import Path; s=Path("/etc/pki/tls/certs/ca-bundle.crt").read_bytes(); assert s == Path("/prod_venv/lib/python3.12/site-packages/botocore/cacert.pem").read_bytes()'
 
 # Remove kserve manifest and not needed files from final image, this can lead to false positives in regards to
 # CVEs since there are optional libraries which are not installed by storage-initializer

@@ -45,6 +45,17 @@ spec:
       value: main
     - name: pathInRepo
       value: pipeline/multi-arch-container-build.yaml
+  taskRunSpecs:
+  - pipelineTaskName: rpms-signature-scan
+    stepSpecs:
+    - name: rpms-signature-scan
+      computeResources:
+        requests:
+          cpu: "500m"
+          memory: "2Gi"
+        limits:
+          cpu: "500m"
+          memory: "2Gi"
   taskRunTemplate:
     serviceAccountName: build-pipeline-odh-kserve-autogluon-server-ci
   workspaces:

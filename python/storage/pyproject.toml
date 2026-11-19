@@ -7,8 +7,17 @@ license = {text = "https://github.com/kserve/kserve/blob/master/LICENSE"}
 requires-python = "<3.14,>=3.10"
 dependencies = [
     # GHSA-6mq8-rvhq-8wgg, CVE-2025-69223 aiohttp HTTP parser auto_decompress zip bomb DoS
-    "aiohttp<4.0.0,>=3.13.3",
-    "certifi>=2024.7.4",
+    # CVE-2026-34993 aiohttp arbitrary code execution via untrusted input to CookieJar.load()
+    # CVE-2026-69244 aiohttp DoS via malformed HTTP responses (out-of-bounds heap read)
+    # CVE-2026-111064 aiohttp DoS via missing initial request timeout
+    # CVE-2026-111066 aiohttp DoS via file descriptor exhaustion in multipart request processing
+    # CVE-2026-123817 aiohttp DoS via memory exhaustion during WebSocket frame reassembly
+    "aiohttp<4.0.0,>=3.14.4",
+    # CVE-2026-129265 / GHSA-6q48-6c7w-9gw2 distrust eMudhra intermediate CA certificates:
+    # certifi before 2026.10.19 bundles emSign roots whose eMudhra intermediates have
+    # compromised keys.
+    # Pinning because it is a transitive dependency.
+    "certifi>=2026.10.19",
     "requests<3.0.0,>=2.32.2",
     "google-cloud-storage<3.0.0,>=2.14.0",
     "azure-storage-blob<13.0.0,>=12.20.0",
@@ -20,6 +29,11 @@ dependencies = [
     # Pod Identity workloads) require botocore env-var endpoint overrides,
     # which are supported from 1.32.
     "boto3<2.0.0,>=1.32.0",
+    # Distrust eMudhra intermediate CA certificates (bz#2563310): python-botocore before
+    # 1.43.117 bundles the Comodo AAA Certificate Services root CA that chains to the
+    # compromised eMudhra intermediates.
+    # Pinning because it is a transitive dependency.
+    "botocore>=1.43.117",
     # NOTE: the [hf-transfer] extra is intentionally dropped for hermetic Konflux
     # builds: hf-transfer is not onboarded to the AIPCC index. hf-xet (below) is the
     # onboarded accelerator and supersedes hf-transfer for Hub downloads.
@@ -40,14 +54,26 @@ dependencies = [
     "pyjwt>=2.14.0,<2.15.0",
     # CVE-2026-30922 pyasn1 Vulnerable to Denial of Service via Unbounded Recursion
     # CVE-2026-59885 pyasn1 Quadratic complexity in OID processing allows DoS
+    # CVE-2026-119194 pyasn1 DoS via hash collisions in schemaless decoding
+    # CVE-2026-119195 pyasn1 DoS via quadratic processing of fragmented ASN.1 data
+    # CVE-2026-119196 pyasn1 DoS via constructed bit string decoding
+    # CVE-2026-119197 pyasn1 DoS via quadratic complexity in binary REAL decoding
     # Pinning because it is a transitive dependency.
-    "pyasn1>=0.6.4",
+    "pyasn1>=0.6.5",
     # CVE-2026-21226 Azure Core is vulnerable to deserialization of untrusted data
     # Pinning because it is a transitive dependency.
     "azure-core>=1.38.0",
     # GHSA-38jv-5279-wg99, CVE-2026-21441 urllib3 decompression-bomb bypass via HTTP redirects
     # Pinning because it is a transitive dependency.
-    "urllib3>=2.6.3"
+    "urllib3>=2.8.0",
+    # CVE-2026-112940 filelock: arbitrary file overwrite via insecure database file
+    # reopening. Versions in the range >=3.20.4,<4.2.1 contain the CVE. The EA builds
+    # shipped 3.32.3, which is inside that window, so this cap forces the unaffected
+    # 3.20.3. To raise it past 3.20.3, jump directly to >=4.2.1 — note that requires
+    # Python >=3.11 (the components still declare >=3.10 and CI tests 3.10) and a
+    # filelock 4.x API-compatibility review.
+    # Pinning because it is a transitive dependency.
+    "filelock>=3.12.2,<3.20.4"
 ]
 name = "kserve-storage"
 version = "0.21.0"

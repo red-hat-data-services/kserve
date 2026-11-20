@@ -166,6 +166,7 @@ jobs:
           exit 1
 
       - name: Report notification configuration
+        id: notification-config
         # Make it visible in every run whether failure notifications are
         # armed, and why not if they are not. Env-indirect so the webhook
         # value is never interpolated into the script body.
@@ -192,15 +193,15 @@ jobs:
           else
             echo "::warning title=Slack notifications skipped::Failure notifications are disabled until both RHOAI_DEVOPS_SLACK_WEBHOOK and RHOAI_SLACK_MENTIONS are configured."
           fi
+          echo "enabled=$armed" >> "$GITHUB_OUTPUT"
 
       - name: Notify on failure
         # Dormant until RHOAI_DEVOPS_SLACK_WEBHOOK (secret) and
         # RHOAI_SLACK_MENTIONS (variable, e.g. '<!subteam^S…>') are set.
         if: >-
           failure() &&
-          secrets.RHOAI_DEVOPS_SLACK_WEBHOOK != '' &&
-          vars.RHOAI_SLACK_MENTIONS != ''
-        uses: rtcamp/action-slack-notify@sha256:17fac87b8ea4ffec1f90b855f7f88e8fd69ec8568f690f4ea24d5a408eeee419a
+          steps.notification-config.outputs.enabled == 'true'
+        uses: rtcamp/action-slack-notify@06cc13f74fa8d4d2296c09455d91e9453e4025f4 # v2.4.1
         env:
           SLACK_WEBHOOK: ${{ secrets.RHOAI_DEVOPS_SLACK_WEBHOOK }}
           SLACK_COLOR: danger

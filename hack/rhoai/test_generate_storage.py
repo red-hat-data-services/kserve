@@ -1,124 +1,225 @@
 # /// script
 # requires-python = ">=3.11"
-# dependencies = ["tomlkit==0.13.2"]
 # ///
 
-"""Tests for the RHOAI storage-initializer artifact generator contract."""
+"""Exercise the storage artifact generator through its command-line interface."""
 
 from __future__ import annotations
 
-import importlib.util
+import json
+import os
 from pathlib import Path
+import shutil
+import subprocess
+import sys
 import tempfile
-import textwrap
 import unittest
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
 GENERATOR_PATH = Path(__file__).with_name("generate_storage.py")
-WORKFLOW_PATH = REPOSITORY_ROOT / ".github/workflows/rhoai-artifacts-update.yml"
+OUTPUTS = {
+    "requirements.txt": "runtime==1.0 --hash=sha256:abc\n",
+    "requirements-build-deps.txt": "wheel==1.0 --hash=sha256:def\n",
+}
+CONFIDENTIAL_REQUIREMENT = "jwcrypto==1.5.0 --hash=sha256:123\n"
+FAKE_UV = """\
+import json
+import os
+from pathlib import Path
+import sys
 
-spec = importlib.util.spec_from_file_location("generate_storage", GENERATOR_PATH)
-if spec is None or spec.loader is None:
-    raise RuntimeError(f"cannot load {GENERATOR_PATH}")
-generator = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(generator)
-
-
-class OverrideContractTests(unittest.TestCase):
-    def _with_overrides(self, body: str, monkeypatch: object = None) -> None:
-        with tempfile.TemporaryDirectory() as temp_dir:
-            overrides = Path(temp_dir) / "konflux.rhoai.overrides"
-            overrides.write_text(textwrap.dedent(body), encoding="utf-8")
-            original = generator.OVERRIDES_FILE
-            generator.OVERRIDES_FILE = overrides
-            try:
-                generator._validate_overrides()
-            finally:
-                generator.OVERRIDES_FILE = original
-
-    def test_committed_overrides_validate(self):
-        generator._validate_overrides()
-
-    def test_override_without_rationale_comment_is_rejected(self):
-        with self.assertRaisesRegex(generator.GenerationError, "rationale"):
-            self._with_overrides(
-                """
-                huggingface-hub>=0.32.0
-
-                # mentions nothing tracked
-                pyjwt==2.13.0
-                """
-            )
-
-    def test_undeclared_override_is_rejected(self):
-        with self.assertRaisesRegex(generator.GenerationError, "exactly"):
-            self._with_overrides(
-                """
-                # AIPCC-18230
-                huggingface-hub>=0.32.0
-
-                # 2.14.x
-                pyjwt==2.13.0
-
-                # no marker
-                some-other-package==1.0.0
-                """
-            )
+arguments = sys.argv[1:]
+if arguments == ["--version"]:
+    print("uv " + os.environ["FAKE_UV_VERSION"])
+    sys.exit(0)
+with open(os.environ["FAKE_UV_LOG"], "a") as log:
+    overrides = Path(arguments[arguments.index("--override") + 1]).read_text()
+    log.write(json.dumps({"arguments": arguments, "overrides": overrides}) + "\\n")
+if os.environ.get("FAKE_UV_ERROR"):
+    sys.exit(os.environ["FAKE_UV_ERROR"])
+output = Path(arguments[arguments.index("-o") + 1])
+body = json.loads(os.environ["FAKE_UV_OUTPUTS"])[output.name]
+if "--extra" in arguments and arguments[arguments.index("--extra") + 1] == "confidential":
+    body += os.environ["FAKE_UV_CONFIDENTIAL"]
+output.write_text(body, encoding="utf-8")
+"""
 
 
-class SharedPyprojectContractTests(unittest.TestCase):
-    def test_committed_shared_pyproject_is_odh_verbatim(self):
-        generator._validate_shared_pyproject()
-
-    def test_downstream_pyproject_edit_is_rejected(self):
-        with tempfile.TemporaryDirectory() as temp_dir:
-            pyproject = Path(temp_dir) / "pyproject.toml"
-            pyproject.write_text(
-                textwrap.dedent(
-                    """
-                    [project]
-                    dependencies = [
-                        "huggingface-hub>=0.32.0",
-                    ]
-                    """
-                ),
-                encoding="utf-8",
-            )
-            original = generator.SHARED_PYPROJECT
-            generator.SHARED_PYPROJECT = pyproject
-            try:
-                with self.assertRaisesRegex(
-                    generator.GenerationError, "ODH-verbatim"
-                ):
-                    generator._validate_shared_pyproject()
-            finally:
-                generator.SHARED_PYPROJECT = original
-
-
-class WorkflowContractTests(unittest.TestCase):
-    def test_workflow_exists_and_watches_shared_pyproject(self):
-        workflow = WORKFLOW_PATH.read_text(encoding="utf-8")
-        self.assertIn("  workflow_dispatch:", workflow)
-        for watched in (
-            "python/storage/pyproject.toml",
-            "python/storage/konflux.rhoai.overrides",
-            "python/storage/konflux-hdfs.in",
-            "python/storage/konflux-build-deps.in",
-            "hack/rhoai/*.py",
+class GeneratorTests(unittest.TestCase):
+    def setUp(self):
+        temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(temporary.cleanup)
+        self.root = Path(temporary.name)
+        self.storage = self.root / "python/storage"
+        self.storage.mkdir(parents=True)
+        self.script = self.root / "hack/rhoai/generate_storage.py"
+        self.script.parent.mkdir(parents=True)
+        shutil.copy2(GENERATOR_PATH, self.script)
+        shutil.copy2(REPOSITORY_ROOT / "kserve-deps.env", self.root)
+        for name in (
+            "pyproject.toml",
+            "konflux-hdfs.in",
+            "konflux-build-deps.in",
+            "konflux.rhoai.overrides",
         ):
-            self.assertIn(watched, workflow)
-        # The unified workflow dispatches both generators and keeps the
-        # generate matrix serialized so bot pushes cannot race.
-        self.assertIn("max-parallel: 1", workflow)
-        self.assertIn("generate_${{ matrix.generator }}.py", workflow)
-        # Failure notification is dormant until the webhook secret and the
-        # mention variable are configured; no hardcoded mention target, and
-        # skipped notifications are logged as warnings, not silent.
-        self.assertIn("secrets.RHOAI_DEVOPS_SLACK_WEBHOOK != ''", workflow)
-        self.assertIn("vars.RHOAI_SLACK_MENTIONS != ''", workflow)
-        self.assertIn("SLACK_MENTIONS: ${{ vars.RHOAI_SLACK_MENTIONS }}", workflow)
-        self.assertIn("if: always()", workflow)
-        self.assertIn("::warning title=Slack notifications skipped", workflow)
+            shutil.copy2(REPOSITORY_ROOT / "python/storage" / name, self.storage)
+
+        tools = self.root / "bin"
+        tools.mkdir()
+        uv = tools / "uv"
+        uv.write_text(f"#!{sys.executable}\n{FAKE_UV}", encoding="utf-8")
+        uv.chmod(0o755)
+        self.log = self.root / "uv-calls.jsonl"
+        version = next(
+            line.split("=", 1)[1]
+            for line in (self.root / "kserve-deps.env").read_text().splitlines()
+            if line.startswith("UV_VERSION=")
+        )
+        self.environment = {
+            **os.environ,
+            "PATH": str(tools) + os.pathsep + os.environ["PATH"],
+            "FAKE_UV_VERSION": version,
+            "FAKE_UV_LOG": str(self.log),
+            "FAKE_UV_OUTPUTS": json.dumps(OUTPUTS),
+            "FAKE_UV_CONFIDENTIAL": CONFIDENTIAL_REQUIREMENT,
+        }
+
+    def run_generator(self, *arguments):
+        return subprocess.run(
+            [sys.executable, str(self.script), *arguments],
+            cwd=self.root,
+            env=self.environment,
+            capture_output=True,
+            text=True,
+        )
+
+    def test_generates_both_artifacts_with_confidential_dependencies(self):
+        result = self.run_generator()
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        for name, body in OUTPUTS.items():
+            if name == "requirements.txt":
+                body += CONFIDENTIAL_REQUIREMENT
+            self.assertEqual((self.storage / name).read_text(), body)
+        calls = map(json.loads, self.log.read_text().splitlines())
+        runtime, build = (call["arguments"] for call in calls)
+        self.assertIn("pyproject.toml", runtime)
+        self.assertIn("konflux-hdfs.in", runtime)
+        self.assertIn("konflux-build-deps.in", build)
+        self.assertNotIn("--extra", build)
+        for arguments in (runtime, build):
+            self.assertEqual(arguments[:2], ["pip", "compile"])
+            self.assertIn("--generate-hashes", arguments)
+            for flag, expected in (
+                ("--override", "konflux.rhoai.overrides"),
+                ("--python-version", "3.12"),
+                ("--python-platform", "x86_64-unknown-linux-gnu"),
+            ):
+                self.assertEqual(arguments[arguments.index(flag) + 1], expected)
+
+    def test_passes_overrides_to_uv_without_a_duplicate_policy(self):
+        overrides = "huggingface-hub>=0.32.0\npyjwt==2.13.0\nother-package==1.0\n"
+        (self.storage / "konflux.rhoai.overrides").write_text(overrides)
+
+        result = self.run_generator()
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        for call in map(json.loads, self.log.read_text().splitlines()):
+            self.assertEqual(call["overrides"], overrides)
+
+    def test_check_reports_missing_artifacts_without_writes(self):
+        result = self.run_generator("--check")
+
+        self.assertEqual(result.returncode, 1, result.stderr)
+        for name in OUTPUTS:
+            self.assertIn(name, result.stderr)
+            self.assertFalse((self.storage / name).exists())
+
+    def test_check_accepts_current_artifacts_and_preserves_stale_artifacts(self):
+        result = self.run_generator()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        current = {name: (self.storage / name).read_bytes() for name in OUTPUTS}
+
+        result = self.run_generator("--check")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(
+            {name: (self.storage / name).read_bytes() for name in OUTPUTS}, current
+        )
+
+        (self.storage / "requirements.txt").write_text("stale\n")
+        result = self.run_generator("--check")
+
+        self.assertEqual(result.returncode, 1, result.stderr)
+        self.assertIn("requirements.txt", result.stderr)
+        self.assertEqual((self.storage / "requirements.txt").read_text(), "stale\n")
+        self.assertEqual(
+            (self.storage / "requirements-build-deps.txt").read_bytes(),
+            current["requirements-build-deps.txt"],
+        )
+
+    def test_uv_failure_is_reported_without_artifact_writes(self):
+        for name in OUTPUTS:
+            (self.storage / name).write_text("previous artifact\n")
+        self.environment["FAKE_UV_ERROR"] = "dependency resolution failed"
+
+        result = self.run_generator()
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("dependency resolution failed", result.stderr)
+        for name in OUTPUTS:
+            self.assertEqual((self.storage / name).read_text(), "previous artifact\n")
+
+    def test_rejects_unsafe_artifacts_without_writes(self):
+        for name in OUTPUTS:
+            (self.storage / name).write_text("previous artifact\n")
+        for name in OUTPUTS:
+            for unsafe in (
+                "hf-transfer==1.0\n",
+                "--index-url https://pypi.org/simple\n",
+                "https://files.pythonhosted.org/package.whl\n",
+            ):
+                with self.subTest(artifact=name, unsafe=unsafe):
+                    self.environment["FAKE_UV_OUTPUTS"] = json.dumps(
+                        {**OUTPUTS, name: unsafe}
+                    )
+
+                    result = self.run_generator()
+
+                    self.assertNotEqual(result.returncode, 0)
+                    self.assertIn(name, result.stderr)
+                    for artifact in OUTPUTS:
+                        self.assertEqual(
+                            (self.storage / artifact).read_text(), "previous artifact\n"
+                        )
+
+    def test_rejects_wrong_uv_version_before_compilation(self):
+        self.environment["FAKE_UV_VERSION"] = "0.0.0"
+
+        result = self.run_generator()
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("expected uv", result.stderr)
+        self.assertFalse(self.log.exists())
+
+    def test_rejects_changed_upstream_requirements_before_compilation(self):
+        pyproject = self.storage / "pyproject.toml"
+        original = pyproject.read_text()
+        for requirement in (
+            "huggingface-hub>=0.32.0",
+            "huggingface-hub[hf-transfer]>=0.33.0",
+        ):
+            with self.subTest(requirement=requirement):
+                pyproject.write_text(
+                    original.replace(
+                        "huggingface-hub[hf-transfer]>=0.32.0", requirement
+                    )
+                )
+
+                result = self.run_generator()
+
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn("ODH-verbatim", result.stderr)
+                self.assertFalse(self.log.exists())
 
 
 if __name__ == "__main__":

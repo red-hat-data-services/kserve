@@ -799,10 +799,15 @@ pyyaml==6.0.3 \
     #   pytorch-lightning
     #   transformers
     #   uvicorn
-regex==2026.11.9 \
-    --hash=sha256:3c244dc59722b79d13802df43a6f01989a1a106a7d08162d4f1271c47169aed7 \
-    --hash=sha256:858ee03cfc0125e4decbc90109bddb5c363468989f90d7f427a15fabd3ddd9fc \
-    --hash=sha256:ead48d32957a2a682f3b0b19d0d820e92ad386cb2d602bb53030eafee2d661d0
+# Pinned to 2026.11.7: 2026.11.9+ has no ppc64le wheel on the AIPCC rhoai/3.5/cpu-ubi9
+# index (breaks the ppc64le leg of the multi-arch Konflux build), and versions < 2026.8.31
+# are affected by AIKIDO-2026-447516 (out-of-bounds write, fixed in 2026.8.31).
+# 2026.11.7 is the newest version with both the fix and full 4-arch wheel coverage.
+regex==2026.11.7 \
+    --hash=sha256:12ef2472fd1ce7aac62364d35c15a688ba4e1d860bdc270cb2007a1665dc12b2 \
+    --hash=sha256:502e15ca48f27386294ad781e2f6951100087d17efd5f0075f6cd4183da5ac8f \
+    --hash=sha256:7482906f282691ee1b2777b7069abe16c9b73d1e497e3cb91c9bfb287034e43b \
+    --hash=sha256:9e75185c25cafcfa3c9305a88e04ae19edc765b57c63599b109e0f861a920c91
     # via transformers
 requests==2.34.2 \
     --hash=sha256:ea6708de2da329a533299949db29fca0e3f7e3135068ad5171a28d07a9687631
@@ -1040,7 +1045,10 @@ triad==1.0.2 \
     # via
     #   adagio
     #   fugue
-triton==3.6.0 \
+# The s390x marker is required: no s390x triton wheels exist (upstream does not
+# support s390x) and torch does not require triton on s390x. `make requirements`
+# re-applies this marker after uv pip compile.
+triton==3.6.0 ; platform_machine != "s390x" \
     --hash=sha256:1fd543ee4b888f749e186f87fb4c669894fd2f74849b820ffee3014a54e99d05 \
     --hash=sha256:669850f373cd9bd588b5a4d86c6849f16be98b3e8087130ad945082842ae631b \
     --hash=sha256:a64f6de7b2d45d0426474a980776161e626ccdcbb35e8b540686411fe204e0c9

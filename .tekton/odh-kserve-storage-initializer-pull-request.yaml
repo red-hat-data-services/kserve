@@ -44,10 +44,14 @@ spec:
   - name: path-context
     value: python
   - name: hermetic
-    value: true
+    value: "true"
   - name: prefetch-input
     value: |
-      [{"path": ".", "type": "rpm"}]
+      [
+        {"type": "rpm", "path": "."},
+        {"type": "pip", "path": "python/storage", "allow_binary": true,
+         "requirements_build_files": ["requirements-build-deps.txt"]}
+      ]
   - name: build-image-index
     value: true
   - name: image-expires-after
@@ -63,6 +67,17 @@ spec:
       value: '{{ target_branch }}'
     - name: pathInRepo
       value: pipelines/multi-arch-container-build.yaml
+  taskRunSpecs:
+  - pipelineTaskName: rpms-signature-scan
+    stepSpecs:
+    - name: rpms-signature-scan
+      computeResources:
+        requests:
+          cpu: "500m"
+          memory: "2Gi"
+        limits:
+          cpu: "500m"
+          memory: "2Gi"
   taskRunTemplate:
     serviceAccountName: build-pipeline-pull-request-pipelines
   workspaces:

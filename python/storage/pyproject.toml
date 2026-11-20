@@ -16,7 +16,10 @@ dependencies = [
     "azure-identity<2.0.0,>=1.15.0",
     # Raise the boto3 floor to the first known fixed release for CVE-2026-114406 (RHAI-49092).
     "boto3<2.0.0,>=1.43.122",
-    "huggingface-hub[hf-transfer]>=0.32.0",
+    # NOTE: the [hf-transfer] extra is intentionally dropped for hermetic Konflux
+    # builds: hf-transfer is not onboarded to the AIPCC index. hf-xet is the
+    # onboarded accelerator and supersedes hf-transfer for Hub downloads.
+    "huggingface-hub>=0.32.0",
     # CVE-2026-104851 fsspec server-side template injection in ReferenceFileSystem
     "fsspec>=2026.6.0",
     "hf-xet>=1.5.0",

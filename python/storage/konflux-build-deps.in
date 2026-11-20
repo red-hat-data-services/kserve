@@ -1,0 +1,10 @@
+# Build requirements for the storage-initializer hermetic build (wheel building).
+#
+# Hermeto fetches these via the "requirements_build_files" input
+# (requirements-build-deps.txt, compiled from this file). They are deliberately
+# NOT declared in pyproject.toml: they are build-time-only tools needed to
+# install the kserve-storage wheel from source in the Konflux image build.
+#
+# Onboarded to the AIPCC index (public-rhai/rhoai/3.5/cpu-ubi9).
+setuptools==83.0.0
+wheel==0.47.0

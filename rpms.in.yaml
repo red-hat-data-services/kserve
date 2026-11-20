@@ -1,0 +1,11 @@
+contentOrigin:
+  repofiles:
+    - ubi.repo
+packages: []
+reinstallPackages:
+  - shadow-utils
+arches:
+  - x86_64
+  - aarch64
+  - ppc64le
+  - s390x

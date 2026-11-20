@@ -1,0 +1,18 @@
+# Downstream-only uv overrides for the storage-initializer hermetic build.
+#
+# This file carries the RHOAI dependency deltas against the ODH-synced
+# python/storage/pyproject.toml so the shared file can stay ODH-verbatim and
+# the rhods-devops-infra auto-sync merges cleanly. Document each override's
+# reason and removal condition here for review. uv parses this file directly.
+#
+# hf-transfer is not onboarded to the AIPCC index. hf-xet is the onboarded
+# accelerator and supersedes hf-transfer for Hub downloads. Drop this override
+# once hf-transfer is onboarded (AIPCC-18230).
+huggingface-hub>=0.32.0
+
+# The synced pyproject requires pyjwt>=2.14.0,<2.15.0 (upstream #6437), but
+# the AIPCC index only carries 2.13.0. Drop this override once pyjwt 2.14.x
+# is onboarded to the index.
+# This bypasses the shared CVE-2026-32597 minimum and needs a separate
+# security decision before merge.
+pyjwt==2.13.0

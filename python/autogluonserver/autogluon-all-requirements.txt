@@ -570,7 +570,6 @@ numpy==2.5.3 \
     #   pandas
     #   patsy
     #   peft
-    #   safetensors
     #   scikit-learn
     #   scipy
     #   spacy
@@ -949,7 +948,6 @@ safetensors==0.8.0 \
     # via
     #   accelerate
     #   autogluon-timeseries
-    #   huggingface-hub
     #   peft
     #   transformers
 scikit-learn==1.9.1 \
@@ -1099,11 +1097,9 @@ torch==2.13.0 \
     #   autogluon-timeseries
     #   chronos-forecasting
     #   fastai
-    #   huggingface-hub
     #   lightning
     #   peft
     #   pytorch-lightning
-    #   safetensors
     #   torchmetrics
     #   torchvision
 torchmetrics==1.9.0 \

@@ -8,6 +8,9 @@ supported-markers = [
     "sys_platform == 'linux'",
 ]
 
+[manifest]
+overrides = [{ name = "huggingface-hub", specifier = ">=0.32.0" }]
+
 [[package]]
 name = "accelerate"
 version = "1.15.0"
@@ -239,7 +242,7 @@ dependencies = [
     { name = "einops", marker = "sys_platform == 'linux'" },
     { name = "fugue", marker = "sys_platform == 'linux'" },
     { name = "gluonts", marker = "sys_platform == 'linux'" },
-    { name = "huggingface-hub", extra = ["torch"], marker = "sys_platform == 'linux'" },
+    { name = "huggingface-hub", marker = "sys_platform == 'linux'" },
     { name = "joblib", marker = "sys_platform == 'linux'" },
     { name = "lightning", marker = "sys_platform == 'linux'" },
     { name = "mlforecast", marker = "sys_platform == 'linux'" },
@@ -1025,12 +1028,6 @@ wheels = [
     { url = "https://packages.redhat.com/api/pulp-content/public-rhai/cpu-torch2.13-el9.8-test/huggingface_hub-1.33.0-1-py3-none-any.whl", hash = "sha256:64651b2d3e6ce696a0f5b7ed7dd935f535798dc9ee5d121e65de33902146eca2", size = 848166, upload-time = "2026-09-28T16:32:07.967Z" },
 ]
 
-[package.optional-dependencies]
-torch = [
-    { name = "safetensors", extra = ["torch"], marker = "sys_platform == 'linux'" },
-    { name = "torch", marker = "sys_platform == 'linux'" },
-]
-
 [[package]]
 name = "idna"
 version = "3.20"
@@ -1277,7 +1274,7 @@ requires-dist = [
     { name = "dulwich", specifier = ">=1.2.5" },
     { name = "google-cloud-storage", specifier = ">=2.14.0,<3.0.0" },
     { name = "hf-xet", specifier = ">=1.5.0" },
-    { name = "huggingface-hub", specifier = ">=0.32.0" },
+    { name = "huggingface-hub", extras = ["hf-transfer"], specifier = ">=0.32.0" },
     { name = "jwcrypto", marker = "extra == 'confidential'", specifier = ">=1.5.0" },
     { name = "modelscope-hub", specifier = ">=0.1.4" },
     { name = "oras", specifier = ">=0.2.42,<1.0.0" },
@@ -2243,12 +2240,6 @@ wheels = [
     { url = "https://packages.redhat.com/api/pulp-content/public-rhai/cpu-torch2.13-el9.8-test/safetensors-0.8.0-1-cp310-abi3-linux_ppc64le.whl", hash = "sha256:660c9ee5c07e141c3ae758380e6be18b3a32cc32681c0cee4a72d0a1185b0f57", size = 615334, upload-time = "2026-09-25T17:19:46.724Z" },
     { url = "https://packages.redhat.com/api/pulp-content/public-rhai/cpu-torch2.13-el9.8-test/safetensors-0.8.0-1-cp310-abi3-linux_s390x.whl", hash = "sha256:7d081efe5a5a4e2b7f8f59bc30622001e8659d04be85834c8c0939f1cf5ee897", size = 635466, upload-time = "2026-09-26T20:10:40.245Z" },
     { url = "https://packages.redhat.com/api/pulp-content/public-rhai/cpu-torch2.13-el9.8-test/safetensors-0.8.0-1-cp310-abi3-linux_x86_64.whl", hash = "sha256:57639bd76c4c5023b1c5579645e22109ab3ab35da4ec9e4903c14efe37d3bbd5", size = 505414, upload-time = "2026-09-24T18:30:58.539Z" },
-]
-
-[package.optional-dependencies]
-torch = [
-    { name = "numpy", marker = "sys_platform == 'linux'" },
-    { name = "torch", marker = "sys_platform == 'linux'" },
 ]
 
 [[package]]

@@ -99,10 +99,16 @@ def _validate_project(project_path: Path) -> str:
 
     tool = _table(project.get("tool"), "tool")
     uv = _table(tool.get("uv"), "tool.uv")
-    if set(uv) != {"environments", "index", "sources"}:
-        raise GenerationError(
-            "tool.uv must contain only environments, index and sources"
-        )
+    allowed_uv_keys = {"environments", "index", "sources"}
+    if set(uv) - allowed_uv_keys:
+        # override-dependencies is the only sanctioned extra key: it carries
+        # the downstream hermetic delta (e.g. the hf-transfer drop) without
+        # editing the ODH-synced python/storage/pyproject.toml.
+        if set(uv) != allowed_uv_keys | {"override-dependencies"}:
+            raise GenerationError(
+                "tool.uv must contain only environments, index, sources and "
+                "optionally override-dependencies"
+            )
     if uv["environments"] != ["sys_platform == 'linux'"]:
         raise GenerationError("RHOAI project must resolve only Linux environments")
 

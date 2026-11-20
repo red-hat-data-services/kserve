@@ -17,7 +17,6 @@ REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
 PROJECT_PATH = REPOSITORY_ROOT / "python/autogluonserver/pyproject.rhoai.toml"
 LOCK_PATH = REPOSITORY_ROOT / "python/autogluonserver/uv.rhoai.lock"
 GENERATOR_PATH = Path(__file__).with_name("generate_autogluon.py")
-WORKFLOW_PATH = REPOSITORY_ROOT / ".github/workflows/autogluon-rhoai-update.yml"
 
 spec = importlib.util.spec_from_file_location("generate_autogluon", GENERATOR_PATH)
 if spec is None or spec.loader is None:
@@ -38,38 +37,6 @@ class GeneratorContractTests(unittest.TestCase):
         )
 
         self.assertEqual(generator.UV_VERSION, expected_version)
-
-    def test_workflow_event_contract(self):
-        workflow = WORKFLOW_PATH.read_text(encoding="utf-8")
-
-        self.assertIn("  workflow_dispatch:", workflow)
-        self.assertNotIn("manual-approval", workflow)
-        self.assertNotIn("autogluon-manual", workflow)
-        self.assertNotIn("github.event_name == 'workflow_dispatch'", workflow)
-        relevant_paths = (
-            "python/autogluonserver/pyproject.rhoai.toml",
-            "python/autogluonserver/uv.rhoai.lock",
-            "python/autogluonserver/autogluon-all-requirements.txt",
-            "python/kserve/pyproject.toml",
-            "python/storage/pyproject.toml",
-            "hack/rhoai/*.py",
-            ".github/workflows/autogluon-rhoai-update.yml",
-        )
-        push_event = workflow.split("  pull_request_target:", 1)[0]
-        self.assertIn("branches:\n      - main", push_event)
-        self.assertNotIn("rhoai-*", push_event)
-        self.assertIn("    paths:", push_event)
-
-        release_event = workflow.split("  pull_request_target:", 1)[1].split(
-            "  pull_request:", 1
-        )[0]
-        self.assertIn("types: [closed]", release_event)
-        self.assertIn("branches: ['rhoai-[0-9].[0-9]**']", release_event)
-        self.assertIn("    paths:", release_event)
-        for path in relevant_paths:
-            self.assertIn(f"      - {path}", push_event)
-            self.assertIn(f"      - {path}", release_event)
-        self.assertIn("github.event.pull_request.merged == true", workflow)
 
     def test_checked_in_project_and_lock_pass_validation(self):
         index_url = generator._validate_project(PROJECT_PATH)

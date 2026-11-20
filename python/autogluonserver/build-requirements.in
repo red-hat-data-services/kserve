@@ -2,3 +2,8 @@ setuptools
 wheel
 # aiohttp>=3.14.4 (via kserve/autogluon) requires yarl>=1.25.1; keep lockfile consistent
 yarl>=1.25.1,<2
+# regex: must stay >= 2026.8.31 (AIKIDO-2026-447516 out-of-bounds write) and the AIPCC
+# rhoai/3.5/cpu-ubi9 index has no ppc64le wheel for 2026.11.9+; 2026.11.7 is the newest
+# version with both the security fix and full 4-arch (x86_64, ppc64le, s390x, aarch64)
+# wheel coverage. Revisit when a newer regex gets a ppc64le wheel on the index.
+regex==2026.11.7

@@ -19,6 +19,9 @@ requirements:
 		--python-version $(PYTHON_VERSION) \
 		--python-platform $(PYTHON_PLATFORM) \
 		--index-url "$(AIPCC_INDEX_URL)" >> autogluon-all-requirements.txt
+	# uv pip compile resolves on x86_64 and does not know that s390x has no triton
+	# wheels; re-apply the exclusion marker (lost on every regeneration otherwise).
+	sed -i 's/^triton==\([0-9.]*\) \\$$/triton==\1 ; platform_machine != "s390x" \\/' autogluon-all-requirements.txt
 
 test: type_check
 	pytest -W ignore

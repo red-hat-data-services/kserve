@@ -26,10 +26,9 @@ RUN --mount=type=cache,target=/go/pkg/mod \
 # Copy the controller-manager into a thin image
 FROM registry.redhat.io/ubi9/ubi-minimal:9.8@sha256:f26ef64172ea61f5ac5ba4be8c5c738bf8760b22b3e5148ce7b40f7308ab32db
 
-RUN microdnf install -y shadow-utils && \
-    microdnf clean all && \
-    useradd kserve -m -u 1000
-RUN microdnf remove -y shadow-utils
+# The pinned UBI base already provides useradd through shadow-utils.
+RUN useradd kserve -m -u 1000 && \
+    microdnf remove -y --disablerepo='*' shadow-utils
 
 COPY --from=builder /go/src/github.com/kserve/kserve/localmodelnode-agent /manager
 USER 1000:1000

@@ -462,8 +462,8 @@ llvmlite==0.48.0 \
 mako==1.3.12 \
     --hash=sha256:39aa737c9633f559da1068b3791b5b20f5c25567b0c19f566bdfab82d7129705
     # via alembic
-markdown==3.10.2 \
-    --hash=sha256:d03a9d8f09ae8a59d6ed69ca040b7aa7f693855c271708807ecae847b767d260
+markdown==3.11.3 \
+    --hash=sha256:5ca73264fb63098f1f6e5db7b535749817a555df098e0c5737e6af6668faceb1
     # via tensorboard
 markdown-it-py==4.2.0 \
     --hash=sha256:aec8d53b1472c56d47ce05b7da68fd354ffb406b38d4245567d368f130a9e628
